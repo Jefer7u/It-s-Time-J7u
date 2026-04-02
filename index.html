@@ -946,7 +946,6 @@
 // ============================================================
 // 1. FIREBASE SETUP & INITIALIZATION
 // ============================================================
-// IMPORTS ACTUALIZADOS: Se agregó GoogleAuthProvider y signInWithPopup
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
@@ -969,19 +968,123 @@ const db = getFirestore(app);
 const googleProvider = new GoogleAuthProvider();
 
 // ============================================================
-// STOIC QUOTES ARRAY
+// STOIC QUOTES ARRAY (100 Quotes + Spanish)
 // ============================================================
 const stoicQuotes = [
-  "\"You have power over your mind - not outside events. Realize this, and you will find strength.\" – Marcus Aurelius",
-  "\"We suffer more often in imagination than in reality.\" – Seneca",
-  "\"First say to yourself what you would be; and then do what you have to do.\" – Epictetus",
-  "\"Waste no more time arguing what a good man should be. Be one.\" – Marcus Aurelius",
-  "\"It is not the man who has too little, but the man who craves more, that is poor.\" – Seneca",
-  "\"He who fears death will never do anything worth of a man who is alive.\" – Seneca",
-  "\"The obstacle in the path becomes the path. Never forget, within every obstacle is an opportunity.\" – Ryan Holiday"
+  // 🏛️ Estoicismo y Autocontrol
+  { en: "\"You have power over your mind - not outside events. Realize this, and you will find strength.\" – Marcus Aurelius", es: "Tienes poder sobre tu mente, no sobre los eventos externos. Date cuenta de esto y encontrarás la fuerza." },
+  { en: "\"We suffer more often in imagination than in reality.\" – Seneca", es: "Sufrimos más a menudo en la imaginación que en la realidad." },
+  { en: "\"First say to yourself what you would be; and then do what you have to do.\" – Epictetus", es: "Primero dite a ti mismo lo que serías; y luego haz lo que tienes que hacer." },
+  { en: "\"Waste no more time arguing what a good man should be. Be one.\" – Marcus Aurelius", es: "No pierdas más tiempo discutiendo cómo debe ser un buen hombre. Sé uno." },
+  { en: "\"It is not the man who has too little, but the man who craves more, that is poor.\" – Seneca", es: "No es pobre el hombre que tiene muy poco, sino el que anhela más." },
+  { en: "\"He who fears death will never do anything worth of a man who is alive.\" – Seneca", es: "El que teme a la muerte nunca hará nada digno de un hombre vivo." },
+  { en: "\"The obstacle in the path becomes the path. Never forget, within every obstacle is an opportunity.\" – Ryan Holiday", es: "El obstáculo en el camino se convierte en el camino. Dentro de cada obstáculo hay una oportunidad." },
+  { en: "\"Amor Fati: Love your fate, which is in fact your life.\" – Friedrich Nietzsche", es: "Amor Fati: Ama tu destino, que de hecho es tu vida." },
+  { en: "\"If it is not right do not do it; if it is not true do not say it.\" – Marcus Aurelius", es: "Si no es correcto, no lo hagas; si no es verdad, no lo digas." },
+  { en: "\"No man is free who is not master of himself.\" – Epictetus", es: "Ningún hombre es libre si no es dueño de sí mismo." },
+  { en: "\"Luck is what happens when preparation meets opportunity.\" – Seneca", es: "La suerte es lo que sucede cuando la preparación se encuentra con la oportunidad." },
+  { en: "\"The best revenge is to be unlike him who performed the injury.\" – Marcus Aurelius", es: "La mejor venganza es no parecerte a quien te causó el daño." },
+  { en: "\"We should always be asking ourselves: Is this something that is, or is not, in my control?\" – Epictetus", es: "Siempre deberíamos preguntarnos: ¿Es esto algo que está o no en mi control?" },
+  { en: "\"While we wait for life, life passes.\" – Seneca", es: "Mientras esperamos a que pase la vida, la vida pasa." },
+  { en: "\"Difficulties strengthen the mind, as labor does the body.\" – Seneca", es: "Las dificultades fortalecen la mente, así como el trabajo fortalece el cuerpo." },
+  { en: "\"To be evenminded is the greatest virtue.\" – Heraclitus", es: "Mantener el equilibrio mental es la mayor virtud." },
+  { en: "\"Wealth consists not in having great possessions, but in having few wants.\" – Epictetus", es: "La riqueza no consiste en tener grandes posesiones, sino en tener pocas necesidades." },
+  { en: "\"Don't explain your philosophy. Embody it.\" – Epictetus", es: "No expliques tu filosofía. Encárnala." },
+  { en: "\"The soul becomes dyed with the color of its thoughts.\" – Marcus Aurelius", es: "El alma se tiñe del color de sus pensamientos." },
+  { en: "\"He who has a why to live for can bear almost any how.\" – Friedrich Nietzsche", es: "Quien tiene un porqué para vivir puede soportar casi cualquier cómo." },
+
+  // ⚡ Acción y Ejecución
+  { en: "\"Discipline equals freedom.\" – Jocko Willink", es: "La disciplina es igual a la libertad." },
+  { en: "\"Done is better than perfect.\" – Sheryl Sandberg", es: "Hecho es mejor que perfecto." },
+  { en: "\"Action is the foundational key to all success.\" – Pablo Picasso", es: "La acción es la clave fundamental de todo éxito." },
+  { en: "\"You miss 100% of the shots you don't take.\" – Wayne Gretzky", es: "Fallas el 100% de los tiros que no intentas." },
+  { en: "\"The way to get started is to quit talking and begin doing.\" – Walt Disney", es: "La forma de empezar es dejar de hablar y empezar a hacer." },
+  { en: "\"Do not wait; the time will never be 'just right'.\" – George Patton", es: "No esperes; el momento nunca será 'perfecto'." },
+  { en: "\"What you do today can improve all your tomorrows.\" – Ralph Marston", es: "Lo que haces hoy puede mejorar todos tus mañanas." },
+  { en: "\"It always seems impossible until it's done.\" – Nelson Mandela", es: "Siempre parece imposible hasta que se hace." },
+  { en: "\"Fall seven times and stand up eight.\" – Japanese Proverb", es: "Cae siete veces y levántate ocho." },
+  { en: "\"Start where you are. Use what you have. Do what you can.\" – Arthur Ashe", es: "Empieza donde estás. Usa lo que tienes. Haz lo que puedas." },
+  { en: "\"A goal without a plan is just a wish.\" – Antoine de Saint-Exupéry", es: "Un objetivo sin un plan es solo un deseo." },
+  { en: "\"Focus on being productive instead of busy.\" – Tim Ferriss", es: "Concéntrate en ser productivo en lugar de estar ocupado." },
+  { en: "\"Perfection is the enemy of execution.\" – Unknown", es: "La perfección es la enemiga de la ejecución." },
+  { en: "\"Action breeds confidence and courage.\" – Dale Carnegie", es: "La acción engendra confianza y coraje." },
+  { en: "\"The secret of getting ahead is getting started.\" – Mark Twain", es: "El secreto para salir adelante es empezar." },
+  { en: "\"A journey of a thousand miles begins with a single step.\" – Lao Tzu", es: "Un viaje de mil millas comienza con un solo paso." },
+  { en: "\"Take the risk or lose the chance.\" – Unknown", es: "Toma el riesgo o pierde la oportunidad." },
+  { en: "\"Strive for progress, not perfection.\" – Unknown", es: "Esfuérzate por el progreso, no por la perfección." },
+  { en: "\"Energy and persistence conquer all things.\" – Benjamin Franklin", es: "La energía y la persistencia lo conquistan todo." },
+  { en: "\"Some people want it to happen, some wish it would happen, others make it happen.\" – Michael Jordan", es: "Algunas personas quieren que suceda, algunas desean que suceda, otras hacen que suceda." },
+
+  // ⏳ Tiempo y Hábitos
+  { en: "\"Time is the most valuable coin in your life.\" – Carl Sandburg", es: "El tiempo es la moneda más valiosa de tu vida." },
+  { en: "\"Lost time is never found again.\" – Benjamin Franklin", es: "El tiempo perdido nunca se vuelve a encontrar." },
+  { en: "\"You may delay, but time will not.\" – Benjamin Franklin", es: "Puedes demorarte, pero el tiempo no lo hará." },
+  { en: "\"The key is in not spending time, but in investing it.\" – Stephen R. Covey", es: "La clave no está en gastar el tiempo, sino en invertirlo." },
+  { en: "\"One day or day one. You decide.\" – Unknown", es: "Un día o el día uno. Tú decides." },
+  { en: "\"Do what you have to do until you can do what you want to do.\" – Oprah Winfrey", es: "Haz lo que tengas que hacer hasta que puedas hacer lo que quieras hacer." },
+  { en: "\"Suffer the pain of discipline or suffer the pain of regret.\" – Jim Rohn", es: "Sufre el dolor de la disciplina o sufre el dolor del arrepentimiento." },
+  { en: "\"Motivation gets you going, but discipline keeps you growing.\" – John C. Maxwell", es: "La motivación te pone en marcha, pero la disciplina te mantiene creciendo." },
+  { en: "\"Small daily improvements are the key to staggering long-term results.\" – Unknown", es: "Pequeñas mejoras diarias son la clave para resultados asombros a largo plazo." },
+  { en: "\"Motivation is what gets you started. Habit is what keeps you going.\" – Jim Ryun", es: "La motivación es lo que te hace empezar. El hábito es lo que te mantiene en marcha." },
+  { en: "\"We are what we repeatedly do. Excellence, then, is not an act, but a habit.\" – Aristotle", es: "Somos lo que hacemos repetidamente. La excelencia, entonces, no es un acto, sino un hábito." },
+  { en: "\"Don't count the days, make the days count.\" – Muhammad Ali", es: "No cuentes los días, haz que los días cuenten." },
+  { en: "\"Make each day your masterpiece.\" – John Wooden", es: "Haz de cada día tu obra maestra." },
+  { en: "\"Yesterday is history, tomorrow is a mystery, today is a gift.\" – Bill Keane", es: "El ayer es historia, el mañana es un misterio, el hoy es un regalo." },
+  { en: "\"Don't watch the clock; do what it does. Keep going.\" – Sam Levenson", es: "No mires el reloj; haz lo que él hace. Sigue adelante." },
+  { en: "\"Don't let yesterday take up too much of today.\" – Will Rogers", es: "No dejes que el ayer ocupe demasiado del hoy." },
+  { en: "\"The past does not equal the future.\" – Tony Robbins", es: "El pasado no es igual al futuro." },
+  { en: "\"Your future is created by what you do today, not tomorrow.\" – Robert Kiyosaki", es: "Tu futuro es creado por lo que haces hoy, no mañana." },
+  { en: "\"Action without vision is only passing time, vision without action is merely day dreaming.\" – Nelson Mandela", es: "La acción sin visión es solo pasar el tiempo, la visión sin acción es solo soñar despierto." },
+  { en: "\"You don't find willpower, you create it.\" – Unknown", es: "No encuentras la fuerza de voluntad, la creas." },
+
+  // 🧠 Mentalidad y Resiliencia
+  { en: "\"Success is not final, failure is not fatal: it is the courage to continue that counts.\" – Winston Churchill", es: "El éxito no es definitivo, el fracaso no es fatal: lo que cuenta es el valor para continuar." },
+  { en: "\"If you're going through hell, keep going.\" – Winston Churchill", es: "Si estás atravesando un infierno, sigue adelante." },
+  { en: "\"Hard choices, easy life. Easy choices, hard life.\" – Jerzy Gregorek", es: "Decisiones difíciles, vida fácil. Decisiones fáciles, vida difícil." },
+  { en: "\"If it scares you, it might be a good thing to try.\" – Seth Godin", es: "Si te asusta, podría ser una buena idea intentarlo." },
+  { en: "\"Doubt kills more dreams than failure ever will.\" – Suzy Kassem", es: "La duda mata más sueños de los que el fracaso jamás logrará." },
+  { en: "\"Everything you've ever wanted is on the other side of fear.\" – George Addair", es: "Todo lo que siempre has querido está al otro lado del miedo." },
+  { en: "\"Fear is a reaction. Courage is a decision.\" – Winston Churchill", es: "El miedo es una reacción. El coraje es una decisión." },
+  { en: "\"Do one thing every day that scares you.\" – Eleanor Roosevelt", es: "Haz una cosa todos los días que te asuste." },
+  { en: "\"Believe you can and you're halfway there.\" – Theodore Roosevelt", es: "Cree que puedes y ya estás a medio camino." },
+  { en: "\"You are never too old to set another goal or to dream a new dream.\" – C.S. Lewis", es: "Nunca eres demasiado viejo para fijarte otra meta o soñar un nuevo sueño." },
+  { en: "\"Whether you think you can or you think you can't, you're right.\" – Henry Ford", es: "Ya sea que pienses que puedes o que no puedes, tienes razón." },
+  { en: "\"Dream big and dare to fail.\" – Norman Vaughan", es: "Sueña en grande y atrévete a fracasar." },
+  { en: "\"The only limit to our realization of tomorrow will be our doubts of today.\" – Franklin D. Roosevelt", es: "El único límite para nuestra realización del mañana serán nuestras dudas de hoy." },
+  { en: "\"Tough times never last, but tough people do.\" – Robert H. Schuller", es: "Los tiempos difíciles nunca duran, pero las personas fuertes sí." },
+  { en: "\"Life is 10% what happens to me and 90% of how I react to it.\" – Charles Swindoll", es: "La vida es 10% lo que me pasa y 90% cómo reacciono a ello." },
+  { en: "\"Change your thoughts and you change your world.\" – Norman Vincent Peale", es: "Cambia tus pensamientos y cambiarás tu mundo." },
+  { en: "\"What we achieve inwardly will change outer reality.\" – Plutarch", es: "Lo que logramos internamente cambiará la realidad externa." },
+  { en: "\"Your mindset determines your success.\" – Unknown", es: "Tu mentalidad determina tu éxito." },
+  { en: "\"Be the change that you wish to see in the world.\" – Mahatma Gandhi", es: "Sé el cambio que deseas ver en el mundo." },
+  { en: "\"If you want something you never had, you have to do something you've never done.\" – Thomas Jefferson", es: "Si quieres algo que nunca tuviste, tienes que hacer algo que nunca has hecho." },
+
+  // 🔥 Superación y Esfuerzo
+  { en: "\"Comfort is the enemy of progress.\" – P.T. Barnum", es: "La comodidad es la enemiga del progreso." },
+  { en: "\"Great things never came from comfort zones.\" – Unknown", es: "Las grandes cosas nunca vinieron de las zonas de confort." },
+  { en: "\"Nothing great was ever achieved without enthusiasm.\" – Ralph Waldo Emerson", es: "Nada grande se logró jamás sin entusiasmo." },
+  { en: "\"Success is going from failure to failure without losing your enthusiasm.\" – Winston Churchill", es: "El éxito es ir de fracaso en fracaso sin perder el entusiasmo." },
+  { en: "\"The expert in anything was once a beginner.\" – Helen Hayes", es: "El experto en cualquier cosa fue una vez un principiante." },
+  { en: "\"Every strike brings me closer to the next home run.\" – Babe Ruth", es: "Cada fallo me acerca al próximo acierto." },
+  { en: "\"I have not failed. I've just found 10,000 ways that won't work.\" – Thomas Edison", es: "No he fracasado. Solo he encontrado 10.000 formas que no funcionan." },
+  { en: "\"Failure is simply the opportunity to begin again, this time more intelligently.\" – Henry Ford", es: "El fracaso es simplemente la oportunidad de empezar de nuevo, esta vez de forma más inteligente." },
+  { en: "\"The best way to predict the future is to create it.\" – Abraham Lincoln", es: "La mejor manera de predecir el futuro es crearlo." },
+  { en: "\"Vision is the art of seeing what is invisible to others.\" – Jonathan Swift", es: "La visión es el arte de ver lo que es invisible para los demás." },
+  { en: "\"Keep your eyes on the stars, and your feet on the ground.\" – Theodore Roosevelt", es: "Mantén tus ojos en las estrellas y tus pies en la tierra." },
+  { en: "\"If you are going through a storm, keep walking.\" – Unknown", es: "Si estás atravesando una tormenta, sigue caminando." },
+  { en: "\"Be stronger than your excuses.\" – Unknown", es: "Sé más fuerte que tus excusas." },
+  { en: "\"Work hard in silence, let your success be your noise.\" – Frank Ocean", es: "Trabaja duro en silencio, deja que tu éxito haga el ruido." },
+  { en: "\"Push yourself, because no one else is going to do it for you.\" – Unknown", es: "Esfuérzate, porque nadie más lo va a hacer por ti." },
+  { en: "\"Dwell on the beauty of life. Watch the stars, and see yourself running with them.\" – Marcus Aurelius", es: "Concéntrate en la belleza de la vida. Mira las estrellas y vete corriendo con ellas." },
+  { en: "\"A ship is safe in harbor, but that's not what ships are for.\" – John A. Shedd", es: "Un barco está seguro en el puerto, pero los barcos no son para eso." },
+  { en: "\"It's not what happens to you, but how you react to it that matters.\" – Epictetus", es: "No es lo que te pasa, sino cómo reaccionas a ello lo que importa." },
+  { en: "\"You don't have to be great to start, but you have to start to be great.\" – Zig Ziglar", es: "No tienes que ser grande para empezar, pero tienes que empezar para ser grande." },
+  { en: "\"It's time. Execute.\" – It's Time App", es: "Es hora. Ejecuta." }
 ];
 
-const sessionQuote = stoicQuotes[Math.floor(Math.random() * stoicQuotes.length)];
+// Seleccionamos un objeto aleatorio y armamos el bloque HTML
+const randomQuote = stoicQuotes[Math.floor(Math.random() * stoicQuotes.length)];
+const sessionQuoteHTML = `${randomQuote.en}<br><span style="font-size: 11.5px; color: var(--text3); margin-top: 4px; display: inline-block;">${randomQuote.es}</span>`;
 
 // ============================================================
 // STATE
@@ -1114,8 +1217,9 @@ function setDateLabels() {
   document.getElementById('sidebar-date').textContent = short;
   document.getElementById('today-full-date').textContent = full;
   
-  document.getElementById('home-quote').innerText = sessionQuote;
-  document.getElementById('modal-quote').innerText = sessionQuote;
+  // AQUÍ ESTÁ EL CAMBIO IMPORTANTE: usamos innerHTML y la nueva variable
+  document.getElementById('home-quote').innerHTML = sessionQuoteHTML;
+  document.getElementById('modal-quote').innerHTML = sessionQuoteHTML;
 }
 
 // ============================================================
