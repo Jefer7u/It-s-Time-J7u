@@ -1070,10 +1070,9 @@ const db = getFirestore(app);
 const googleProvider = new GoogleAuthProvider();
 
 // ============================================================
-// STOIC QUOTES ARRAY
+// STOIC QUOTES ARRAY (100)
 // ============================================================
 const stoicQuotes = [
-  // 🏛️ Estoicismo y Autocontrol
   { en: "\"You have power over your mind - not outside events. Realize this, and you will find strength.\" – Marcus Aurelius", es: "Tienes poder sobre tu mente, no sobre los eventos externos. Date cuenta de esto y encontrarás la fuerza." },
   { en: "\"We suffer more often in imagination than in reality.\" – Seneca", es: "Sufrimos más a menudo en la imaginación que en la realidad." },
   { en: "\"First say to yourself what you would be; and then do what you have to do.\" – Epictetus", es: "Primero dite a ti mismo lo que serías; y luego haz lo que tienes que hacer." },
@@ -1094,8 +1093,6 @@ const stoicQuotes = [
   { en: "\"Don't explain your philosophy. Embody it.\" – Epictetus", es: "No expliques tu filosofía. Encárnala." },
   { en: "\"The soul becomes dyed with the color of its thoughts.\" – Marcus Aurelius", es: "El alma se tiñe del color de sus pensamientos." },
   { en: "\"He who has a why to live for can bear almost any how.\" – Friedrich Nietzsche", es: "Quien tiene un porqué para vivir puede soportar casi cualquier cómo." },
-
-  // ⚡ Acción y Ejecución
   { en: "\"Discipline equals freedom.\" – Jocko Willink", es: "La disciplina es igual a la libertad." },
   { en: "\"Done is better than perfect.\" – Sheryl Sandberg", es: "Hecho es mejor que perfecto." },
   { en: "\"Action is the foundational key to all success.\" – Pablo Picasso", es: "La acción es la clave fundamental de todo éxito." },
@@ -1116,8 +1113,6 @@ const stoicQuotes = [
   { en: "\"Strive for progress, not perfection.\" – Unknown", es: "Esfuérzate por el progreso, no por la perfección." },
   { en: "\"Energy and persistence conquer all things.\" – Benjamin Franklin", es: "La energía y la persistencia lo conquistan todo." },
   { en: "\"Some people want it to happen, some wish it would happen, others make it happen.\" – Michael Jordan", es: "Algunas personas quieren que suceda, algunas desean que suceda, otras hacen que suceda." },
-
-  // ⏳ Tiempo y Hábitos
   { en: "\"Time is the most valuable coin in your life.\" – Carl Sandburg", es: "El tiempo es la moneda más valiosa de tu vida." },
   { en: "\"Lost time is never found again.\" – Benjamin Franklin", es: "El tiempo perdido nunca se vuelve a encontrar." },
   { en: "\"You may delay, but time will not.\" – Benjamin Franklin", es: "Puedes demorarte, pero el tiempo no lo hará." },
@@ -1138,8 +1133,6 @@ const stoicQuotes = [
   { en: "\"Your future is created by what you do today, not tomorrow.\" – Robert Kiyosaki", es: "Tu futuro es creado por lo que haces hoy, no mañana." },
   { en: "\"Action without vision is only passing time, vision without action is merely day dreaming.\" – Nelson Mandela", es: "La acción sin visión es solo pasar el tiempo, la visión sin acción es solo soñar despierto." },
   { en: "\"You don't find willpower, you create it.\" – Unknown", es: "No encuentras la fuerza de voluntad, la creas." },
-
-  // 🧠 Mentalidad y Resiliencia
   { en: "\"Success is not final, failure is not fatal: it is the courage to continue that counts.\" – Winston Churchill", es: "El éxito no es definitivo, el fracaso no es fatal: lo que cuenta es el valor para continuar." },
   { en: "\"If you're going through hell, keep going.\" – Winston Churchill", es: "Si estás atravesando un infierno, sigue adelante." },
   { en: "\"Hard choices, easy life. Easy choices, hard life.\" – Jerzy Gregorek", es: "Decisiones difíciles, vida fácil. Decisiones fáciles, vida difícil." },
@@ -1160,8 +1153,6 @@ const stoicQuotes = [
   { en: "\"Your mindset determines your success.\" – Unknown", es: "Tu mentalidad determina tu éxito." },
   { en: "\"Be the change that you wish to see in the world.\" – Mahatma Gandhi", es: "Sé el cambio que deseas ver en el mundo." },
   { en: "\"If you want something you never had, you have to do something you've never done.\" – Thomas Jefferson", es: "Si quieres algo que nunca tuviste, tienes que hacer algo que nunca has hecho." },
-
-  // 🔥 Superación y Esfuerzo
   { en: "\"Comfort is the enemy of progress.\" – P.T. Barnum", es: "La comodidad es la enemiga del progreso." },
   { en: "\"Great things never came from comfort zones.\" – Unknown", es: "Las grandes cosas nunca vinieron de las zonas de confort." },
   { en: "\"Nothing great was ever achieved without enthusiasm.\" – Ralph Waldo Emerson", es: "Nada grande se logró jamás sin entusiasmo." },
@@ -1397,7 +1388,6 @@ window.toggleItemDone = function(id, dateContext = TODAY) {
     const task = state.tasks.find(t => t.id === id);
     if (task) {
       task.done = !task.done;
-      // LOGICA DEL HISTORIAL: Asigna fecha de completado
       task.completedAt = task.done ? dateContext : null;
     }
   }
@@ -1460,7 +1450,6 @@ function buildUnifiedCard(id, container, readOnly = false, dateContext = null) {
     </div>
   `;
   
-  // Al hacer clic, pasamos el context de fecha, para no afectar a "Hoy" si estamos viendo el historial
   card.querySelector('.task-checkbox').onclick = () => toggleItemDone(id, actualDate);
   container.appendChild(card);
 }
@@ -1525,7 +1514,6 @@ function renderAllTasks() {
   if (state.activeFilter === 'pending') tasksToRender = tasksToRender.filter(t => !t.done);
   if (state.activeFilter === 'done') tasksToRender = tasksToRender.filter(t => t.done);
 
-  // Excluir tareas con fecha de completado si no estamos en la pestaña "Done"
   if (state.activeFilter !== 'done') {
       tasksToRender = tasksToRender.filter(t => !t.completedAt);
   }
@@ -1539,21 +1527,15 @@ function renderAllTasks() {
   document.getElementById('badge-tasks').textContent = state.tasks.filter(t => !t.done).length;
 }
 
-// ============================================================
-// HISTORIAL CONSOLIDADO (Tareas + Hábitos)
-// ============================================================
 function renderHistory() {
   const container = document.getElementById('history-list');
   container.innerHTML = '';
   
   const historyItems = [];
-
-  // 1. Añadimos tareas completadas
   state.tasks.filter(t => t.done && t.completedAt).forEach(t => {
     historyItems.push({ id: t.id, date: t.completedAt });
   });
 
-  // 2. Añadimos hábitos completados desde el habitLog
   if (state.habitLog) {
     Object.keys(state.habitLog).forEach(dateStr => {
       Object.keys(state.habitLog[dateStr]).forEach(habitId => {
@@ -1569,21 +1551,19 @@ function renderHistory() {
     return;
   }
 
-  // Agrupar por fecha
   const grouped = {};
   historyItems.forEach(item => {
     if (!grouped[item.date]) grouped[item.date] = [];
     grouped[item.date].push(item);
   });
 
-  // Ordenar fechas (más recientes arriba)
   const sortedDates = Object.keys(grouped).sort((a,b) => b.localeCompare(a));
 
   sortedDates.forEach(date => {
     const dateSection = document.createElement('div');
     dateSection.innerHTML = `<div class="section-title">${formatDate(date)}</div>`;
     grouped[date].forEach(item => {
-      buildUnifiedCard(item.id, dateSection, true, date); // readOnly = true, contextDate = date
+      buildUnifiedCard(item.id, dateSection, true, date);
     });
     container.appendChild(dateSection);
   });
@@ -1642,7 +1622,7 @@ function renderHabits() {
 }
 
 // ============================================================
-// MODALS Y CREACIÓN
+// MODALS Y PLANNER
 // ============================================================
 document.getElementById('btn-plan-today').addEventListener('click', () => {
   const container = document.getElementById('plan-task-list');
@@ -1759,9 +1739,29 @@ function render() {
   if (state.currentPage === 'habits') renderHabits();
 }
 
+// ============================================================
+// SEED DATA (3 Tareas + 2 Habitos por defecto)
+// ============================================================
 function seedIfEmpty() {
-  if (state.tasks.length === 0) {
-    state.tasks = [{ id: uidGenerator(), title: 'Build momentum with my new system', area: 'personal', done: false, completedAt: null }];
+  if (state.tasks.length === 0 && state.habits.length === 0) {
+    const t1 = uidGenerator();
+    const t2 = uidGenerator();
+    const t3 = uidGenerator();
+    const h1 = uidGenerator();
+    const h2 = uidGenerator();
+
+    state.tasks = [
+      { id: t1, title: 'Task 1', area: 'personal', done: false, completedAt: null, createdAt: TODAY },
+      { id: t2, title: 'Task 2', area: 'projects', done: false, completedAt: null, createdAt: TODAY },
+      { id: t3, title: 'Task 3', area: 'university', done: false, completedAt: null, createdAt: TODAY }
+    ];
+    
+    state.habits = [
+      { id: h1, name: 'GYM', icon: '💪' },
+      { id: h2, name: 'Read', icon: '📚' }
+    ];
+    
+    state.todayPlan = [t1, t2, t3, h1, h2];
   }
 }
 
