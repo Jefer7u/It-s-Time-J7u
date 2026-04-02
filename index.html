@@ -904,7 +904,7 @@
       <div class="page-header" style="display:flex; align-items:center; gap:12px;">
         <div style="flex:1;">
           <div class="page-title">History</div>
-          <div class="page-sub">Archive of completed tasks</div>
+          <div class="page-sub">Archive of completed tasks and habits</div>
         </div>
       </div>
       <div class="page-body">
@@ -1277,6 +1277,7 @@ async function loadFromFirebase(uid) {
     if (docSnap.exists()) {
       state = { ...state, ...docSnap.data().data };
       if (!state.todayPlan) state.todayPlan = [];
+      if (!state.habitLog) state.habitLog = {};
     } else {
       seedIfEmpty();
       save();
@@ -1387,17 +1388,17 @@ document.querySelectorAll('.area-color-opt').forEach(el => {
 // ============================================================
 // CORE LOGIC: TOGGLE DONE (Tasks & Habits)
 // ============================================================
-window.toggleItemDone = function(id) {
+window.toggleItemDone = function(id, dateContext = TODAY) {
   const habit = state.habits.find(h => h.id === id);
   if (habit) {
-    if (!state.habitLog[TODAY]) state.habitLog[TODAY] = {};
-    state.habitLog[TODAY][id] = !state.habitLog[TODAY][id];
+    if (!state.habitLog[dateContext]) state.habitLog[dateContext] = {};
+    state.habitLog[dateContext][id] = !state.habitLog[dateContext][id];
   } else {
     const task = state.tasks.find(t => t.id === id);
     if (task) {
       task.done = !task.done;
-      // LOGICA DEL HISTORIAL: Asigna fecha cuando se completa
-      task.completedAt = task.done ? TODAY : null;
+      // LOGICA DEL HISTORIAL: Asigna fecha de completado
+      task.completedAt = task.done ? dateContext : null;
     }
   }
   save();
@@ -1427,13 +1428,14 @@ function getHabitStreak(habitId) {
 // ============================================================
 // UI BUILDING: UNIFIED CARD
 // ============================================================
-function buildUnifiedCard(id, container, readOnly = false) {
+function buildUnifiedCard(id, container, readOnly = false, dateContext = null) {
+  const actualDate = dateContext || TODAY;
   const habit = state.habits.find(h => h.id === id);
   const task = state.tasks.find(t => t.id === id);
   
   if (!habit && !task) return;
 
-  const isDone = habit ? (state.habitLog[TODAY] && state.habitLog[TODAY][id]) : task.done;
+  const isDone = habit ? (state.habitLog[actualDate] && state.habitLog[actualDate][id]) : task.done;
   const title = habit ? `${habit.icon} ${habit.name}` : task.title;
   const area = task ? state.areas.find(a => a.id === task.area) : null;
 
@@ -1458,8 +1460,8 @@ function buildUnifiedCard(id, container, readOnly = false) {
     </div>
   `;
   
-  // Incluso en modo History (readOnly), permitimos desmarcar la tarea si fue un error
-  card.querySelector('.task-checkbox').onclick = () => toggleItemDone(id);
+  // Al hacer clic, pasamos el context de fecha, para no afectar a "Hoy" si estamos viendo el historial
+  card.querySelector('.task-checkbox').onclick = () => toggleItemDone(id, actualDate);
   container.appendChild(card);
 }
 
@@ -1486,7 +1488,6 @@ function renderToday() {
     return;
   }
 
-  // Ordenar para que los terminados vayan abajo
   const sortedPlan = [...state.todayPlan].sort((a,b) => {
     const isADone = state.habits.find(h=>h.id===a) ? (state.habitLog[TODAY] && state.habitLog[TODAY][a]) : state.tasks.find(t=>t.id===a)?.done;
     const isBDone = state.habits.find(h=>h.id===b) ? (state.habitLog[TODAY] && state.habitLog[TODAY][b]) : state.tasks.find(t=>t.id===b)?.done;
@@ -1524,7 +1525,7 @@ function renderAllTasks() {
   if (state.activeFilter === 'pending') tasksToRender = tasksToRender.filter(t => !t.done);
   if (state.activeFilter === 'done') tasksToRender = tasksToRender.filter(t => t.done);
 
-  // Ocultar las tareas que ya tienen completedAt si estamos en 'All' o 'Pending' para que vivan en History
+  // Excluir tareas con fecha de completado si no estamos en la pestaña "Done"
   if (state.activeFilter !== 'done') {
       tasksToRender = tasksToRender.filter(t => !t.completedAt);
   }
@@ -1538,35 +1539,51 @@ function renderAllTasks() {
   document.getElementById('badge-tasks').textContent = state.tasks.filter(t => !t.done).length;
 }
 
-// LOGICA DEL HISTORIAL (NUEVO)
+// ============================================================
+// HISTORIAL CONSOLIDADO (Tareas + Hábitos)
+// ============================================================
 function renderHistory() {
   const container = document.getElementById('history-list');
   container.innerHTML = '';
   
-  // Filtramos solo tareas que esten DONE y tengan fecha de completado
-  const completedTasks = state.tasks.filter(t => t.done && t.completedAt);
+  const historyItems = [];
 
-  if (completedTasks.length === 0) {
-    container.innerHTML = `<div class="empty-state"><div class="empty-icon">◷</div><p>No completed tasks to show in history yet.</p></div>`;
+  // 1. Añadimos tareas completadas
+  state.tasks.filter(t => t.done && t.completedAt).forEach(t => {
+    historyItems.push({ id: t.id, date: t.completedAt });
+  });
+
+  // 2. Añadimos hábitos completados desde el habitLog
+  if (state.habitLog) {
+    Object.keys(state.habitLog).forEach(dateStr => {
+      Object.keys(state.habitLog[dateStr]).forEach(habitId => {
+        if (state.habitLog[dateStr][habitId]) { 
+          historyItems.push({ id: habitId, date: dateStr });
+        }
+      });
+    });
+  }
+
+  if (historyItems.length === 0) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">◷</div><p>No completed tasks or habits to show in history yet.</p></div>`;
     return;
   }
 
   // Agrupar por fecha
   const grouped = {};
-  completedTasks.forEach(t => {
-    const d = t.completedAt;
-    if (!grouped[d]) grouped[d] = [];
-    grouped[d].push(t);
+  historyItems.forEach(item => {
+    if (!grouped[item.date]) grouped[item.date] = [];
+    grouped[item.date].push(item);
   });
 
-  // Ordenar fechas de más reciente a más antigua
+  // Ordenar fechas (más recientes arriba)
   const sortedDates = Object.keys(grouped).sort((a,b) => b.localeCompare(a));
 
   sortedDates.forEach(date => {
     const dateSection = document.createElement('div');
     dateSection.innerHTML = `<div class="section-title">${formatDate(date)}</div>`;
-    grouped[date].forEach(t => {
-      buildUnifiedCard(t.id, dateSection, true); // true para "readOnly" (no muestra boton de borrar)
+    grouped[date].forEach(item => {
+      buildUnifiedCard(item.id, dateSection, true, date); // readOnly = true, contextDate = date
     });
     container.appendChild(dateSection);
   });
@@ -1632,7 +1649,11 @@ document.getElementById('btn-plan-today').addEventListener('click', () => {
   container.innerHTML = '';
   
   if (state.habits.length > 0) {
-    container.innerHTML += '<div class="section-title">Habits</div>';
+    const hTitle = document.createElement('div');
+    hTitle.className = 'section-title';
+    hTitle.textContent = 'Habits';
+    container.appendChild(hTitle);
+
     state.habits.forEach(h => {
       const div = document.createElement('div');
       div.className = `plan-item ${state.todayPlan.includes(h.id) ? 'selected' : ''}`;
@@ -1645,7 +1666,11 @@ document.getElementById('btn-plan-today').addEventListener('click', () => {
 
   const pendingTasks = state.tasks.filter(t => !t.done);
   if (pendingTasks.length > 0) {
-    container.innerHTML += '<div class="section-title">Tasks</div>';
+    const tTitle = document.createElement('div');
+    tTitle.className = 'section-title';
+    tTitle.textContent = 'Tasks';
+    container.appendChild(tTitle);
+
     pendingTasks.forEach(t => {
       const area = state.areas.find(a => a.id === t.area);
       const div = document.createElement('div');
@@ -1740,7 +1765,7 @@ function seedIfEmpty() {
   }
 }
 
-// Inicialización del frontend vacio mientras Auth carga
+// Inicialización
 render();
 </script>
 </body>
