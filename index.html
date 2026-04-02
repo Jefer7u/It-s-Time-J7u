@@ -35,7 +35,13 @@
     --sidebar-w: 220px;
     --transition: 0.18s ease;
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  
+  * { 
+    box-sizing: border-box; 
+    margin: 0; 
+    padding: 0; 
+  }
+  
   body {
     font-family: var(--font-sans);
     background: var(--bg);
@@ -46,6 +52,7 @@
     font-size: 14px;
     line-height: 1.6;
   }
+  
   ::-webkit-scrollbar { width: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 4px; }
@@ -62,9 +69,11 @@
     justify-content: center;
     transition: opacity 0.3s ease;
   }
+  
   .auth-container {
     width: min(400px, 90vw);
   }
+  
   .auth-title {
     font-family: var(--font-sans);
     font-size: 42px;
@@ -72,7 +81,9 @@
     color: var(--text);
     margin-bottom: 4px;
   }
+  
   .auth-title span { color: var(--accent); }
+  
   .auth-subtitle {
     color: var(--text2);
     margin-bottom: 28px;
@@ -82,7 +93,7 @@
 
   /* MAIN APP LAYOUT */
   #app-content {
-    display: none; /* Hidden until authenticated */
+    display: none; 
     width: 100%;
     height: 100%;
   }
@@ -97,10 +108,12 @@
     flex-shrink: 0;
     overflow-y: auto;
   }
+  
   .sidebar-header {
     padding: 24px 20px 16px;
     border-bottom: 1px solid var(--border);
   }
+  
   .app-name {
     font-family: var(--font-sans);
     font-weight: 700;
@@ -108,7 +121,9 @@
     color: var(--text);
     letter-spacing: -0.3px;
   }
+  
   .app-name span { color: var(--accent); }
+  
   .app-date {
     font-size: 11px;
     color: var(--text3);
@@ -117,7 +132,14 @@
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
-  .sidebar-nav { padding: 12px 12px; flex: 1; display: flex; flex-direction: column; }
+  
+  .sidebar-nav { 
+    padding: 12px 12px; 
+    flex: 1; 
+    display: flex; 
+    flex-direction: column; 
+  }
+  
   .nav-section-label {
     font-size: 10px;
     text-transform: uppercase;
@@ -125,6 +147,7 @@
     color: var(--text3);
     padding: 12px 8px 6px;
   }
+  
   .nav-item {
     display: flex;
     align-items: center;
@@ -138,9 +161,25 @@
     font-weight: 400;
     user-select: none;
   }
-  .nav-item:hover { background: var(--bg3); color: var(--text); }
-  .nav-item.active { background: var(--bg4); color: var(--accent); font-weight: 500; }
-  .nav-item .nav-icon { font-size: 15px; width: 18px; text-align: center; opacity: 0.9; }
+  
+  .nav-item:hover { 
+    background: var(--bg3); 
+    color: var(--text); 
+  }
+  
+  .nav-item.active { 
+    background: var(--bg4); 
+    color: var(--accent); 
+    font-weight: 500; 
+  }
+  
+  .nav-item .nav-icon { 
+    font-size: 15px; 
+    width: 18px; 
+    text-align: center; 
+    opacity: 0.9; 
+  }
+  
   .nav-badge {
     margin-left: auto;
     background: var(--accent2);
@@ -159,25 +198,39 @@
     display: flex;
     flex-direction: column;
   }
-  .page { display: none; flex-direction: column; height: 100%; }
+  
+  .page { 
+    display: none; 
+    flex-direction: column; 
+    height: 100%; 
+  }
+  
   .page.active { display: flex; }
+  
   .page-header {
     padding: 28px 36px 20px;
     border-bottom: 1px solid var(--border);
     flex-shrink: 0;
   }
+  
   .page-title {
     font-family: var(--font-sans);
     font-size: 28px;
     color: var(--text);
     font-weight: 700;
   }
+  
   .page-sub {
     font-size: 12.5px;
     color: var(--text3);
     margin-top: 3px;
   }
-  .page-body { padding: 24px 36px; flex: 1; overflow-y: auto; }
+  
+  .page-body { 
+    padding: 24px 36px; 
+    flex: 1; 
+    overflow-y: auto; 
+  }
 
   /* QUOTES STYLING */
   .stoic-quote-container {
@@ -185,6 +238,7 @@
     padding-left: 14px;
     border-left: 2px solid var(--accent);
   }
+  
   .stoic-quote-text {
     font-size: 13.5px;
     color: var(--text2);
@@ -207,12 +261,16 @@
     border: none;
     outline: none;
   }
+  
   .btn-primary { background: var(--accent); color: var(--text); }
   .btn-primary:hover { background: var(--accent2); }
+  
   .btn-ghost { background: transparent; color: var(--text2); border: 1px solid var(--border2); }
   .btn-ghost:hover { background: var(--bg3); color: var(--text); }
+  
   .btn-danger { background: transparent; color: var(--red); border: 1px solid rgba(224,107,107,0.25); }
   .btn-danger:hover { background: rgba(224,107,107,0.1); }
+  
   .btn-sm { padding: 4px 10px; font-size: 12px; }
   .btn-icon { padding: 6px; width: 30px; height: 30px; justify-content: center; }
 
@@ -229,13 +287,16 @@
     transition: border-color var(--transition);
     width: 100%;
   }
+  
   input:focus, textarea:focus, select:focus {
     border-color: var(--accent);
   }
+  
   input[type="range"] {
     accent-color: var(--accent);
     cursor: pointer;
   }
+  
   select option { background: var(--bg3); }
 
   /* TASK CARD */
@@ -248,14 +309,17 @@
     transition: all var(--transition);
     position: relative;
   }
+  
   .task-card:hover { border-color: var(--border2); }
   .task-card.done { opacity: 0.45; }
   .task-card.today-planned { border-left: 2px solid var(--accent); }
+  
   .task-top {
     display: flex;
     align-items: flex-start;
     gap: 10px;
   }
+  
   .task-checkbox {
     width: 18px;
     height: 18px;
@@ -270,15 +334,20 @@
     transition: all var(--transition);
     font-size: 10px;
   }
+  
   .task-checkbox.checked { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+  
   .task-title-wrap { flex: 1; }
+  
   .task-title {
     font-size: 14px;
     font-weight: 500;
     color: var(--text);
     cursor: pointer;
   }
+  
   .task-title.strikethrough { text-decoration: line-through; color: var(--text3); }
+  
   .task-meta {
     display: flex;
     align-items: center;
@@ -286,6 +355,7 @@
     margin-top: 4px;
     flex-wrap: wrap;
   }
+  
   .tag {
     font-size: 11px;
     padding: 2px 8px;
@@ -293,12 +363,15 @@
     font-weight: 500;
     font-family: var(--font-mono);
   }
+  
   .task-date {
     font-size: 11px;
     color: var(--text3);
     font-family: var(--font-mono);
   }
+  
   .task-date.overdue { color: var(--red); }
+  
   .task-actions {
     display: flex;
     align-items: center;
@@ -313,6 +386,7 @@
     align-items: center;
     gap: 8px;
   }
+  
   .progress-bar-bg {
     flex: 1;
     height: 3px;
@@ -320,12 +394,14 @@
     border-radius: 4px;
     overflow: hidden;
   }
+  
   .progress-bar-fill {
     height: 100%;
     background: var(--accent);
     border-radius: 4px;
     transition: width 0.3s ease;
   }
+  
   .progress-label {
     font-size: 10px;
     font-family: var(--font-mono);
@@ -341,13 +417,16 @@
     border-top: 1px solid var(--border);
     display: none;
   }
+  
   .subtask-list.open { display: block; }
+  
   .subtask-item {
     display: flex;
     align-items: center;
     gap: 8px;
     padding: 4px 0;
   }
+  
   .subtask-check {
     width: 14px;
     height: 14px;
@@ -361,14 +440,18 @@
     font-size: 9px;
     transition: all var(--transition);
   }
+  
   .subtask-check.checked { background: var(--green); border-color: var(--green); color: var(--bg); }
+  
   .subtask-text { font-size: 12.5px; color: var(--text2); flex: 1; }
   .subtask-text.done { text-decoration: line-through; color: var(--text3); }
+  
   .add-subtask-row {
     display: flex;
     gap: 6px;
     margin-top: 6px;
   }
+  
   .add-subtask-row input { font-size: 12px; padding: 5px 8px; }
 
   /* MODAL */
@@ -385,7 +468,9 @@
     transition: opacity 0.18s ease;
     backdrop-filter: blur(4px);
   }
+  
   .modal-overlay.open { opacity: 1; pointer-events: all; }
+  
   .modal {
     background: var(--bg2);
     border: 1px solid var(--border2);
@@ -397,7 +482,9 @@
     transform: translateY(10px);
     transition: transform 0.18s ease;
   }
+  
   .modal-overlay.open .modal { transform: translateY(0); }
+  
   .modal-title {
     font-family: var(--font-sans);
     font-weight: 700;
@@ -405,7 +492,9 @@
     margin-bottom: 20px;
     color: var(--text);
   }
+  
   .form-group { margin-bottom: 14px; }
+  
   .form-label {
     font-size: 11px;
     text-transform: uppercase;
@@ -414,6 +503,7 @@
     margin-bottom: 5px;
     display: block;
   }
+  
   .form-row { display: flex; gap: 12px; }
   .form-row .form-group { flex: 1; }
   .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 22px; }
@@ -427,19 +517,23 @@
     line-height: 1.2;
     margin-bottom: 6px;
   }
+  
   .today-greeting span { color: var(--accent); font-weight: 700; }
+  
   .today-stats {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 10px;
     margin: 20px 0;
   }
+  
   .stat-card {
     background: var(--bg2);
     border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: 14px 16px;
   }
+  
   .stat-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.8px; }
   .stat-value { font-size: 28px; font-weight: 700; color: var(--text); margin-top: 4px; font-family: var(--font-sans); }
   .stat-value small { font-size: 14px; color: var(--text3); font-weight: 400; }
@@ -455,6 +549,7 @@
     align-items: center;
     gap: 8px;
   }
+  
   .section-title::after {
     content: '';
     flex: 1;
@@ -470,6 +565,7 @@
     margin-bottom: 12px;
     overflow: hidden;
   }
+  
   .diary-day-header {
     padding: 14px 18px;
     cursor: pointer;
@@ -478,7 +574,9 @@
     justify-content: space-between;
     user-select: none;
   }
+  
   .diary-day-header:hover { background: var(--bg3); }
+  
   .diary-day-date {
     font-family: var(--font-mono);
     font-size: 12px;
@@ -486,24 +584,30 @@
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
+  
   .diary-day-title {
     font-size: 14px;
     font-weight: 500;
     color: var(--text);
     margin-top: 2px;
   }
+  
   .diary-day-body { padding: 0 18px 18px; display: none; }
   .diary-day-body.open { display: block; }
+  
   .diary-q { margin-bottom: 12px; }
+  
   .diary-q-label {
     font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 0.8px;
     margin-bottom: 4px;
   }
+  
   .diary-q-label.good { color: var(--green); }
   .diary-q-label.bad { color: var(--red); }
   .diary-q-label.improve { color: var(--amber); }
+  
   .diary-q-text {
     font-size: 13.5px;
     color: var(--text);
@@ -520,6 +624,7 @@
     padding: 48px 20px;
     color: var(--text3);
   }
+  
   .empty-state .empty-icon { font-size: 36px; margin-bottom: 12px; opacity: 0.5; }
   .empty-state p { font-size: 13px; }
 
@@ -534,8 +639,10 @@
     transition: background var(--transition);
     border: 1px solid transparent;
   }
+  
   .plan-item:hover { background: var(--bg3); }
   .plan-item.selected { background: rgba(229, 57, 53, 0.08); border-color: var(--accent); }
+  
   .plan-item-check {
     width: 16px;
     height: 16px;
@@ -548,6 +655,7 @@
     font-size: 9px;
     transition: all var(--transition);
   }
+  
   .plan-item.selected .plan-item-check { background: var(--accent); border-color: var(--accent); color: var(--bg); }
 
   /* SCORE MODAL */
@@ -559,6 +667,7 @@
     text-align: center;
     margin: 8px 0;
   }
+  
   .score-labels {
     display: flex;
     justify-content: space-between;
@@ -575,6 +684,7 @@
     border-bottom: 1px solid var(--border);
     margin-bottom: 20px;
   }
+  
   .tab {
     padding: 10px 16px;
     font-size: 13px;
@@ -585,6 +695,7 @@
     transition: all var(--transition);
     user-select: none;
   }
+  
   .tab:hover { color: var(--text); }
   .tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 500; }
 
@@ -615,12 +726,14 @@
     border-radius: var(--radius-sm);
     margin-bottom: 6px;
   }
+  
   .habit-streak {
     font-family: var(--font-mono);
     font-size: 11px;
     color: var(--accent);
     margin-left: auto;
   }
+  
   .habit-toggle {
     width: 34px;
     height: 20px;
@@ -631,6 +744,7 @@
     transition: background 0.2s;
     flex-shrink: 0;
   }
+  
   .habit-toggle::after {
     content: '';
     position: absolute;
@@ -642,6 +756,7 @@
     left: 3px;
     transition: all 0.2s;
   }
+  
   .habit-toggle.on { background: rgba(229, 57, 53, 0.3); }
   .habit-toggle.on::after { left: 17px; background: var(--accent); }
 </style>
@@ -679,7 +794,7 @@
           Sign in with Google
         </button>
       </div>
-      </div>
+    </div>
   </div>
 </div>
 
@@ -690,6 +805,7 @@
       <div class="app-name">It's Time<span>.</span></div>
       <div class="app-date" id="sidebar-date"></div>
     </div>
+    
     <div class="sidebar-nav">
       <div class="nav-section-label">Main</div>
       <div class="nav-item active" data-page="today">
@@ -699,13 +815,18 @@
         <span class="nav-icon">◻</span> All Tasks
         <span class="nav-badge" id="badge-tasks">0</span>
       </div>
+      <div class="nav-item" data-page="history">
+        <span class="nav-icon">◷</span> History
+      </div>
       <div class="nav-item" data-page="habits">
         <span class="nav-icon">◷</span> Habits
       </div>
+      
       <div class="nav-section-label">Reflection</div>
       <div class="nav-item" data-page="diary">
         <span class="nav-icon">◌</span> Journal
       </div>
+      
       <div class="nav-section-label">Areas</div>
       <div id="area-nav"></div>
       <div class="nav-item" id="btn-add-area" style="color: var(--text3); font-size:12px;">
@@ -726,11 +847,9 @@
       <div class="page-header">
         <div class="today-greeting">Good day. <span>Persistence.</span></div>
         <div class="page-sub" id="today-full-date"></div>
-        
         <div class="stoic-quote-container">
           <p id="home-quote" class="stoic-quote-text"></p>
         </div>
-
       </div>
       <div class="page-body">
         <div class="today-stats">
@@ -757,7 +876,7 @@
           <button class="btn btn-ghost" id="btn-open-diary-today">◌ Daily reflection</button>
         </div>
 
-        <div class="section-title">Today's Tasks</div>
+        <div class="section-title">Execution List</div>
         <div id="today-task-list"></div>
       </div>
     </div>
@@ -775,10 +894,21 @@
           <div class="tab active" data-filter="all">All</div>
           <div class="tab" data-filter="pending">Pending</div>
           <div class="tab" data-filter="done">Completed</div>
-          <div class="tab" data-filter="overdue">Overdue</div>
         </div>
         <div id="task-area-filter" style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:16px;"></div>
         <div id="all-task-list"></div>
+      </div>
+    </div>
+    
+    <div class="page" id="page-history">
+      <div class="page-header" style="display:flex; align-items:center; gap:12px;">
+        <div style="flex:1;">
+          <div class="page-title">History</div>
+          <div class="page-sub">Archive of completed tasks</div>
+        </div>
+      </div>
+      <div class="page-body">
+        <div id="history-list"></div>
       </div>
     </div>
 
@@ -811,8 +941,9 @@
     </div>
 
   </main>
+</div> 
 
-</div> <div class="modal-overlay" id="modal-task">
+<div class="modal-overlay" id="modal-task">
   <div class="modal">
     <div class="modal-title" id="modal-task-title">New Task</div>
     <div class="form-group">
@@ -829,18 +960,6 @@
         <input type="date" id="task-input-date">
       </div>
     </div>
-    <div class="form-group">
-      <label class="form-label">Initial Progress (0–10)</label>
-      <div style="display:flex; align-items:center; gap:12px;">
-        <input type="range" min="0" max="10" value="0" id="task-input-score" style="flex:1;">
-        <span class="score-display" id="task-score-display" style="font-size:22px; width:36px;">0</span>
-      </div>
-      <div class="score-labels"><span>Not started</span><span>Done</span></div>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Notes</label>
-      <textarea id="task-input-notes" rows="2" placeholder="Additional context..." style="resize:vertical;"></textarea>
-    </div>
     <div class="modal-actions">
       <button class="btn btn-ghost" id="btn-cancel-task">Cancel</button>
       <button class="btn btn-primary" id="btn-save-task">Save Task</button>
@@ -851,7 +970,7 @@
 <div class="modal-overlay" id="modal-plan">
   <div class="modal">
     <div class="modal-title">Plan my day</div>
-    <p style="font-size:13px; color:var(--text2); margin-bottom:16px;">Select the tasks you want to focus on today:</p>
+    <p style="font-size:13px; color:var(--text2); margin-bottom:16px;">Select the tasks and habits you want to focus on today:</p>
     <div id="plan-task-list" style="max-height:380px; overflow-y:auto;"></div>
     <div class="modal-actions">
       <button class="btn btn-ghost" id="btn-cancel-plan">Cancel</button>
@@ -881,20 +1000,6 @@
     <div class="modal-actions">
       <button class="btn btn-ghost" id="btn-cancel-diary">Cancel</button>
       <button class="btn btn-primary" id="btn-save-diary">Save Reflection</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="modal-score">
-  <div class="modal" style="max-width:380px;">
-    <div class="modal-title">Update Progress</div>
-    <p style="font-size:13px; color:var(--text2); margin-bottom:16px;" id="score-task-name"></p>
-    <div class="score-display" id="score-modal-value">0</div>
-    <input type="range" min="0" max="10" value="0" id="score-range" style="width:100%; margin:8px 0;">
-    <div class="score-labels"><span>Not started</span><span>In progress</span><span>Done</span></div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" id="btn-cancel-score">Cancel</button>
-      <button class="btn btn-primary" id="btn-save-score">Save</button>
     </div>
   </div>
 </div>
@@ -956,19 +1061,16 @@ const firebaseConfig = {
   projectId: "its-time-j7u",
   storageBucket: "its-time-j7u.firebasestorage.app",
   messagingSenderId: "837102160262",
-  appId: "1:837102160262:web:e7b27a204ea1ab20888407",
-  measurementId: "G-YJD6BYH8X4"
+  appId: "1:837102160262:web:e7b27a204ea1ab20888407"
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
-
-// INICIALIZAMOS EL PROVEEDOR DE GOOGLE
 const googleProvider = new GoogleAuthProvider();
 
 // ============================================================
-// STOIC QUOTES ARRAY (100 Quotes + Spanish)
+// STOIC QUOTES ARRAY
 // ============================================================
 const stoicQuotes = [
   // 🏛️ Estoicismo y Autocontrol
@@ -1082,7 +1184,6 @@ const stoicQuotes = [
   { en: "\"It's time. Execute.\" – It's Time App", es: "Es hora. Ejecuta." }
 ];
 
-// Seleccionamos un objeto aleatorio y armamos el bloque HTML
 const randomQuote = stoicQuotes[Math.floor(Math.random() * stoicQuotes.length)];
 const sessionQuoteHTML = `${randomQuote.en}<br><span style="font-size: 11.5px; color: var(--text3); margin-top: 4px; display: inline-block;">${randomQuote.es}</span>`;
 
@@ -1103,7 +1204,6 @@ let state = {
   todayPlan: [],
   currentPage: 'today',
   editingTaskId: null,
-  scoringTaskId: null,
   activeFilter: 'all',
   activeAreaFilter: null,
   selectedAreaColor: '#7ab3e0',
@@ -1112,7 +1212,7 @@ let state = {
 const TODAY = new Date().toISOString().split('T')[0];
 
 // ============================================================
-// FIREBASE AUTHENTICATION UI LOGIC
+// FIREBASE AUTH UI LOGIC
 // ============================================================
 const authScreen = document.getElementById('auth-screen');
 const appContent = document.getElementById('app-content');
@@ -1135,7 +1235,6 @@ document.getElementById('btn-register').addEventListener('click', () => {
   createUserWithEmailAndPassword(auth, email, pass).catch(e => showError(e.message));
 });
 
-// EVENT LISTENER PARA INICIAR SESIÓN CON GOOGLE
 document.getElementById('btn-google').addEventListener('click', () => {
   signInWithPopup(auth, googleProvider).catch(e => showError(e.message));
 });
@@ -1144,30 +1243,28 @@ document.getElementById('btn-logout').addEventListener('click', () => {
   signOut(auth);
 });
 
-// Watch for Login/Logout
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
   if (user) {
     authScreen.style.opacity = '0';
-    setTimeout(() => {
+    setTimeout(async () => {
       authScreen.style.display = 'none';
       appContent.style.display = 'flex';
-      loadFromFirebase(user.uid);
+      await loadFromFirebase(user.uid);
     }, 300);
   } else {
     appContent.style.display = 'none';
     authScreen.style.display = 'flex';
     authScreen.style.opacity = '1';
-    state.tasks = []; // Clear memory on logout
+    state.tasks = [];
   }
 });
 
 // ============================================================
-// FIREBASE FIRESTORE LOGIC (SAVE/LOAD)
+// FIREBASE SAVE/LOAD
 // ============================================================
 async function save() {
   if (!auth.currentUser) return;
   try {
-    // We save the entire 'state' object to a document named after the user's ID
     await setDoc(doc(db, "users", auth.currentUser.uid), { data: state });
   } catch (e) {
     console.error("Error saving: ", e);
@@ -1178,11 +1275,9 @@ async function loadFromFirebase(uid) {
   try {
     const docSnap = await getDoc(doc(db, "users", uid));
     if (docSnap.exists()) {
-      const loaded = docSnap.data().data;
-      state = { ...state, ...loaded };
+      state = { ...state, ...docSnap.data().data };
       if (!state.todayPlan) state.todayPlan = [];
     } else {
-      // First time user login
       seedIfEmpty();
       save();
     }
@@ -1200,24 +1295,20 @@ function uidGenerator() {
 // DATES & INITIATION
 // ============================================================
 function formatDate(iso) {
-  if (!iso) return '';
+  if (!iso || iso === 'Unknown') return 'Unknown Date';
   const d = new Date(iso + 'T12:00:00');
   return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 }
-function isOverdue(iso) {
-  if (!iso) return false;
-  return iso < TODAY;
-}
+
 function setDateLabels() {
   const now = new Date();
   const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
   const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
   const full = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
   const short = `${now.getDate().toString().padStart(2,'0')}.${(now.getMonth()+1).toString().padStart(2,'0')}.${now.getFullYear()}`;
+  
   document.getElementById('sidebar-date').textContent = short;
   document.getElementById('today-full-date').textContent = full;
-  
-  // AQUÍ ESTÁ EL CAMBIO IMPORTANTE: usamos innerHTML y la nueva variable
   document.getElementById('home-quote').innerHTML = sessionQuoteHTML;
   document.getElementById('modal-quote').innerHTML = sessionQuoteHTML;
 }
@@ -1228,20 +1319,17 @@ function setDateLabels() {
 document.querySelectorAll('.nav-item[data-page]').forEach(el => {
   el.addEventListener('click', () => {
     const page = el.dataset.page;
-    navigateTo(page);
+    state.currentPage = page;
+    
+    document.querySelectorAll('.nav-item[data-page]').forEach(nav => nav.classList.remove('active'));
+    el.classList.add('active');
+    
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + page).classList.add('active');
+    
+    render();
   });
 });
-
-function navigateTo(page) {
-  state.currentPage = page;
-  document.querySelectorAll('.nav-item[data-page]').forEach(el => {
-    el.classList.toggle('active', el.dataset.page === page);
-  });
-  document.querySelectorAll('.page').forEach(el => {
-    el.classList.toggle('active', el.id === 'page-' + page);
-  });
-  render();
-}
 
 // ============================================================
 // AREAS
@@ -1255,7 +1343,12 @@ function renderAreaNav() {
     el.innerHTML = `<span class="category-dot" style="background:${area.color};"></span> ${area.name}`;
     el.addEventListener('click', () => {
       state.activeAreaFilter = area.id;
-      navigateTo('tasks');
+      state.currentPage = 'tasks';
+      document.querySelectorAll('.nav-item[data-page]').forEach(nav => nav.classList.remove('active'));
+      document.querySelector('.nav-item[data-page="tasks"]').classList.add('active');
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById('page-tasks').classList.add('active');
+      render();
     });
     container.appendChild(el);
   });
@@ -1282,6 +1375,7 @@ document.getElementById('btn-save-area').addEventListener('click', () => {
   closeModal('modal-area');
   document.getElementById('area-input-name').value = '';
 });
+
 document.querySelectorAll('.area-color-opt').forEach(el => {
   el.addEventListener('click', () => {
     document.querySelectorAll('.area-color-opt').forEach(x => x.style.borderColor = 'transparent');
@@ -1291,207 +1385,115 @@ document.querySelectorAll('.area-color-opt').forEach(el => {
 });
 
 // ============================================================
-// TASKS
+// CORE LOGIC: TOGGLE DONE (Tasks & Habits)
 // ============================================================
-document.getElementById('btn-new-task').addEventListener('click', () => {
-  state.editingTaskId = null;
-  document.getElementById('modal-task-title').textContent = 'New Task';
-  document.getElementById('task-input-title').value = '';
-  document.getElementById('task-input-date').value = '';
-  document.getElementById('task-input-notes').value = '';
-  document.getElementById('task-input-score').value = 0;
-  document.getElementById('task-score-display').textContent = '0';
-  getAreaSelect(document.getElementById('task-input-area'));
-  openModal('modal-task');
-});
-document.getElementById('task-input-score').addEventListener('input', function() {
-  document.getElementById('task-score-display').textContent = this.value;
-});
-document.getElementById('btn-cancel-task').addEventListener('click', () => closeModal('modal-task'));
-document.getElementById('btn-save-task').addEventListener('click', saveTask);
-
-function saveTask() {
-  const title = document.getElementById('task-input-title').value.trim();
-  if (!title) return;
-  const area = document.getElementById('task-input-area').value;
-  const date = document.getElementById('task-input-date').value;
-  const notes = document.getElementById('task-input-notes').value;
-  const score = parseInt(document.getElementById('task-input-score').value);
-
-  if (state.editingTaskId) {
-    const t = state.tasks.find(x => x.id === state.editingTaskId);
-    if (t) { t.title = title; t.area = area; t.date = date; t.notes = notes; t.score = score; }
+window.toggleItemDone = function(id) {
+  const habit = state.habits.find(h => h.id === id);
+  if (habit) {
+    if (!state.habitLog[TODAY]) state.habitLog[TODAY] = {};
+    state.habitLog[TODAY][id] = !state.habitLog[TODAY][id];
   } else {
-    state.tasks.push({ id: uidGenerator(), title, area, date, notes, score, done: false, subtasks: [], createdAt: TODAY });
+    const task = state.tasks.find(t => t.id === id);
+    if (task) {
+      task.done = !task.done;
+      // LOGICA DEL HISTORIAL: Asigna fecha cuando se completa
+      task.completedAt = task.done ? TODAY : null;
+    }
   }
   save();
-  closeModal('modal-task');
   render();
-}
+};
 
-function toggleTaskDone(id) {
-  const t = state.tasks.find(x => x.id === id);
-  if (t) { t.done = !t.done; if(t.done && t.score < 10) t.score = 10; save(); render(); }
-}
-
-function deleteTask(id) {
-  state.tasks = state.tasks.filter(x => x.id !== id);
+window.deleteTask = function(id) {
+  state.tasks = state.tasks.filter(t => t.id !== id);
   state.todayPlan = state.todayPlan.filter(x => x !== id);
-  save(); render();
-}
+  save(); 
+  render();
+};
 
-function editTask(id) {
-  const t = state.tasks.find(x => x.id === id);
-  if (!t) return;
-  state.editingTaskId = id;
-  document.getElementById('modal-task-title').textContent = 'Edit Task';
-  getAreaSelect(document.getElementById('task-input-area'));
-  document.getElementById('task-input-title').value = t.title;
-  document.getElementById('task-input-date').value = t.date || '';
-  document.getElementById('task-input-notes').value = t.notes || '';
-  document.getElementById('task-input-score').value = t.score || 0;
-  document.getElementById('task-score-display').textContent = t.score || 0;
-  document.getElementById('task-input-area').value = t.area || '';
-  openModal('modal-task');
-}
-
-// SCORE
-document.getElementById('score-range').addEventListener('input', function() {
-  document.getElementById('score-modal-value').textContent = this.value;
-});
-document.getElementById('btn-cancel-score').addEventListener('click', () => closeModal('modal-score'));
-document.getElementById('btn-save-score').addEventListener('click', () => {
-  const v = parseInt(document.getElementById('score-range').value);
-  const t = state.tasks.find(x => x.id === state.scoringTaskId);
-  if (t) { t.score = v; if(v === 10) t.done = true; save(); render(); }
-  closeModal('modal-score');
-});
-
-function openScoreModal(id) {
-  const t = state.tasks.find(x => x.id === id);
-  if (!t) return;
-  state.scoringTaskId = id;
-  document.getElementById('score-task-name').textContent = t.title;
-  document.getElementById('score-range').value = t.score || 0;
-  document.getElementById('score-modal-value').textContent = t.score || 0;
-  openModal('modal-score');
-}
-
-// SUBTASKS
-function addSubtask(taskId, text) {
-  const t = state.tasks.find(x => x.id === taskId);
-  if (!t) return;
-  if (!t.subtasks) t.subtasks = [];
-  t.subtasks.push({ id: uidGenerator(), text, done: false });
-  save(); renderTaskCard(taskId);
-}
-function toggleSubtask(taskId, subId) {
-  const t = state.tasks.find(x => x.id === taskId);
-  if (!t) return;
-  const s = t.subtasks.find(x => x.id === subId);
-  if (s) { s.done = !s.done; save(); renderTaskCard(taskId); }
+function getHabitStreak(habitId) {
+  let streak = 0;
+  let d = new Date();
+  while (true) {
+    const iso = d.toISOString().split('T')[0];
+    if (state.habitLog[iso] && state.habitLog[iso][habitId]) {
+      streak++;
+      d.setDate(d.getDate() - 1);
+    } else break;
+  }
+  return streak;
 }
 
 // ============================================================
-// RENDER TASKS
+// UI BUILDING: UNIFIED CARD
 // ============================================================
-function getAreaById(id) {
-  return state.areas.find(a => a.id === id);
-}
+function buildUnifiedCard(id, container, readOnly = false) {
+  const habit = state.habits.find(h => h.id === id);
+  const task = state.tasks.find(t => t.id === id);
+  
+  if (!habit && !task) return;
 
-function buildTaskCard(task, container) {
-  const area = getAreaById(task.area);
-  const overdue = isOverdue(task.date) && !task.done;
-  const isPlanned = state.todayPlan.includes(task.id);
-  const score = task.score || 0;
+  const isDone = habit ? (state.habitLog[TODAY] && state.habitLog[TODAY][id]) : task.done;
+  const title = habit ? `${habit.icon} ${habit.name}` : task.title;
+  const area = task ? state.areas.find(a => a.id === task.area) : null;
 
   const card = document.createElement('div');
-  card.className = 'task-card' + (task.done ? ' done' : '') + (isPlanned ? ' today-planned' : '');
-  card.dataset.taskId = task.id;
-
-  const subtasksTotal = (task.subtasks || []).length;
-  const subtasksDone = (task.subtasks || []).filter(s => s.done).length;
-  const hasSubtasks = subtasksTotal > 0;
+  card.className = `task-card ${isDone ? 'done' : ''}`;
+  if (!readOnly && state.todayPlan.includes(id)) {
+    card.classList.add('today-planned');
+  }
 
   card.innerHTML = `
     <div class="task-top">
-      <div class="task-checkbox ${task.done ? 'checked' : ''}" data-id="${task.id}" title="Mark as done">
-        ${task.done ? '✓' : ''}
-      </div>
+      <div class="task-checkbox ${isDone ? 'checked' : ''}">${isDone ? '✓' : ''}</div>
       <div class="task-title-wrap">
-        <div class="task-title ${task.done ? 'strikethrough' : ''}" data-edit="${task.id}">${task.title}</div>
+        <div class="task-title ${isDone ? 'strikethrough' : ''}">${title} ${habit ? '<small style="color:var(--accent); margin-left:8px; font-size:9px; text-transform:uppercase;">Habit</small>' : ''}</div>
         <div class="task-meta">
           ${area ? `<span class="tag" style="background:${area.color}22; color:${area.color};">${area.name}</span>` : ''}
-          ${task.date ? `<span class="task-date ${overdue ? 'overdue' : ''}">${overdue ? '⚠ ' : ''}${formatDate(task.date)}</span>` : ''}
-          ${hasSubtasks ? `<span style="font-size:11px; color:var(--text3); font-family:var(--font-mono);">${subtasksDone}/${subtasksTotal} sub</span>` : ''}
-        </div>
-        <div class="progress-wrap">
-          <div class="progress-bar-bg">
-            <div class="progress-bar-fill" style="width:${score*10}%;"></div>
-          </div>
-          <span class="progress-label" style="cursor:pointer;" data-score="${task.id}">${score}/10</span>
+          ${habit ? `<span class="task-date">🔥 Streak: ${getHabitStreak(id)}d</span>` : ''}
+          ${task && task.date && !isDone ? `<span class="task-date">Due: ${formatDate(task.date)}</span>` : ''}
         </div>
       </div>
-      <div class="task-actions">
-        <button class="btn btn-ghost btn-sm btn-icon" data-subtask-toggle="${task.id}" title="Subtasks">≡</button>
-        <button class="btn btn-ghost btn-sm btn-icon" data-edit-btn="${task.id}" title="Edit">✎</button>
-        <button class="btn btn-danger btn-sm btn-icon" data-del="${task.id}" title="Delete">✕</button>
-      </div>
-    </div>
-    <div class="subtask-list" id="sub-${task.id}">
-      ${(task.subtasks || []).map(s => `
-        <div class="subtask-item">
-          <div class="subtask-check ${s.done ? 'checked' : ''}" data-sub="${task.id}" data-subid="${s.id}">${s.done ? '✓' : ''}</div>
-          <span class="subtask-text ${s.done ? 'done' : ''}">${s.text}</span>
-        </div>
-      `).join('')}
-      <div class="add-subtask-row">
-        <input type="text" placeholder="Add subtask..." data-newsub="${task.id}">
-        <button class="btn btn-ghost btn-sm" data-addsub="${task.id}">＋</button>
-      </div>
+      ${task && !readOnly ? `<div class="task-actions"><button class="btn btn-ghost btn-sm btn-icon" onclick="deleteTask('${id}')">✕</button></div>` : ''}
     </div>
   `;
-
-  card.querySelector(`.task-checkbox`).addEventListener('click', () => toggleTaskDone(task.id));
-  card.querySelector(`[data-edit="${task.id}"]`).addEventListener('click', () => editTask(task.id));
-  card.querySelector(`[data-edit-btn="${task.id}"]`).addEventListener('click', () => editTask(task.id));
-  card.querySelector(`[data-del="${task.id}"]`).addEventListener('click', () => deleteTask(task.id));
-  card.querySelector(`[data-score="${task.id}"]`).addEventListener('click', () => openScoreModal(task.id));
-  card.querySelector(`[data-subtask-toggle="${task.id}"]`).addEventListener('click', () => {
-    const el = document.getElementById('sub-' + task.id);
-    el.classList.toggle('open');
-  });
-  card.querySelector(`[data-addsub="${task.id}"]`).addEventListener('click', () => {
-    const inp = card.querySelector(`[data-newsub="${task.id}"]`);
-    const txt = inp.value.trim();
-    if (txt) { addSubtask(task.id, txt); inp.value = ''; }
-  });
-  card.querySelector(`[data-newsub="${task.id}"]`).addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      const txt = e.target.value.trim();
-      if (txt) { addSubtask(task.id, txt); e.target.value = ''; }
-    }
-  });
-  card.querySelectorAll('.subtask-check').forEach(el => {
-    el.addEventListener('click', () => toggleSubtask(el.dataset.sub, el.dataset.subid));
-  });
-
+  
+  // Incluso en modo History (readOnly), permitimos desmarcar la tarea si fue un error
+  card.querySelector('.task-checkbox').onclick = () => toggleItemDone(id);
   container.appendChild(card);
 }
 
-function renderTaskCard(taskId) {
-  const existing = document.querySelector(`[data-task-id="${taskId}"]`);
-  if (!existing) return;
-  const task = state.tasks.find(x => x.id === taskId);
-  if (!task) return;
-  const tmp = document.createElement('div');
-  buildTaskCard(task, tmp);
-  const newCard = tmp.firstChild;
-  const subEl = existing.querySelector('.subtask-list');
-  if (subEl && subEl.classList.contains('open')) {
-    newCard.querySelector('.subtask-list')?.classList.add('open');
+// ============================================================
+// RENDERERS
+// ============================================================
+function renderToday() {
+  const list = document.getElementById('today-task-list');
+  list.innerHTML = '';
+  
+  const plannedCount = state.todayPlan.length;
+  const doneCount = state.todayPlan.filter(id => {
+    const h = state.habits.find(x => x.id === id);
+    return h ? (state.habitLog[TODAY] && state.habitLog[TODAY][id]) : state.tasks.find(t => t.id === id)?.done;
+  }).length;
+
+  document.getElementById('stat-planned').textContent = plannedCount;
+  document.getElementById('stat-done').textContent = doneCount;
+  document.getElementById('stat-progress').innerHTML = `${plannedCount ? Math.round((doneCount/plannedCount)*100) : 0}<small>%</small>`;
+  document.getElementById('stat-pending').textContent = state.tasks.filter(t => !t.done).length;
+
+  if (plannedCount === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-icon">◈</div><p>Your day isn't planned yet. Click "Plan my day" to start.</p></div>`;
+    return;
   }
-  existing.replaceWith(newCard);
+
+  // Ordenar para que los terminados vayan abajo
+  const sortedPlan = [...state.todayPlan].sort((a,b) => {
+    const isADone = state.habits.find(h=>h.id===a) ? (state.habitLog[TODAY] && state.habitLog[TODAY][a]) : state.tasks.find(t=>t.id===a)?.done;
+    const isBDone = state.habits.find(h=>h.id===b) ? (state.habitLog[TODAY] && state.habitLog[TODAY][b]) : state.tasks.find(t=>t.id===b)?.done;
+    return (isADone === isBDone) ? 0 : isADone ? 1 : -1;
+  });
+
+  sortedPlan.forEach(id => buildUnifiedCard(id, list));
 }
 
 function renderAllTasks() {
@@ -1503,8 +1505,9 @@ function renderAllTasks() {
   const allChip = document.createElement('button');
   allChip.className = 'btn btn-sm ' + (state.activeAreaFilter === null ? 'btn-primary' : 'btn-ghost');
   allChip.textContent = 'All';
-  allChip.addEventListener('click', () => { state.activeAreaFilter = null; renderAllTasks(); });
+  allChip.onclick = () => { state.activeAreaFilter = null; renderAllTasks(); };
   afc.appendChild(allChip);
+  
   state.areas.forEach(area => {
     const chip = document.createElement('button');
     chip.className = 'btn btn-sm btn-ghost';
@@ -1512,152 +1515,61 @@ function renderAllTasks() {
     chip.style.color = area.color;
     if (state.activeAreaFilter === area.id) chip.style.background = area.color + '22';
     chip.textContent = area.name;
-    chip.addEventListener('click', () => { state.activeAreaFilter = area.id; renderAllTasks(); });
+    chip.onclick = () => { state.activeAreaFilter = area.id; renderAllTasks(); };
     afc.appendChild(chip);
   });
 
-  let tasks = [...state.tasks];
-  if (state.activeAreaFilter) tasks = tasks.filter(t => t.area === state.activeAreaFilter);
-  if (state.activeFilter === 'pending') tasks = tasks.filter(t => !t.done);
-  if (state.activeFilter === 'done') tasks = tasks.filter(t => t.done);
-  if (state.activeFilter === 'overdue') tasks = tasks.filter(t => isOverdue(t.date) && !t.done);
+  let tasksToRender = [...state.tasks];
+  if (state.activeAreaFilter) tasksToRender = tasksToRender.filter(t => t.area === state.activeAreaFilter);
+  if (state.activeFilter === 'pending') tasksToRender = tasksToRender.filter(t => !t.done);
+  if (state.activeFilter === 'done') tasksToRender = tasksToRender.filter(t => t.done);
 
-  tasks.sort((a, b) => {
-    if (a.done !== b.done) return a.done ? 1 : -1;
-    if (a.date && b.date) return a.date.localeCompare(b.date);
-    if (a.date) return -1;
-    if (b.date) return 1;
-    return 0;
-  });
+  // Ocultar las tareas que ya tienen completedAt si estamos en 'All' o 'Pending' para que vivan en History
+  if (state.activeFilter !== 'done') {
+      tasksToRender = tasksToRender.filter(t => !t.completedAt);
+  }
 
-  if (tasks.length === 0) {
+  if (tasksToRender.length === 0) {
     container.innerHTML = `<div class="empty-state"><div class="empty-icon">◻</div><p>No tasks found here</p></div>`;
-    return;
-  }
-  tasks.forEach(t => buildTaskCard(t, container));
-  updateBadge();
-}
-
-function updateBadge() {
-  const pending = state.tasks.filter(t => !t.done).length;
-  document.getElementById('badge-tasks').textContent = pending;
-}
-
-document.getElementById('task-filter-tabs').addEventListener('click', (e) => {
-  const tab = e.target.closest('.tab');
-  if (!tab) return;
-  document.querySelectorAll('#task-filter-tabs .tab').forEach(t => t.classList.remove('active'));
-  tab.classList.add('active');
-  state.activeFilter = tab.dataset.filter;
-  renderAllTasks();
-});
-
-// ============================================================
-// TODAY PAGE
-// ============================================================
-function renderToday() {
-  const planned = state.todayPlan;
-  const plannedTasks = state.tasks.filter(t => planned.includes(t.id));
-  const done = plannedTasks.filter(t => t.done);
-  const total = state.tasks.filter(t => !t.done).length;
-  const pct = plannedTasks.length > 0 ? Math.round((done.length / plannedTasks.length) * 100) : 0;
-
-  document.getElementById('stat-planned').textContent = plannedTasks.length;
-  document.getElementById('stat-done').textContent = done.length;
-  document.getElementById('stat-progress').innerHTML = `${pct}<small>%</small>`;
-  document.getElementById('stat-pending').textContent = total;
-
-  const list = document.getElementById('today-task-list');
-  list.innerHTML = '';
-
-  if (plannedTasks.length === 0) {
-    list.innerHTML = `<div class="empty-state"><div class="empty-icon">◈</div><p>Your day isn't planned yet. Click "Plan my day" to start.</p></div>`;
-    return;
+  } else {
+    tasksToRender.forEach(t => buildUnifiedCard(t.id, container));
   }
 
-  const sorted = [...plannedTasks].sort((a,b) => (a.done===b.done) ? 0 : a.done ? 1 : -1);
-  sorted.forEach(t => buildTaskCard(t, list));
+  document.getElementById('badge-tasks').textContent = state.tasks.filter(t => !t.done).length;
 }
 
-// PLAN TODAY
-document.getElementById('btn-plan-today').addEventListener('click', () => {
-  const pending = state.tasks.filter(t => !t.done);
-  const container = document.getElementById('plan-task-list');
+// LOGICA DEL HISTORIAL (NUEVO)
+function renderHistory() {
+  const container = document.getElementById('history-list');
   container.innerHTML = '';
-  if (pending.length === 0) {
-    container.innerHTML = '<p style="color:var(--text3); font-size:13px; text-align:center; padding:20px;">No pending tasks available.</p>';
+  
+  // Filtramos solo tareas que esten DONE y tengan fecha de completado
+  const completedTasks = state.tasks.filter(t => t.done && t.completedAt);
+
+  if (completedTasks.length === 0) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">◷</div><p>No completed tasks to show in history yet.</p></div>`;
+    return;
   }
-  pending.forEach(t => {
-    const area = getAreaById(t.area);
-    const el = document.createElement('div');
-    el.className = 'plan-item' + (state.todayPlan.includes(t.id) ? ' selected' : '');
-    el.innerHTML = `
-      <div class="plan-item-check">${state.todayPlan.includes(t.id) ? '✓' : ''}</div>
-      <div style="flex:1;">
-        <div style="font-size:13.5px; font-weight:500;">${t.title}</div>
-        ${area ? `<span style="font-size:11px; color:${area.color};">${area.name}</span>` : ''}
-      </div>
-      ${t.date ? `<span style="font-size:11px; color:var(--text3); font-family:var(--font-mono);">${formatDate(t.date)}</span>` : ''}
-    `;
-    el.addEventListener('click', () => {
-      el.classList.toggle('selected');
-      el.querySelector('.plan-item-check').textContent = el.classList.contains('selected') ? '✓' : '';
+
+  // Agrupar por fecha
+  const grouped = {};
+  completedTasks.forEach(t => {
+    const d = t.completedAt;
+    if (!grouped[d]) grouped[d] = [];
+    grouped[d].push(t);
+  });
+
+  // Ordenar fechas de más reciente a más antigua
+  const sortedDates = Object.keys(grouped).sort((a,b) => b.localeCompare(a));
+
+  sortedDates.forEach(date => {
+    const dateSection = document.createElement('div');
+    dateSection.innerHTML = `<div class="section-title">${formatDate(date)}</div>`;
+    grouped[date].forEach(t => {
+      buildUnifiedCard(t.id, dateSection, true); // true para "readOnly" (no muestra boton de borrar)
     });
-    container.appendChild(el);
+    container.appendChild(dateSection);
   });
-  openModal('modal-plan');
-});
-
-document.getElementById('btn-cancel-plan').addEventListener('click', () => closeModal('modal-plan'));
-document.getElementById('btn-save-plan').addEventListener('click', () => {
-  const pending = state.tasks.filter(t => !t.done);
-  const planItems = document.querySelectorAll('#plan-task-list .plan-item');
-  state.todayPlan = [];
-  planItems.forEach((item, i) => {
-    if (item.classList.contains('selected') && pending[i]) {
-      state.todayPlan.push(pending[i].id);
-    }
-  });
-  save();
-  closeModal('modal-plan');
-  render();
-});
-
-// ============================================================
-// HABITS
-// ============================================================
-document.getElementById('btn-new-habit').addEventListener('click', () => openModal('modal-habit'));
-document.getElementById('btn-cancel-habit').addEventListener('click', () => closeModal('modal-habit'));
-document.getElementById('btn-save-habit').addEventListener('click', () => {
-  const name = document.getElementById('habit-input-name').value.trim();
-  const icon = document.getElementById('habit-input-icon').value.trim() || '◉';
-  if (!name) return;
-  state.habits.push({ id: uidGenerator(), name, icon, createdAt: TODAY });
-  save();
-  closeModal('modal-habit');
-  renderHabits();
-  document.getElementById('habit-input-name').value = '';
-  document.getElementById('habit-input-icon').value = '';
-});
-
-function toggleHabitToday(habitId) {
-  if (!state.habitLog[TODAY]) state.habitLog[TODAY] = {};
-  state.habitLog[TODAY][habitId] = !state.habitLog[TODAY][habitId];
-  save();
-  renderHabits();
-}
-
-function getHabitStreak(habitId) {
-  let streak = 0;
-  const d = new Date();
-  while (true) {
-    const iso = d.toISOString().split('T')[0];
-    if (state.habitLog[iso] && state.habitLog[iso][habitId]) {
-      streak++;
-      d.setDate(d.getDate() - 1);
-    } else break;
-  }
-  return streak;
 }
 
 function renderHabits() {
@@ -1678,9 +1590,9 @@ function renderHabits() {
       <span style="font-size:20px;">${h.icon}</span>
       <span style="flex:1; font-weight:500; font-size:13.5px; ${done ? 'text-decoration:line-through; color:var(--text3);' : ''}">${h.name}</span>
       ${streak > 0 ? `<span class="habit-streak">🔥 ${streak}d</span>` : ''}
-      <div class="habit-toggle ${done ? 'on' : ''}" data-hid="${h.id}"></div>
+      <div class="habit-toggle ${done ? 'on' : ''}"></div>
     `;
-    row.querySelector('.habit-toggle').addEventListener('click', () => toggleHabitToday(h.id));
+    row.querySelector('.habit-toggle').onclick = () => toggleItemDone(h.id);
     todayList.appendChild(row);
   });
 
@@ -1713,115 +1625,122 @@ function renderHabits() {
 }
 
 // ============================================================
-// DIARY
+// MODALS Y CREACIÓN
 // ============================================================
-document.getElementById('btn-open-diary-today').addEventListener('click', openDiaryModal);
-function openDiaryModal() {
-  const entry = state.diary[TODAY] || {};
-  document.getElementById('diary-good').value = entry.good || '';
-  document.getElementById('diary-bad').value = entry.bad || '';
-  document.getElementById('diary-improve').value = entry.improve || '';
-  openModal('modal-diary');
-}
-document.getElementById('btn-cancel-diary').addEventListener('click', () => closeModal('modal-diary'));
-document.getElementById('btn-save-diary').addEventListener('click', () => {
-  state.diary[TODAY] = {
-    good: document.getElementById('diary-good').value.trim(),
-    bad: document.getElementById('diary-bad').value.trim(),
-    improve: document.getElementById('diary-improve').value.trim(),
-    date: TODAY,
-  };
-  save();
-  closeModal('modal-diary');
-  if (state.currentPage === 'diary') renderDiary();
-});
-
-function renderDiary() {
-  const container = document.getElementById('diary-list');
+document.getElementById('btn-plan-today').addEventListener('click', () => {
+  const container = document.getElementById('plan-task-list');
   container.innerHTML = '';
-  const entries = Object.values(state.diary).sort((a, b) => b.date.localeCompare(a.date));
-  if (entries.length === 0) {
-    container.innerHTML = `<div class="empty-state"><div class="empty-icon">◌</div><p>No journal entries yet.<br>At the end of the day, click "Daily reflection".</p></div>`;
-    return;
-  }
-  entries.forEach(entry => {
-    const card = document.createElement('div');
-    card.className = 'diary-day-card';
-    const isToday = entry.date === TODAY;
-    card.innerHTML = `
-      <div class="diary-day-header">
-        <div>
-          <div class="diary-day-date">${formatDate(entry.date)} ${isToday ? '— today' : ''}</div>
-          <div class="diary-day-title">${entry.good ? entry.good.slice(0, 60) + (entry.good.length > 60 ? '...' : '') : 'Empty entry'}</div>
-        </div>
-        <span style="color:var(--text3); font-size:12px;">▾</span>
-      </div>
-      <div class="diary-day-body ${isToday ? 'open' : ''}">
-        <div class="diary-q">
-          <div class="form-label diary-q-label good">✦ What went well</div>
-          <div class="diary-q-text">${entry.good || '—'}</div>
-        </div>
-        <div class="diary-q">
-          <div class="form-label diary-q-label bad">✦ What went wrong</div>
-          <div class="diary-q-text">${entry.bad || '—'}</div>
-        </div>
-        <div class="diary-q">
-          <div class="form-label diary-q-label improve">✦ What to improve</div>
-          <div class="diary-q-text">${entry.improve || '—'}</div>
-        </div>
-      </div>
-    `;
-    card.querySelector('.diary-day-header').addEventListener('click', () => {
-      card.querySelector('.diary-day-body').classList.toggle('open');
+  
+  if (state.habits.length > 0) {
+    container.innerHTML += '<div class="section-title">Habits</div>';
+    state.habits.forEach(h => {
+      const div = document.createElement('div');
+      div.className = `plan-item ${state.todayPlan.includes(h.id) ? 'selected' : ''}`;
+      div.dataset.id = h.id;
+      div.innerHTML = `<div class="plan-item-check">${state.todayPlan.includes(h.id) ? '✓' : ''}</div><div style="font-weight:500;">${h.icon} ${h.name}</div>`;
+      div.onclick = () => { div.classList.toggle('selected'); div.querySelector('.plan-item-check').textContent = div.classList.contains('selected') ? '✓' : ''; };
+      container.appendChild(div);
     });
-    container.appendChild(card);
-  });
-}
+  }
 
-// ============================================================
-// MODAL HELPERS
-// ============================================================
-function openModal(id) {
-  document.getElementById(id).classList.add('open');
-}
-function closeModal(id) {
-  document.getElementById(id).classList.remove('open');
-}
+  const pendingTasks = state.tasks.filter(t => !t.done);
+  if (pendingTasks.length > 0) {
+    container.innerHTML += '<div class="section-title">Tasks</div>';
+    pendingTasks.forEach(t => {
+      const area = state.areas.find(a => a.id === t.area);
+      const div = document.createElement('div');
+      div.className = `plan-item ${state.todayPlan.includes(t.id) ? 'selected' : ''}`;
+      div.dataset.id = t.id;
+      div.innerHTML = `
+        <div class="plan-item-check">${state.todayPlan.includes(t.id) ? '✓' : ''}</div>
+        <div style="flex:1;">
+          <div style="font-size:13.5px; font-weight:500;">${t.title}</div>
+          ${area ? `<span style="font-size:11px; color:${area.color};">${area.name}</span>` : ''}
+        </div>
+      `;
+      div.onclick = () => { div.classList.toggle('selected'); div.querySelector('.plan-item-check').textContent = div.classList.contains('selected') ? '✓' : ''; };
+      container.appendChild(div);
+    });
+  }
+  
+  openModal('modal-plan');
+});
+
+document.getElementById('btn-save-plan').addEventListener('click', () => {
+  state.todayPlan = Array.from(document.querySelectorAll('#plan-task-list .plan-item.selected')).map(el => el.dataset.id);
+  save(); 
+  closeModal('modal-plan'); 
+  render();
+});
+
+document.getElementById('btn-new-task').addEventListener('click', () => {
+  getAreaSelect(document.getElementById('task-input-area'));
+  document.getElementById('task-input-title').value = '';
+  document.getElementById('task-input-date').value = '';
+  openModal('modal-task');
+});
+
+document.getElementById('btn-save-task').addEventListener('click', () => {
+  const title = document.getElementById('task-input-title').value.trim();
+  if (!title) return;
+  state.tasks.push({ 
+    id: uidGenerator(), 
+    title, 
+    area: document.getElementById('task-input-area').value, 
+    date: document.getElementById('task-input-date').value,
+    done: false,
+    completedAt: null 
+  });
+  save(); 
+  closeModal('modal-task'); 
+  render();
+});
+
+document.getElementById('btn-new-habit').addEventListener('click', () => openModal('modal-habit'));
+document.getElementById('btn-save-habit').addEventListener('click', () => {
+  const name = document.getElementById('habit-input-name').value.trim();
+  if (!name) return;
+  state.habits.push({ id: uidGenerator(), name, icon: document.getElementById('habit-input-icon').value || '◉' });
+  save(); 
+  closeModal('modal-habit'); 
+  render();
+});
+
+document.getElementById('task-filter-tabs').addEventListener('click', (e) => {
+  const tab = e.target.closest('.tab');
+  if (!tab) return;
+  document.querySelectorAll('#task-filter-tabs .tab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  state.activeFilter = tab.dataset.filter;
+  renderAllTasks();
+});
+
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 document.querySelectorAll('.modal-overlay').forEach(overlay => {
-  overlay.addEventListener('click', (e) => {
-    if (e.target === overlay) overlay.classList.remove('open');
-  });
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.remove('open'); });
 });
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
-});
+document.getElementById('btn-cancel-task').addEventListener('click', () => closeModal('modal-task'));
+document.getElementById('btn-cancel-plan').addEventListener('click', () => closeModal('modal-plan'));
+document.getElementById('btn-cancel-habit').addEventListener('click', () => closeModal('modal-habit'));
+document.getElementById('btn-cancel-area').addEventListener('click', () => closeModal('modal-area'));
 
-// ============================================================
-// MAIN RENDER
-// ============================================================
 function render() {
   setDateLabels();
   renderAreaNav();
-  updateBadge();
   if (state.currentPage === 'today') renderToday();
   if (state.currentPage === 'tasks') renderAllTasks();
+  if (state.currentPage === 'history') renderHistory();
   if (state.currentPage === 'habits') renderHabits();
-  if (state.currentPage === 'diary') renderDiary();
 }
 
-// ============================================================
-// SEED DATA (Only creates if brand new user)
-// ============================================================
 function seedIfEmpty() {
   if (state.tasks.length === 0) {
-    state.tasks = [
-      { id: uidGenerator(), title: 'Build momentum with my new system', area: 'personal', date: '', notes: '', score: 0, done: false, subtasks: [], createdAt: TODAY }
-    ];
-    state.todayPlan = [state.tasks[0].id];
+    state.tasks = [{ id: uidGenerator(), title: 'Build momentum with my new system', area: 'personal', done: false, completedAt: null }];
   }
 }
 
-// Render without data immediately to show skeleton, loadFromFirebase updates it
+// Inicialización del frontend vacio mientras Auth carga
 render();
 </script>
 </body>
