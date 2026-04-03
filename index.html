@@ -619,36 +619,6 @@
   #offline-banner.show { display: flex; }
   body.offline #main { padding-top: 36px; }
 
-  /* ============================
-     GOOGLE CALENDAR
-     ============================ */
-  .gcal-chip {
-    font-size: 11px; padding: 3px 7px; border-radius: 5px; margin-bottom: 3px;
-    cursor: default; line-height: 1.3; display: block; word-break: break-word;
-    background: rgba(66,133,244,.12); color: #4285F4;
-    border: 1px solid rgba(66,133,244,.25);
-    font-style: italic;
-  }
-  [data-theme="light"] .gcal-chip { background: rgba(66,133,244,.09); }
-  .gcal-chip-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #4285F4; margin-right: 4px; vertical-align: middle; }
-  .gcal-connect-btn {
-    display: flex; align-items: center; gap: 7px;
-    padding: 7px 10px; border-radius: var(--radius-sm);
-    cursor: pointer; color: var(--text2); transition: all var(--transition);
-    font-size: 12px; user-select: none; border: none; background: none; width: 100%;
-  }
-  .gcal-connect-btn:hover { background: var(--bg3); color: var(--text); }
-  .gcal-connect-btn.connected { color: #4285F4; }
-  .gcal-sync-bar {
-    display: flex; align-items: center; gap: 8px; margin-bottom: 14px;
-    padding: 8px 12px; background: var(--bg2); border: 1px solid var(--border);
-    border-radius: var(--radius-sm); flex-wrap: wrap;
-  }
-  .gcal-status-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-  .gcal-status-dot.on  { background: #4285F4; box-shadow: 0 0 0 3px rgba(66,133,244,.2); }
-  .gcal-status-dot.off { background: var(--text3); }
-  .gcal-status-text { font-size: 11.5px; font-family: var(--font-mono); color: var(--text2); flex: 1; }
-  .gcal-day-events { margin-top: 4px; padding-top: 4px; border-top: 1px dashed rgba(66,133,244,.2); }
 
   /* ============================
      PWA INSTALL BUTTON
@@ -785,11 +755,6 @@
     </div>
 
     <div class="sidebar-footer">
-      <!-- Google Calendar connect -->
-      <button class="gcal-connect-btn" id="btn-gcal-connect">
-        <svg width="14" height="14" viewBox="0 0 24 24" style="flex-shrink:0;"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-        <span id="gcal-btn-label" data-i18n="gcal_connect">Connect Calendar</span>
-      </button>
       <!-- Install PWA -->
       <button id="btn-install-pwa">
         <span class="nav-icon" style="font-size:12px;">⬇</span>
@@ -864,13 +829,7 @@
           <button class="btn btn-ghost btn-sm" id="btn-week-next"><span data-i18n="next">Next</span> →</button>
           <button class="btn btn-ghost btn-sm" id="btn-week-today" style="margin-left:auto;">⊙ <span data-i18n="current_week">This week</span></button>
         </div>
-        <!-- Google Calendar sync bar -->
-        <div class="gcal-sync-bar" id="gcal-sync-bar">
-          <div class="gcal-status-dot off" id="gcal-dot"></div>
-          <span class="gcal-status-text" id="gcal-status-text" data-i18n="gcal_not_connected">Calendar not connected</span>
-          <button class="btn btn-ghost btn-sm" id="btn-gcal-sync" style="display:none;">↺ <span data-i18n="gcal_sync_now">Sync</span></button>
-          <button class="btn btn-ghost btn-sm" id="btn-gcal-push-all" style="display:none;">↑ <span data-i18n="gcal_push_tasks">Push tasks</span></button>
-        </div>
+
         <!-- Week stats bar -->
         <div class="week-stats-bar" id="week-stats-bar"></div>
         <!-- Week day columns -->
@@ -1169,16 +1128,7 @@ const db   = initializeFirestore(app, {
 });
 const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({ prompt: 'select_account' });
-// Calendar provider — same base, adds Calendar scope
-const calendarProvider = new GoogleAuthProvider();
-calendarProvider.setCustomParameters({ prompt: 'consent' });
-calendarProvider.addScope('https://www.googleapis.com/auth/calendar.events');
 
-// Google Calendar state
-let gcalToken = null;
-let gcalTokenExpiry = 0;
-let gcalEvents = {};           // { 'YYYY-MM-DD': [eventObj, ...] }
-let gcalSyncing = false;
 
 // ============================================================
 // TOAST HELPER
@@ -1251,11 +1201,6 @@ const translations = {
     hide_history: "Hide entries", show_history: "Show entries",
     show_charts: "Show charts", hide_charts: "Hide charts",
     week_planned: "Planned", week_done_w: "Completed", week_progress_w: "Progress", week_total_tasks: "Total tasks",
-    gcal_connect: "Connect Calendar", gcal_disconnect: "Disconnect Calendar",
-    gcal_connected: "Calendar connected", gcal_not_connected: "Calendar not connected",
-    gcal_sync_now: "Sync", gcal_push_tasks: "Push tasks",
-    gcal_syncing: "Syncing…", gcal_synced: "Synced",
-    gcal_events_label: "Google Calendar",
     install_app: "Install App",
     offline_msg: "You're offline — data syncs when connection returns",
     online_msg: "Back online"
@@ -1314,11 +1259,6 @@ const translations = {
     hide_history: "Ocultar entradas", show_history: "Mostrar entradas",
     show_charts: "Mostrar gráficos", hide_charts: "Ocultar gráficos",
     week_planned: "Planeadas", week_done_w: "Completadas", week_progress_w: "Progreso", week_total_tasks: "Total tareas",
-    gcal_connect: "Conectar Calendar", gcal_disconnect: "Desconectar Calendar",
-    gcal_connected: "Calendar conectado", gcal_not_connected: "Calendar no conectado",
-    gcal_sync_now: "Sincronizar", gcal_push_tasks: "Enviar tareas",
-    gcal_syncing: "Sincronizando…", gcal_synced: "Sincronizado",
-    gcal_events_label: "Google Calendar",
     install_app: "Instalar App",
     offline_msg: "Sin conexión — datos se sincronizan al reconectar",
     online_msg: "Conexión restaurada"
@@ -1620,8 +1560,6 @@ function navigateTo(page) {
   if (pageEl) pageEl.classList.add('active');
   sidebar.classList.remove('open'); sidebarOverlay.classList.remove('open');
   window.scrollTo(0, 0);
-  // Auto-refresh Google Calendar when entering week page
-  if (page === 'week' && isGCalConnected()) { gcalEvents = {}; }
   render();
 }
 document.querySelectorAll('.nav-item[data-page]').forEach(el => el.addEventListener('click', () => navigateTo(el.dataset.page)));
@@ -2016,42 +1954,9 @@ function renderWeek() {
       body.appendChild(row);
     });
 
-    // ── Google Calendar events for this day ───────────────
-    const dayGcalEvs = gcalEvents[dateISO] || [];
-    if (dayGcalEvs.length > 0) {
-      const gcalSec = document.createElement('div');
-      gcalSec.className = 'gcal-day-events';
-      dayGcalEvs.slice(0, 4).forEach(ev => {
-        const chip = document.createElement('div');
-        chip.className = 'gcal-chip';
-        // Format time if available
-        let timeLabel = '';
-        if (ev.start.dateTime) {
-          const t = new Date(ev.start.dateTime);
-          timeLabel = t.toLocaleTimeString(currentLang === 'es' ? 'es-AR' : 'en-GB', { hour:'2-digit', minute:'2-digit' }) + ' ';
-        }
-        chip.innerHTML = `<span class="gcal-chip-dot"></span>${timeLabel}${ev.summary || 'Event'}`;
-        chip.title = ev.summary || 'Event';
-        gcalSec.appendChild(chip);
-      });
-      if (dayGcalEvs.length > 4) {
-        const more = document.createElement('div');
-        more.className = 'gcal-chip';
-        more.style.fontStyle = 'normal';
-        more.textContent = '+' + (dayGcalEvs.length - 4) + ' more';
-        gcalSec.appendChild(more);
-      }
-      body.appendChild(gcalSec);
-    }
-
     col.querySelector(`[data-wday]`).addEventListener('click', () => openWeekPlanModal(dateISO));
     grid.appendChild(col);
   });
-
-  // Auto-sync calendar if connected
-  if (isGCalConnected() && Object.keys(gcalEvents).length === 0) {
-    syncCalendarWeek().then(() => renderWeek());
-  }
 }
 
 function openWeekPlanModal(dateISO) {
@@ -2900,7 +2805,7 @@ document.querySelectorAll('.emoji-preset-btn').forEach(btn => {
 // ============================================================
 function render() {
   TODAY = getLocalISODate();
-  applyI18n(); setDateLabels(); renderAreaNav(); updateGCalUI();
+  applyI18n(); setDateLabels(); renderAreaNav();
   document.getElementById('badge-tasks').textContent = state.tasks.filter(t => !t.done).length;
   if (state.currentPage === 'today')   renderToday();
   if (state.currentPage === 'week')    renderWeek();
@@ -2910,152 +2815,7 @@ function render() {
   if (state.currentPage === 'diary')   renderDiary();
 }
 
-// ============================================================
-// GOOGLE CALENDAR INTEGRATION
-// ============================================================
-function isGCalConnected() {
-  return gcalToken && Date.now() < gcalTokenExpiry;
-}
 
-function updateGCalUI() {
-  const connected = isGCalConnected();
-  const dot        = document.getElementById('gcal-dot');
-  const statusText = document.getElementById('gcal-status-text');
-  const btnSync    = document.getElementById('btn-gcal-sync');
-  const btnPush    = document.getElementById('btn-gcal-push-all');
-  const btnLabel   = document.getElementById('gcal-btn-label');
-  const sideBtn    = document.getElementById('btn-gcal-connect');
-
-  if (dot) { dot.className = 'gcal-status-dot ' + (connected ? 'on' : 'off'); }
-  if (statusText) statusText.textContent = t(connected ? 'gcal_connected' : 'gcal_not_connected');
-  if (btnSync) btnSync.style.display = connected ? 'inline-flex' : 'none';
-  if (btnPush) btnPush.style.display = connected ? 'inline-flex' : 'none';
-  if (btnLabel) btnLabel.textContent = t(connected ? 'gcal_connected' : 'gcal_connect');
-  if (sideBtn)  sideBtn.className = 'gcal-connect-btn' + (connected ? ' connected' : '');
-}
-
-async function connectGoogleCalendar() {
-  try {
-    const result = await signInWithPopup(auth, calendarProvider);
-    const credential = GoogleAuthProvider.credentialFromResult(result);
-    if (credential && credential.accessToken) {
-      gcalToken = credential.accessToken;
-      gcalTokenExpiry = Date.now() + 3540000; // 59 min
-      updateGCalUI();
-      showToast(currentLang === 'es' ? '¡Google Calendar conectado!' : 'Google Calendar connected!', 'ok');
-      if (state.currentPage === 'week') { await syncCalendarWeek(); renderWeek(); }
-    } else {
-      showToast(currentLang === 'es' ? 'No se pudo obtener el token' : 'Could not get access token', 'err');
-    }
-  } catch (e) {
-    if (e.code === 'auth/popup-closed-by-user' || e.code === 'auth/popup-blocked') {
-      showToast(currentLang === 'es' ? 'Popup cerrado o bloqueado' : 'Popup closed or blocked', 'err');
-    } else {
-      showToast('Calendar: ' + (e.message || e.code), 'err');
-    }
-  }
-}
-
-async function fetchGCalEvents(isoStart, isoEnd) {
-  if (!isGCalConnected()) return [];
-  try {
-    const tMin = new Date(isoStart + 'T00:00:00').toISOString();
-    const tMax = new Date(isoEnd   + 'T23:59:59').toISOString();
-    const url  = 'https://www.googleapis.com/calendar/v3/calendars/primary/events'
-               + '?timeMin=' + encodeURIComponent(tMin)
-               + '&timeMax=' + encodeURIComponent(tMax)
-               + '&singleEvents=true&orderBy=startTime&maxResults=100';
-    const res = await fetch(url, { headers: { Authorization: 'Bearer ' + gcalToken } });
-    if (res.status === 401) { gcalToken = null; updateGCalUI(); return []; }
-    if (!res.ok) return [];
-    const data = await res.json();
-    return data.items || [];
-  } catch { return []; }
-}
-
-async function syncCalendarWeek() {
-  if (!isGCalConnected() || gcalSyncing) return;
-  gcalSyncing = true;
-  const statusText = document.getElementById('gcal-status-text');
-  if (statusText) statusText.textContent = t('gcal_syncing');
-  const days   = getWeekDays(state.weekOffset);
-  const events = await fetchGCalEvents(days[0], days[6]);
-  gcalEvents = {};
-  events.forEach(ev => {
-    const date = ev.start.date || (ev.start.dateTime || '').split('T')[0];
-    if (!date) return;
-    if (!gcalEvents[date]) gcalEvents[date] = [];
-    gcalEvents[date].push(ev);
-  });
-  gcalSyncing = false;
-  updateGCalUI();
-  if (statusText) statusText.textContent = t('gcal_synced');
-  setTimeout(() => { if(statusText) statusText.textContent = t('gcal_connected'); }, 2500);
-}
-
-async function pushTaskToCalendar(task) {
-  if (!isGCalConnected()) {
-    showToast(currentLang === 'es' ? 'Conectá Google Calendar primero' : 'Connect Google Calendar first', 'err');
-    return false;
-  }
-  if (!task.date) {
-    showToast(currentLang === 'es' ? 'La tarea necesita fecha límite' : 'Task needs a due date', 'err');
-    return false;
-  }
-  const colorMap = { high: '11', medium: '5', low: '2' }; // Tomato, Banana, Sage
-  const area = state.areas.find(a => a.id === task.area);
-  const event = {
-    summary: task.title,
-    description: [
-      'Priority: ' + (task.priority || 'low').toUpperCase(),
-      area ? 'Area: ' + getAreaName(area) : '',
-      'Created by It's Time app',
-    ].filter(Boolean).join(' | '),
-    start: { date: task.date },
-    end:   { date: task.date },
-    colorId: colorMap[task.priority || 'low'] || '2',
-  };
-  try {
-    const res = await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events', {
-      method: 'POST',
-      headers: { Authorization: 'Bearer ' + gcalToken, 'Content-Type': 'application/json' },
-      body: JSON.stringify(event),
-    });
-    if (res.ok) {
-      showToast(currentLang === 'es' ? '¡Agregado a Google Calendar!' : 'Added to Google Calendar!', 'ok');
-      return true;
-    }
-    showToast('Calendar API error: ' + res.status, 'err');
-    return false;
-  } catch { showToast('Calendar sync failed', 'err'); return false; }
-}
-
-async function pushAllTasksWithDates() {
-  const tasks = state.tasks.filter(t => !t.done && t.date);
-  if (!tasks.length) {
-    showToast(currentLang === 'es' ? 'No hay tareas con fecha' : 'No tasks with due dates', '');
-    return;
-  }
-  let pushed = 0;
-  for (const tk of tasks) { if (await pushTaskToCalendar(tk)) pushed++; }
-  showToast(`${pushed}/${tasks.length} tasks pushed to Calendar`, 'ok');
-}
-
-// GCal connect/sync button listeners
-document.getElementById('btn-gcal-connect').addEventListener('click', () => {
-  if (isGCalConnected()) {
-    gcalToken = null; gcalTokenExpiry = 0; gcalEvents = {};
-    updateGCalUI();
-    showToast(currentLang === 'es' ? 'Calendar desconectado' : 'Calendar disconnected', '');
-    if (state.currentPage === 'week') renderWeek();
-  } else {
-    connectGoogleCalendar();
-  }
-});
-document.getElementById('btn-gcal-sync').addEventListener('click', async () => {
-  await syncCalendarWeek(); renderWeek();
-});
-document.getElementById('btn-gcal-push-all').addEventListener('click', pushAllTasksWithDates);
 
 // ============================================================
 // ONLINE / OFFLINE DETECTION
