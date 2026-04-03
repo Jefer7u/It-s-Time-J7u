@@ -37,13 +37,11 @@
   
   * { box-sizing: border-box; margin: 0; padding: 0; }
   
+  /* CAMBIO: Se removió overflow: hidden para permitir el Pull-to-refresh nativo en móviles */
   body {
     font-family: var(--font-sans);
     background: var(--bg);
     color: var(--text);
-    height: 100vh;
-    display: flex;
-    overflow: hidden;
     font-size: 14px;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
@@ -65,14 +63,16 @@
   .auth-subtitle { color: var(--text2); margin-bottom: 28px; font-size: 14px; font-style: italic; }
 
   /* MAIN APP LAYOUT */
-  #app-content { display: none; width: 100%; height: 100%; position: relative; }
+  #app-content { display: none; width: 100%; min-height: 100vh; position: relative; }
 
   /* SIDEBAR & MOBILE OVERLAY */
   #sidebar-overlay { display: none; }
   
+  /* CAMBIO: Posición fija para el sidebar, permitiendo que el main haga scroll global */
   #sidebar {
     width: var(--sidebar-w); background: var(--bg2); border-right: 1px solid var(--border);
-    display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto; z-index: 1000;
+    display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0;
+    z-index: 1000;
   }
   
   .sidebar-header { padding: 24px 20px 16px; border-bottom: 1px solid var(--border); }
@@ -80,7 +80,7 @@
   .app-name span { color: var(--accent); }
   .app-date { font-size: 11px; color: var(--text3); margin-top: 2px; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.5px; }
   
-  .sidebar-nav { padding: 12px 12px; flex: 1; display: flex; flex-direction: column; }
+  .sidebar-nav { padding: 12px 12px; flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
   .nav-section-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text3); padding: 12px 8px 6px; }
   
   .nav-item {
@@ -93,8 +93,9 @@
   .nav-badge { margin-left: auto; background: var(--accent2); color: var(--text); font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 20px; font-family: var(--font-mono); }
 
   /* MAIN CONTENT */
-  #main { flex: 1; overflow-y: auto; display: flex; flex-direction: column; position: relative; }
-  .page { display: none; flex-direction: column; height: 100%; }
+  /* CAMBIO: Ahora el main respeta el sidebar y dicta el scroll del body */
+  #main { margin-left: var(--sidebar-w); display: flex; flex-direction: column; min-height: 100vh; position: relative; }
+  .page { display: none; flex-direction: column; min-height: 100vh; padding-bottom: 40px; }
   .page.active { display: flex; }
   
   #mobile-header { display: none; }
@@ -102,7 +103,7 @@
   .page-header { padding: 28px 36px 20px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
   .page-title { font-size: 28px; color: var(--text); font-weight: 700; }
   .page-sub { font-size: 12.5px; color: var(--text3); margin-top: 3px; }
-  .page-body { padding: 24px 36px; flex: 1; overflow-y: auto; }
+  .page-body { padding: 24px 36px; flex: 1; }
 
   .stoic-quote-container { margin-top: 20px; padding-left: 14px; border-left: 2px solid var(--accent); }
   .stoic-quote-text { font-size: 13.5px; color: var(--text2); font-style: italic; line-height: 1.5; }
@@ -230,8 +231,8 @@
   /* RESPONSIVE MÓVIL */
   @media (max-width: 700px) {
     #sidebar { 
-      position: fixed; left: -260px; top: 0; bottom: 0; width: 260px; 
-      transition: left 0.3s ease; z-index: 2001; display: flex !important; 
+      left: -260px; width: 260px; 
+      transition: left 0.3s ease; z-index: 2001;
     }
     #sidebar.open { left: 0; }
     
@@ -241,9 +242,11 @@
     }
     #sidebar-overlay.open { opacity: 1; pointer-events: all; }
     
+    #main { margin-left: 0; }
+
     #mobile-header { 
       display: flex; align-items: center; background: var(--bg2); padding: 16px 20px; 
-      border-bottom: 1px solid var(--border); z-index: 10; 
+      border-bottom: 1px solid var(--border); z-index: 10; position: sticky; top: 0;
     }
     #mobile-menu-btn { 
       background: none; border: none; color: var(--text); font-size: 28px; cursor: pointer; margin-right: 16px; padding: 0 10px 0 0;
@@ -695,8 +698,17 @@ const randomQuote = stoicQuotes[Math.floor(Math.random() * stoicQuotes.length)];
 const sessionQuoteHTML = `${randomQuote.en}<br><span style="font-size: 11.5px; color: var(--text3); margin-top: 4px; display: inline-block;">${randomQuote.es}</span>`;
 
 // ============================================================
-// STATE INITIALIZATION
+// STATE INITIALIZATION & TIME FIX (ZONA HORARIA LOCAL)
 // ============================================================
+// Esto calcula la fecha exacta en base a tu zona horaria (Ej: Buenos Aires UTC-3)
+function getLocalISODate() {
+  const d = new Date();
+  d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+  return d.toISOString().split('T')[0];
+}
+
+let TODAY = getLocalISODate();
+
 const getInitialState = () => ({
   tasks: [],
   habits: [],
@@ -718,7 +730,6 @@ const getInitialState = () => ({
 });
 
 let state = getInitialState();
-const TODAY = new Date().toISOString().split('T')[0];
 
 // ============================================================
 // FIREBASE AUTH UI LOGIC
@@ -750,7 +761,7 @@ document.getElementById('btn-google').addEventListener('click', () => {
 
 document.getElementById('btn-logout').addEventListener('click', () => {
   signOut(auth).then(() => {
-    state = getInitialState(); // Resetear memoria para evitar cruce de datos
+    state = getInitialState(); 
     render();
   });
 });
@@ -760,7 +771,7 @@ onAuthStateChanged(auth, async (user) => {
     authScreen.style.opacity = '0';
     setTimeout(async () => {
       authScreen.style.display = 'none';
-      appContent.style.display = 'flex';
+      appContent.style.display = 'block'; // Cambio a block para que el layout fluya nativo
       await loadFromFirebase(user.uid);
     }, 300);
   } else {
@@ -923,7 +934,7 @@ document.querySelectorAll('.area-color-opt').forEach(el => {
 });
 
 // ============================================================
-// CORE LOGIC: TOGGLE DONE (Tasks & Habits)
+// CORE LOGIC: TOGGLE DONE & DELETIONS
 // ============================================================
 window.toggleItemDone = function(id, dateContext = TODAY) {
   const habit = state.habits.find(h => h.id === id);
@@ -947,6 +958,15 @@ window.deleteTask = function(id) {
   state.todayPlan = state.todayPlan.filter(x => x !== id);
   save(); 
   render();
+};
+
+window.deleteHabit = function(id) {
+  if (confirm("Are you sure you want to delete this habit permanently?")) {
+    state.habits = state.habits.filter(h => h.id !== id);
+    state.todayPlan = state.todayPlan.filter(x => x !== id);
+    save(); 
+    render();
+  }
 };
 
 function getHabitStreak(habitId) {
@@ -1197,12 +1217,17 @@ function renderAllTasks() {
   });
 
   let tasksToRender = [...state.tasks];
-  if (state.activeAreaFilter) tasksToRender = tasksToRender.filter(t => t.area === state.activeAreaFilter);
-  if (state.activeFilter === 'pending') tasksToRender = tasksToRender.filter(t => !t.done);
-  if (state.activeFilter === 'done') tasksToRender = tasksToRender.filter(t => t.done);
-
-  if (state.activeFilter !== 'done') {
-      tasksToRender = tasksToRender.filter(t => !t.completedAt);
+  
+  // 1. Filtrar por Área si hay una seleccionada
+  if (state.activeAreaFilter) {
+    tasksToRender = tasksToRender.filter(t => t.area === state.activeAreaFilter);
+  }
+  
+  // 2. CORRECCIÓN DE FILTROS: Filtrar por estado de la pestaña
+  if (state.activeFilter === 'pending') {
+    tasksToRender = tasksToRender.filter(t => !t.done);
+  } else if (state.activeFilter === 'done') {
+    tasksToRender = tasksToRender.filter(t => t.done);
   }
 
   if (tasksToRender.length === 0) {
@@ -1285,13 +1310,15 @@ function renderHabits() {
     const streak = getHabitStreak(h.id);
     const row = document.createElement('div');
     row.className = 'habit-row';
+    // CAMBIO: Botón de Borrar añadido
     row.innerHTML = `
       <span style="font-size:20px;">${h.icon}</span>
       <span style="flex:1; font-weight:500; font-size:13.5px; ${done ? 'text-decoration:line-through; color:var(--text3);' : ''}">${h.name}</span>
       ${streak > 0 ? `<span class="habit-streak">🔥 ${streak}d</span>` : ''}
+      <button class="btn btn-ghost btn-sm btn-icon" onclick="window.deleteHabit('${h.id}')" title="Delete Habit" style="margin-right: 12px;">✕</button>
       <div class="habit-toggle ${done ? 'on' : ''}"></div>
     `;
-    row.querySelector('.habit-toggle').onclick = () => window.toggleItemDone(h.id);
+    row.querySelector('.habit-toggle').onclick = () => window.toggleItemDone(h.id, TODAY);
     todayList.appendChild(row);
   });
 
@@ -1491,6 +1518,15 @@ document.getElementById('btn-save-habit').addEventListener('click', () => {
   render();
 });
 
+document.getElementById('task-filter-tabs').addEventListener('click', (e) => {
+  const tab = e.target.closest('.tab');
+  if (!tab) return;
+  document.querySelectorAll('#task-filter-tabs .tab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  state.activeFilter = tab.dataset.filter;
+  renderAllTasks();
+});
+
 function openModal(id) { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 document.querySelectorAll('.modal-overlay').forEach(overlay => {
@@ -1504,6 +1540,7 @@ document.getElementById('btn-cancel-diary').addEventListener('click', () => clos
 document.getElementById('btn-cancel-score').addEventListener('click', () => closeModal('modal-score'));
 
 function render() {
+  TODAY = getLocalISODate(); // Refresca la fecha local por si cruzó la medianoche
   setDateLabels();
   renderAreaNav();
   if (state.currentPage === 'today') renderToday();
