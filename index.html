@@ -179,7 +179,7 @@
   .add-subtask-row { display: flex; gap: 6px; margin-top: 6px; }
 
   /* HABITS ROWS */
-  .habit-row { display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 6px; }
+  .habit-row { display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 6px; transition: all var(--transition);}
   .habit-streak { font-family: var(--font-mono); font-size: 11px; color: var(--accent); margin-left: auto; }
   .habit-toggle { width: 34px; height: 20px; background: var(--bg4); border-radius: 20px; cursor: pointer; position: relative; transition: background 0.2s; flex-shrink: 0; }
   .habit-toggle::after { content: ''; position: absolute; width: 14px; height: 14px; background: var(--text3); border-radius: 50%; top: 3px; left: 3px; transition: all 0.2s; }
@@ -189,21 +189,14 @@
   /* MODALS */
   .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.65); display: flex; align-items: center; justify-content: center; z-index: 2000; opacity: 0; pointer-events: none; transition: opacity 0.18s ease; backdrop-filter: blur(4px); }
   .modal-overlay.open { opacity: 1; pointer-events: all; }
-  .modal { background: var(--bg2); border: 1px solid var(--border2); border-radius: var(--radius); padding: 28px; width: min(520px, 90vw); max-height: 85vh; overflow-y: auto; transform: translateY(10px); transition: transform 0.18s ease; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+  .modal { background: var(--bg2); border: 1px solid var(--border2); border-radius: var(--radius); padding: 28px; width: min(520px, 90vw); max-height: 85vh; overflow-y: auto; transform: translateY(10px); transition: transform 0.18s ease; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
   .modal-overlay.open .modal { transform: translateY(0); }
-  .modal-title { font-weight: 700; font-size: 22px; margin-bottom: 20px; color: var(--text); }
+  .modal-title { font-family: var(--font-sans); font-weight: 700; font-size: 22px; margin-bottom: 20px; color: var(--text); }
   .form-group { margin-bottom: 14px; }
   .form-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text3); margin-bottom: 5px; display: block; }
   .form-row { display: flex; gap: 12px; }
   .form-row .form-group { flex: 1; }
   .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 22px; }
-
-  /* PLAN TODAY PICKER */
-  .plan-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: var(--radius-sm); cursor: pointer; transition: background var(--transition); border: 1px solid transparent; }
-  .plan-item:hover { background: var(--bg3); }
-  .plan-item.selected { background: rgba(229, 57, 53, 0.08); border-color: var(--accent); }
-  .plan-item-check { width: 16px; height: 16px; border: 1.5px solid var(--text3); border-radius: 4px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 9px; transition: all var(--transition); color: transparent; }
-  .plan-item.selected .plan-item-check { background: var(--accent); border-color: var(--accent); color: #fff; }
 
   /* WEEK PLANNER ITEMS */
   .week-plan-row { display: flex; align-items: center; gap: 10px; padding: 10px; border-bottom: 1px solid var(--border); }
@@ -211,7 +204,7 @@
   .week-plan-row select { width: auto; padding: 4px 8px; font-size: 12.5px; }
 
   /* STATS & KPIS */
-  .score-display { font-size: 42px; font-weight: 700; color: var(--accent); text-align: center; margin: 8px 0; }
+  .score-display { font-size: 42px; font-family: var(--font-sans); font-weight: 700; color: var(--accent); text-align: center; margin: 8px 0; }
   .score-labels { display: flex; justify-content: space-between; font-size: 10px; color: var(--text3); font-family: var(--font-mono); margin-top: 4px; }
 
   .today-greeting { font-size: 36px; color: var(--text); font-weight: 300; line-height: 1.2; margin-bottom: 6px; }
@@ -245,27 +238,23 @@
   .tab:hover { color: var(--text); }
   .tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 500; }
   .category-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  
   .empty-state { text-align: center; padding: 48px 20px; color: var(--text3); }
   .empty-state .empty-icon { font-size: 36px; margin-bottom: 12px; opacity: 0.5; }
   
   /* RESPONSIVE MÓVIL */
   @media (max-width: 700px) {
-    #sidebar { left: -260px; width: 260px; z-index: 2001; }
+    #sidebar { left: -260px; width: 260px; transition: left 0.3s ease; z-index: 2001; }
     #sidebar.open { left: 0; }
-    
     #sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 2000; display: block; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
     #sidebar-overlay.open { opacity: 1; pointer-events: all; }
-    
     #main { margin-left: 0; }
-
     #mobile-header { display: flex; align-items: center; background: var(--bg2); padding: 16px 20px; border-bottom: 1px solid var(--border); z-index: 10; position: sticky; top: 0; }
     #mobile-menu-btn { background: none; border: none; color: var(--text); font-size: 28px; cursor: pointer; margin-right: 16px; padding: 0 10px 0 0; }
-    
     .stats-grid { grid-template-columns: repeat(2, 1fr); }
     .page-body { padding: 16px 20px; }
     .page-header { padding: 20px 20px 14px; }
     .today-greeting { font-size: 30px; }
-
     .week-plan-row { flex-direction: column; align-items: flex-start; }
     .week-plan-row select { width: 100%; margin-top: 6px; }
   }
@@ -277,24 +266,16 @@
   <div class="auth-container">
     <h1 class="auth-title">It's Time<span>.</span></h1>
     <p class="auth-subtitle" data-i18n="authSub">The time for talking is over. Execute.</p>
-    
     <div style="background:var(--bg2); padding: 28px; border: 1px solid var(--border); border-radius:var(--radius);">
-      <div class="form-group">
-        <label class="form-label" data-i18n="email">Email</label>
-        <input type="email" id="auth-email" placeholder="you@example.com">
-      </div>
-      <div class="form-group">
-        <label class="form-label" data-i18n="password">Password</label>
-        <input type="password" id="auth-pass" placeholder="••••••••">
-      </div>
+      <div class="form-group"><label class="form-label" data-i18n="email">Email</label><input type="email" id="auth-email"></div>
+      <div class="form-group"><label class="form-label" data-i18n="password">Password</label><input type="password" id="auth-pass"></div>
       <p id="auth-error" style="color:var(--accent); font-size:12px; margin-bottom:12px; display:none;"></p>
       <div style="display:flex; gap:10px; margin-top:24px;">
         <button class="btn btn-primary" id="btn-login" style="flex:1; justify-content:center;" data-i18n="loginBtn">Log In</button>
         <button class="btn btn-ghost" id="btn-register" style="flex:1; justify-content:center;" data-i18n="registerBtn">Register</button>
       </div>
-      
       <div style="margin-top: 12px;">
-        <button class="btn btn-ghost" id="btn-google" style="width:100%; justify-content:center; padding:10px; background:var(--bg3);">
+        <button class="btn btn-ghost" id="btn-google" style="width:100%; justify-content:center; background:var(--bg3);">
           <svg style="width:18px; height:18px; margin-right:8px;" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
           <span data-i18n="googleBtn">Sign in with Google</span>
         </button>
@@ -304,43 +285,24 @@
 </div>
 
 <div id="app-content">
-
   <div id="sidebar-overlay"></div>
-
   <nav id="sidebar">
     <div class="sidebar-header">
       <div class="app-name">It's Time<span>.</span></div>
       <div class="app-date" id="sidebar-date"></div>
     </div>
-    
     <div class="sidebar-nav">
       <div class="nav-section-label" data-i18n="navMain">Main</div>
-      <div class="nav-item active" data-page="today">
-        <span class="nav-icon">◈</span> <span data-i18n="navToday">Today</span>
-      </div>
-      <div class="nav-item" data-page="tasks">
-        <span class="nav-icon">◻</span> <span data-i18n="navTasks">All Tasks</span>
-        <span class="nav-badge" id="badge-tasks">0</span>
-      </div>
-      <div class="nav-item" data-page="history">
-        <span class="nav-icon">◷</span> <span data-i18n="navHistory">History</span>
-      </div>
-      <div class="nav-item" data-page="habits">
-        <span class="nav-icon">◷</span> <span data-i18n="navHabits">Habits</span>
-      </div>
-      
+      <div class="nav-item active" data-page="today"><span class="nav-icon">◈</span> <span data-i18n="navToday">Today</span></div>
+      <div class="nav-item" data-page="tasks"><span class="nav-icon">◻</span> <span data-i18n="navTasks">All Tasks</span> <span class="nav-badge" id="badge-tasks">0</span></div>
+      <div class="nav-item" data-page="history"><span class="nav-icon">◷</span> <span data-i18n="navHistory">History</span></div>
+      <div class="nav-item" data-page="habits"><span class="nav-icon">◷</span> <span data-i18n="navHabits">Habits</span></div>
       <div class="nav-section-label" data-i18n="navReflection">Reflection</div>
-      <div class="nav-item" data-page="diary">
-        <span class="nav-icon">◌</span> <span data-i18n="navJournal">Journal</span>
-      </div>
-      
+      <div class="nav-item" data-page="diary"><span class="nav-icon">◌</span> <span data-i18n="navJournal">Journal</span></div>
       <div class="nav-section-label" data-i18n="navAreas">Areas</div>
       <div id="area-nav"></div>
-      <div class="nav-item" id="btn-add-area" style="color: var(--text3); font-size:12px; margin-bottom: 20px;">
-        <span class="nav-icon" style="font-size:12px;">＋</span> <span data-i18n="navNewArea">New Area</span>
-      </div>
+      <div class="nav-item" id="btn-add-area" style="color: var(--text3); font-size:12px; margin-bottom: 20px;"><span class="nav-icon" style="font-size:12px;">＋</span> <span data-i18n="navNewArea">New Area</span></div>
     </div>
-
     <div class="settings-row">
       <button class="icon-btn" id="btn-toggle-theme" title="Toggle Theme">🌓</button>
       <button class="icon-btn" id="btn-toggle-lang" title="Change Language">🌐 EN</button>
@@ -349,7 +311,6 @@
   </nav>
 
   <main id="main">
-
     <div id="mobile-header">
       <button id="mobile-menu-btn">☰</button>
       <div style="font-weight: 700; font-size: 18px; color: var(--text);">It's Time<span style="color:var(--accent);">.</span></div>
@@ -357,38 +318,22 @@
 
     <div class="page active" id="page-today">
       <div class="page-header">
-        <div class="today-greeting"><span data-i18n="greeting">Good day.</span> <span data-i18n="persistence">Persistence.</span></div>
+        <div class="today-greeting"><span data-i18n="greeting">Good day.</span> <span data-i18n="persistence" style="color:var(--accent); font-weight:700;">Persistence.</span></div>
         <div class="page-sub" id="today-full-date"></div>
-        <div class="stoic-quote-container">
-          <p id="home-quote" class="stoic-quote-text"></p>
-        </div>
+        <div class="stoic-quote-container"><p id="home-quote" class="stoic-quote-text"></p></div>
       </div>
       <div class="page-body">
         <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-label" data-i18n="statPlanned">Planned Today</div>
-            <div class="stat-value" id="stat-planned">0</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label" data-i18n="statDone">Completed</div>
-            <div class="stat-value" id="stat-done">0</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label" data-i18n="statProgress">Progress</div>
-            <div class="stat-value" id="stat-progress">0<small>%</small></div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label" data-i18n="statPending">Total Pending</div>
-            <div class="stat-value" id="stat-pending">0</div>
-          </div>
+          <div class="stat-card"><div class="stat-label" data-i18n="statPlanned">Planned Today</div><div class="stat-value" id="stat-planned">0</div></div>
+          <div class="stat-card"><div class="stat-label" data-i18n="statDone">Completed</div><div class="stat-value" id="stat-done">0</div></div>
+          <div class="stat-card"><div class="stat-label" data-i18n="statProgress">Progress</div><div class="stat-value" id="stat-progress">0<small>%</small></div></div>
+          <div class="stat-card"><div class="stat-label" data-i18n="statPending">Total Pending</div><div class="stat-value" id="stat-pending">0</div></div>
         </div>
-
-        <div style="display:flex; gap:8px; margin-bottom:4px; flex-wrap: wrap;">
+        <div style="display:flex; gap:8px; margin-bottom:16px; flex-wrap: wrap;">
           <button class="btn btn-primary" id="btn-plan-today">◈ <span data-i18n="btnPlanDay">Plan my day</span></button>
-          <button class="btn btn-ghost" style="background: var(--bg3); border-color: transparent; color: var(--text);" id="btn-plan-week">📅 <span data-i18n="btnPlanWeek">Plan my week</span></button>
+          <button class="btn btn-primary" style="background:var(--bg3); color:var(--text);" id="btn-plan-week">📅 <span data-i18n="btnPlanWeek">Plan my week</span></button>
           <button class="btn btn-ghost" id="btn-open-diary-today">◌ <span data-i18n="btnReflection">Daily reflection</span></button>
         </div>
-
         <div class="section-title" data-i18n="titleExecution">Execution List</div>
         <div id="today-task-list"></div>
       </div>
@@ -396,10 +341,7 @@
 
     <div class="page" id="page-tasks">
       <div class="page-header" style="display:flex; align-items:center; gap:12px;">
-        <div style="flex:1;">
-          <div class="page-title" data-i18n="pageTasksTitle">All Tasks</div>
-          <div class="page-sub" data-i18n="pageTasksSub">Complete backlog of tasks and projects</div>
-        </div>
+        <div style="flex:1;"><div class="page-title" data-i18n="pageTasksTitle">All Tasks</div><div class="page-sub" data-i18n="pageTasksSub">Complete backlog of tasks and projects</div></div>
         <button class="btn btn-primary" id="btn-new-task">＋ <span data-i18n="btnNewTask">New Task</span></button>
       </div>
       <div class="page-body">
@@ -415,10 +357,7 @@
     
     <div class="page" id="page-history">
       <div class="page-header" style="display:flex; align-items:center; gap:12px;">
-        <div style="flex:1;">
-          <div class="page-title" data-i18n="pageHistoryTitle">History</div>
-          <div class="page-sub" data-i18n="pageHistorySub">Archive and KPIs</div>
-        </div>
+        <div style="flex:1;"><div class="page-title" data-i18n="pageHistoryTitle">History</div><div class="page-sub" data-i18n="pageHistorySub">Archive and KPIs</div></div>
       </div>
       <div class="page-body">
         <div class="tabs" id="history-filter-tabs">
@@ -431,10 +370,7 @@
 
     <div class="page" id="page-habits">
       <div class="page-header" style="display:flex; align-items:center; gap:12px;">
-        <div style="flex:1;">
-          <div class="page-title" data-i18n="pageHabitsTitle">Habits</div>
-          <div class="page-sub" data-i18n="pageHabitsSub">Recurring activities to build momentum</div>
-        </div>
+        <div style="flex:1;"><div class="page-title" data-i18n="pageHabitsTitle">Habits</div><div class="page-sub" data-i18n="pageHabitsSub">Recurring activities</div></div>
         <button class="btn btn-primary" id="btn-new-habit">＋ <span data-i18n="btnNewHabit">New Habit</span></button>
       </div>
       <div class="page-body">
@@ -447,40 +383,22 @@
 
     <div class="page" id="page-diary">
       <div class="page-header" style="display:flex; align-items:center; gap:12px;">
-        <div style="flex:1;">
-          <div class="page-title" data-i18n="pageDiaryTitle">Journal</div>
-          <div class="page-sub" data-i18n="pageDiarySub">Daily reflection — what went well, what to improve</div>
-        </div>
+        <div style="flex:1;"><div class="page-title" data-i18n="pageDiaryTitle">Journal</div><div class="page-sub" data-i18n="pageDiarySub">Daily reflection</div></div>
       </div>
-      <div class="page-body">
-        <div id="diary-list"></div>
-      </div>
+      <div class="page-body"><div id="diary-list"></div></div>
     </div>
-
   </main>
 </div> 
 
 <div class="modal-overlay" id="modal-task">
   <div class="modal">
     <div class="modal-title" id="modal-task-title" data-i18n="modalTaskTitle">New Task</div>
-    <div class="form-group">
-      <label class="form-label" data-i18n="lblTitle">Title</label>
-      <input type="text" id="task-input-title" placeholder="What needs to be done?">
-    </div>
+    <div class="form-group"><label class="form-label" data-i18n="lblTitle">Title</label><input type="text" id="task-input-title" data-i18n-placeholder="phTaskTitle" placeholder="What needs to be done?"></div>
     <div class="form-row">
-      <div class="form-group">
-        <label class="form-label" data-i18n="lblArea">Area</label>
-        <select id="task-input-area"></select>
-      </div>
-      <div class="form-group">
-        <label class="form-label" data-i18n="lblDueDate">Due Date</label>
-        <input type="date" id="task-input-date">
-      </div>
+      <div class="form-group"><label class="form-label" data-i18n="lblArea">Area</label><select id="task-input-area"></select></div>
+      <div class="form-group"><label class="form-label" data-i18n="lblDueDate">Due Date</label><input type="date" id="task-input-date"></div>
     </div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost modal-close" data-i18n="btnCancel">Cancel</button>
-      <button class="btn btn-primary" id="btn-save-task" data-i18n="btnSave">Save</button>
-    </div>
+    <div class="modal-actions"><button class="btn btn-ghost modal-close" data-i18n="btnCancel">Cancel</button><button class="btn btn-primary" id="btn-save-task" data-i18n="btnSave">Save</button></div>
   </div>
 </div>
 
@@ -489,10 +407,7 @@
     <div class="modal-title" data-i18n="modalPlanDayTitle">Plan my day</div>
     <p style="font-size:13px; color:var(--text2); margin-bottom:16px;" data-i18n="modalPlanDaySub">Select the tasks and habits you want to focus on today:</p>
     <div id="plan-task-list" style="max-height:380px; overflow-y:auto;"></div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost modal-close" data-i18n="btnCancel">Cancel</button>
-      <button class="btn btn-primary" id="btn-save-plan" data-i18n="btnConfirm">Confirm Plan</button>
-    </div>
+    <div class="modal-actions"><button class="btn btn-ghost modal-close" data-i18n="btnCancel">Cancel</button><button class="btn btn-primary" id="btn-save-plan" data-i18n="btnConfirm">Confirm Plan</button></div>
   </div>
 </div>
 
@@ -501,35 +416,18 @@
     <div class="modal-title" data-i18n="modalPlanWeekTitle">Plan my week</div>
     <p style="font-size:13px; color:var(--text2); margin-bottom:16px;" id="week-plan-subtitle"></p>
     <div id="week-plan-list" style="max-height:450px; overflow-y:auto;"></div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost modal-close" data-i18n="btnCancel">Cancel</button>
-      <button class="btn btn-primary" id="btn-save-week" data-i18n="btnSavePlan">Save Plan</button>
-    </div>
+    <div class="modal-actions"><button class="btn btn-ghost modal-close" data-i18n="btnCancel">Cancel</button><button class="btn btn-primary" id="btn-save-week" data-i18n="btnSavePlan">Save Plan</button></div>
   </div>
 </div>
 
 <div class="modal-overlay" id="modal-diary">
   <div class="modal">
     <div class="modal-title" data-i18n="modalDiaryTitle">Daily Reflection</div>
-    <div class="stoic-quote-container" style="margin-bottom: 20px;">
-        <p id="modal-quote" class="stoic-quote-text"></p>
-    </div>
-    <div class="form-group">
-      <label class="form-label diary-q-label good" data-i18n="lblDiaryGood">✦ What went well today?</label>
-      <textarea id="diary-good" rows="3" style="resize:vertical;"></textarea>
-    </div>
-    <div class="form-group">
-      <label class="form-label diary-q-label bad" data-i18n="lblDiaryBad">✦ What could have gone better?</label>
-      <textarea id="diary-bad" rows="3" style="resize:vertical;"></textarea>
-    </div>
-    <div class="form-group">
-      <label class="form-label diary-q-label improve" data-i18n="lblDiaryImprove">✦ How will I improve tomorrow?</label>
-      <textarea id="diary-improve" rows="3" style="resize:vertical;"></textarea>
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost modal-close" data-i18n="btnCancel">Cancel</button>
-      <button class="btn btn-primary" id="btn-save-diary" data-i18n="btnSave">Save Reflection</button>
-    </div>
+    <div class="stoic-quote-container" style="margin-bottom: 20px;"><p id="modal-quote" class="stoic-quote-text"></p></div>
+    <div class="form-group"><label class="form-label diary-q-label good" data-i18n="lblDiaryGood">✦ What went well today?</label><textarea id="diary-good" rows="3" data-i18n-placeholder="phDiaryGood" placeholder="Something you achieved..."></textarea></div>
+    <div class="form-group"><label class="form-label diary-q-label bad" data-i18n="lblDiaryBad">✦ What could have gone better?</label><textarea id="diary-bad" rows="3" data-i18n-placeholder="phDiaryBad" placeholder="No judgment..."></textarea></div>
+    <div class="form-group"><label class="form-label diary-q-label improve" data-i18n="lblDiaryImprove">✦ How will I improve tomorrow?</label><textarea id="diary-improve" rows="3" data-i18n-placeholder="phDiaryImprove" placeholder="One concrete action..."></textarea></div>
+    <div class="modal-actions"><button class="btn btn-ghost modal-close" data-i18n="btnCancel">Cancel</button><button class="btn btn-primary" id="btn-save-diary" data-i18n="btnSave">Save</button></div>
   </div>
 </div>
 
@@ -539,45 +437,25 @@
     <p style="font-size:13px; color:var(--text2); margin-bottom:16px;" id="score-task-name"></p>
     <div class="score-display" id="score-modal-value">0</div>
     <input type="range" min="0" max="10" value="0" id="score-range" style="width:100%; margin:8px 0;">
-    <div class="score-labels">
-      <span data-i18n="scoreStart">Not started</span>
-      <span data-i18n="scoreProg">In progress</span>
-      <span data-i18n="scoreDone">Done</span>
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost modal-close" data-i18n="btnCancel">Cancel</button>
-      <button class="btn btn-primary" id="btn-save-score" data-i18n="btnSave">Save</button>
-    </div>
+    <div class="score-labels"><span data-i18n="scoreStart">Not started</span><span data-i18n="scoreProg">In progress</span><span data-i18n="scoreDone">Done</span></div>
+    <div class="modal-actions"><button class="btn btn-ghost modal-close" data-i18n="btnCancel">Cancel</button><button class="btn btn-primary" id="btn-save-score" data-i18n="btnSave">Save</button></div>
   </div>
 </div>
 
 <div class="modal-overlay" id="modal-habit">
   <div class="modal" style="max-width:400px;">
     <div class="modal-title" id="modal-habit-title" data-i18n="modalHabitTitle">New Habit</div>
-    <div class="form-group">
-      <label class="form-label" data-i18n="lblHabitName">Habit Name</label>
-      <input type="text" id="habit-input-name" placeholder="e.g. Read 15 minutes">
-    </div>
-    <div class="form-group">
-      <label class="form-label" data-i18n="lblHabitIcon">Icon (Emoji)</label>
-      <input type="text" id="habit-input-icon" placeholder="📚" maxlength="2" style="width:70px;">
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost modal-close" data-i18n="btnCancel">Cancel</button>
-      <button class="btn btn-primary" id="btn-save-habit" data-i18n="btnSave">Save Habit</button>
-    </div>
+    <div class="form-group"><label class="form-label" data-i18n="lblHabitName">Habit Name</label><input type="text" id="habit-input-name" data-i18n-placeholder="phHabitName" placeholder="e.g. Read 15 minutes"></div>
+    <div class="form-group"><label class="form-label" data-i18n="lblHabitIcon">Icon (Emoji)</label><input type="text" id="habit-input-icon" placeholder="📚" maxlength="2" style="width:70px;"></div>
+    <div class="modal-actions"><button class="btn btn-ghost modal-close" data-i18n="btnCancel">Cancel</button><button class="btn btn-primary" id="btn-save-habit" data-i18n="btnSave">Save</button></div>
   </div>
 </div>
 
 <div class="modal-overlay" id="modal-area">
   <div class="modal" style="max-width:380px;">
     <div class="modal-title" data-i18n="modalAreaTitle">New Area</div>
-    <div class="form-group">
-      <label class="form-label" data-i18n="lblName">Name</label>
-      <input type="text" id="area-input-name" placeholder="e.g. Personal...">
-    </div>
-    <div class="form-group">
-      <label class="form-label" data-i18n="lblColor">Color</label>
+    <div class="form-group"><label class="form-label" data-i18n="lblName">Name</label><input type="text" id="area-input-name" data-i18n-placeholder="phAreaName" placeholder="e.g. Personal..."></div>
+    <div class="form-group"><label class="form-label" data-i18n="lblColor">Color</label>
       <div style="display:flex; gap:8px; flex-wrap:wrap;" id="area-color-picker">
         <div class="area-color-opt" data-color="#7ab3e0" style="width:28px;height:28px;border-radius:50%;background:#7ab3e0;cursor:pointer;border:2px solid transparent;"></div>
         <div class="area-color-opt" data-color="#a889d4" style="width:28px;height:28px;border-radius:50%;background:#a889d4;cursor:pointer;border:2px solid transparent;"></div>
@@ -587,10 +465,7 @@
         <div class="area-color-opt" data-color="#E53935" style="width:28px;height:28px;border-radius:50%;background:#E53935;cursor:pointer;border:2px solid transparent;"></div>
       </div>
     </div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost modal-close" data-i18n="btnCancel">Cancel</button>
-      <button class="btn btn-primary" id="btn-save-area" data-i18n="btnSave">Save Area</button>
-    </div>
+    <div class="modal-actions"><button class="btn btn-ghost modal-close" data-i18n="btnCancel">Cancel</button><button class="btn btn-primary" id="btn-save-area" data-i18n="btnSave">Save</button></div>
   </div>
 </div>
 
@@ -605,10 +480,7 @@ import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/fireb
 const firebaseConfig = {
   apiKey: "AIzaSyB_Lsgz-c844Vyxh80g6AtO3PxiJPQetXU",
   authDomain: "its-time-j7u.firebaseapp.com",
-  projectId: "its-time-j7u",
-  storageBucket: "its-time-j7u.firebasestorage.app",
-  messagingSenderId: "837102160262",
-  appId: "1:837102160262:web:e7b27a204ea1ab20888407"
+  projectId: "its-time-j7u"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -638,7 +510,9 @@ const dict = {
     modalAreaTitle: "New Area", lblName: "Name", lblColor: "Color",
     emptyTasks: "No tasks found here", emptyHistory: "No completed tasks or habits to show in history yet.", emptyHabits: "No habits yet. Create your first one.", emptyDiary: "No journal entries yet.",
     unassigned: "Unassigned", tasksDone: "Tasks Done", habitsDone: "Habits Done", activeDays: "Active Days",
-    weekOf: "Week of", mon: "Mon", tue: "Tue", wed: "Wed", thu: "Thu", fri: "Fri", sat: "Sat", sun: "Sun"
+    weekOf: "Week of",
+    phTaskTitle: "What needs to be done?", phHabitName: "e.g. Read 15 minutes", phAreaName: "e.g. Personal...",
+    phDiaryGood: "Something you achieved...", phDiaryBad: "No judgment...", phDiaryImprove: "One concrete action..."
   },
   es: {
     authSub: "Se acabó el tiempo de hablar. Ejecuta.", email: "Correo", password: "Contraseña", loginBtn: "Ingresar", registerBtn: "Registrarse", googleBtn: "Entrar con Google",
@@ -658,7 +532,9 @@ const dict = {
     modalAreaTitle: "Nueva Área", lblName: "Nombre", lblColor: "Color",
     emptyTasks: "No hay tareas aquí", emptyHistory: "Aún no hay datos en el historial.", emptyHabits: "No tienes hábitos. Crea el primero.", emptyDiary: "Aún no hay entradas en el diario.",
     unassigned: "Sin asignar", tasksDone: "Tareas Listas", habitsDone: "Hábitos Listos", activeDays: "Días Activos",
-    weekOf: "Semana del", mon: "Lun", tue: "Mar", wed: "Mié", thu: "Jue", fri: "Vie", sat: "Sáb", sun: "Dom"
+    weekOf: "Semana del",
+    phTaskTitle: "¿Qué necesitas hacer?", phHabitName: "ej. Leer 15 minutos", phAreaName: "ej. Personal...",
+    phDiaryGood: "Algo que lograste...", phDiaryBad: "Sin juzgar...", phDiaryImprove: "Una acción concreta..."
   }
 };
 
@@ -676,9 +552,8 @@ const sessionQuoteHTML = `${randomQuote.en}<br><span style="font-size: 11.5px; c
 function t(key) { return dict[state.lang][key] || key; }
 
 function applyTranslations() {
-  document.querySelectorAll('[data-i18n]').forEach(el => {
-    el.textContent = t(el.dataset.i18n);
-  });
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => { el.placeholder = t(el.dataset.i18nPlaceholder); });
   document.getElementById('btn-toggle-lang').textContent = state.lang === 'en' ? '🌐 EN' : '🌐 ES';
 }
 
@@ -710,7 +585,7 @@ function getISOWeekInfo(dateStr) {
 function getWeekDays(baseDateStr) {
   const d = new Date(baseDateStr + 'T12:00:00');
   const day = d.getDay() || 7;
-  d.setDate(d.getDate() - day + 1); // Lunes
+  d.setDate(d.getDate() - day + 1); // Forzar Lunes
   const days = [];
   for(let i=0; i<7; i++) {
     days.push(getLocalISODate(d));
@@ -739,8 +614,8 @@ function setDateLabels() {
 // STATE INITIALIZATION
 // ============================================================
 const getInitialState = () => ({
-  lang: 'en', // Default English
-  theme: 'dark', // Default Dark
+  lang: 'en',
+  theme: 'dark',
   tasks: [],
   habits: [],
   habitLog: {},
@@ -928,7 +803,7 @@ document.querySelectorAll('.area-color-opt').forEach(el => {
 // ============================================================
 // CORE LOGIC: TOGGLE DONE & DELETIONS
 // ============================================================
-window.toggleItemDone = function(id, dateContext = TODAY) {
+function toggleItemDone(id, dateContext = TODAY) {
   const habit = state.habits.find(h => h.id === id);
   if (habit) {
     if (!state.habitLog[dateContext]) state.habitLog[dateContext] = {};
@@ -942,23 +817,23 @@ window.toggleItemDone = function(id, dateContext = TODAY) {
     }
   }
   save(); render();
-};
+}
 
-window.deleteTask = function(id) {
+function deleteTask(id) {
   state.tasks = state.tasks.filter(t => t.id !== id);
   state.todayPlan = state.todayPlan.filter(x => x !== id);
   save(); render();
-};
+}
 
-window.deleteHabit = function(id) {
+function deleteHabit(id) {
   if (confirm("Delete this habit permanently?")) {
     state.habits = state.habits.filter(h => h.id !== id);
     state.todayPlan = state.todayPlan.filter(x => x !== id);
     save(); render();
   }
-};
+}
 
-window.editHabit = function(id) {
+function editHabit(id) {
   const h = state.habits.find(x => x.id === id);
   if(!h) return;
   state.editingHabitId = id;
@@ -966,7 +841,7 @@ window.editHabit = function(id) {
   document.getElementById('habit-input-name').value = h.name;
   document.getElementById('habit-input-icon').value = h.icon;
   openModal('modal-habit');
-};
+}
 
 function getHabitStreak(habitId) {
   let streak = 0;
@@ -999,11 +874,11 @@ function buildTaskCard(task, container, readOnly = false) {
 
   card.innerHTML = `
     <div class="task-top">
-      <div class="task-checkbox ${task.done ? 'checked' : ''}" data-id="${task.id}">
+      <div class="task-checkbox ${task.done ? 'checked' : ''}">
         ${task.done ? '✓' : ''}
       </div>
       <div class="task-title-wrap">
-        <div class="task-title ${task.done ? 'strikethrough' : ''}" data-edit="${task.id}">${task.title}</div>
+        <div class="task-title ${task.done ? 'strikethrough' : ''}">${task.title}</div>
         <div class="task-meta">
           ${area ? `<span class="tag" style="background:${area.color}22; color:${area.color};">${area.name}</span>` : ''}
           ${task.date && !task.done ? `<span class="task-date ${overdue ? 'overdue' : ''}">${overdue ? '⚠ ' : ''}${formatDate(task.date)}</span>` : ''}
@@ -1018,42 +893,45 @@ function buildTaskCard(task, container, readOnly = false) {
       </div>
       ${!readOnly ? `
       <div class="task-actions">
-        <button class="btn btn-ghost btn-sm btn-icon" data-subtask-toggle="${task.id}">≡</button>
-        <button class="btn btn-ghost btn-sm btn-icon" data-edit-btn="${task.id}">✎</button>
-        <button class="btn btn-danger btn-sm btn-icon" onclick="window.deleteTask('${task.id}')">✕</button>
+        <button class="btn btn-ghost btn-sm btn-icon btn-toggle-sub">≡</button>
+        <button class="btn btn-ghost btn-sm btn-icon btn-edit-task">✎</button>
+        <button class="btn btn-danger btn-sm btn-icon btn-del-task">✕</button>
       </div>` : ''}
     </div>
     ${!readOnly ? `
     <div class="subtask-list" id="sub-${task.id}">
       ${(task.subtasks || []).map(s => `
         <div class="subtask-item">
-          <div class="subtask-check ${s.done ? 'checked' : ''}" data-sub="${task.id}" data-subid="${s.id}">${s.done ? '✓' : ''}</div>
+          <div class="subtask-check ${s.done ? 'checked' : ''}" data-subid="${s.id}">${s.done ? '✓' : ''}</div>
           <span class="subtask-text ${s.done ? 'done' : ''}">${s.text}</span>
         </div>
       `).join('')}
       <div class="add-subtask-row">
-        <input type="text" placeholder="Add subtask..." data-newsub="${task.id}">
-        <button class="btn btn-ghost btn-sm" data-addsub="${task.id}">＋</button>
+        <input type="text" placeholder="Add subtask..." class="new-sub-input">
+        <button class="btn btn-ghost btn-sm btn-add-sub">＋</button>
       </div>
     </div>` : ''}
   `;
 
-  card.querySelector('.task-checkbox').addEventListener('click', () => window.toggleItemDone(task.id, readOnly && task.completedAt ? task.completedAt : TODAY));
+  // Safely attach event listeners without polluting global window
+  card.querySelector('.task-checkbox').addEventListener('click', () => toggleItemDone(task.id, readOnly && task.completedAt ? task.completedAt : TODAY));
+  card.querySelector('.task-title').addEventListener('click', () => { if(!readOnly) editTask(task.id); });
 
   if (!readOnly) {
-    card.querySelector(`[data-edit="${task.id}"]`).addEventListener('click', () => editTask(task.id));
-    card.querySelector(`[data-edit-btn="${task.id}"]`).addEventListener('click', () => editTask(task.id));
+    card.querySelector('.btn-edit-task').addEventListener('click', () => editTask(task.id));
+    card.querySelector('.btn-del-task').addEventListener('click', () => deleteTask(task.id));
+    card.querySelector('.btn-toggle-sub').addEventListener('click', () => document.getElementById('sub-' + task.id).classList.toggle('open'));
     card.querySelector(`[data-score="${task.id}"]`).addEventListener('click', () => openScoreModal(task.id));
-    card.querySelector(`[data-subtask-toggle="${task.id}"]`).addEventListener('click', () => document.getElementById('sub-' + task.id).classList.toggle('open'));
-    card.querySelector(`[data-addsub="${task.id}"]`).addEventListener('click', () => {
-      const inp = card.querySelector(`[data-newsub="${task.id}"]`);
+    
+    card.querySelector('.btn-add-sub').addEventListener('click', () => {
+      const inp = card.querySelector('.new-sub-input');
       if (inp.value.trim()) addSubtask(task.id, inp.value.trim());
     });
-    card.querySelector(`[data-newsub="${task.id}"]`).addEventListener('keydown', (e) => {
+    card.querySelector('.new-sub-input').addEventListener('keydown', (e) => {
       if (e.key === 'Enter' && e.target.value.trim()) addSubtask(task.id, e.target.value.trim());
     });
     card.querySelectorAll('.subtask-check').forEach(el => {
-      el.addEventListener('click', () => toggleSubtask(el.dataset.sub, el.dataset.subid));
+      el.addEventListener('click', () => toggleSubtask(task.id, el.dataset.subid));
     });
   }
   container.appendChild(card);
@@ -1078,7 +956,7 @@ function editTask(id) {
   const t = state.tasks.find(x => x.id === id);
   if (!t) return;
   state.editingTaskId = id;
-  document.getElementById('modal-task-title').textContent = 'Edit Task';
+  document.getElementById('modal-task-title').textContent = t('modalTaskTitle');
   getAreaSelect(document.getElementById('task-input-area'));
   document.getElementById('task-input-title').value = t.title;
   document.getElementById('task-input-date').value = t.date || '';
@@ -1117,14 +995,12 @@ function renderToday() {
   const list = document.getElementById('today-task-list');
   list.innerHTML = '';
   
-  // Unificar Todo lo de hoy
   const todaysPlannedTasks = state.tasks.filter(t => t.plannedDate === TODAY && !t.done);
   const completedTodayTasks = state.tasks.filter(t => t.completedAt === TODAY);
   
   let plannedCount = state.todayPlan.length + todaysPlannedTasks.length + completedTodayTasks.length;
   let doneCount = completedTodayTasks.length;
 
-  // Render Hábitos Planeados Manualmente
   state.todayPlan.forEach(id => {
     const h = state.habits.find(x => x.id === id);
     if (h) {
@@ -1139,16 +1015,14 @@ function renderToday() {
         <span style="flex:1; font-weight:500; font-size:14px; ${isDone ? 'text-decoration:line-through; color:var(--text3);' : ''}">${h.name} <small style="color:var(--accent); font-size:9px; text-transform:uppercase; margin-left:6px;">Habit</small></span>
         <span class="habit-streak" style="font-size:11px; font-family:var(--font-mono); color:var(--text3);">🔥 ${getHabitStreak(id)}d</span>
       `;
-      row.querySelector('.task-checkbox').addEventListener('click', () => window.toggleItemDone(id, TODAY));
+      row.querySelector('.task-checkbox').addEventListener('click', () => toggleItemDone(id, TODAY));
       list.appendChild(row);
     } else {
-      // Tareas agregadas por el "Plan my day" picker
       const tk = state.tasks.find(x => x.id === id);
       if(tk && !todaysPlannedTasks.includes(tk) && !completedTodayTasks.includes(tk)) buildTaskCard(tk, list, false);
     }
   });
 
-  // Render Tareas Semanales para Hoy y Terminadas Hoy
   todaysPlannedTasks.forEach(t => buildTaskCard(t, list, false));
   completedTodayTasks.forEach(t => buildTaskCard(t, list, false));
 
@@ -1240,7 +1114,7 @@ function renderHistory() {
           const row = document.createElement('div');
           row.className = 'task-card done'; row.style.display = 'flex'; row.style.alignItems = 'center'; row.style.gap = '12px';
           row.innerHTML = `<div class="task-checkbox checked" style="margin:0;">✓</div><span style="font-size:20px;">${item.data.icon}</span><span style="flex:1; font-weight:500; font-size:14px; text-decoration:line-through; color:var(--text3);">${item.data.name}</span>`;
-          row.querySelector('.task-checkbox').addEventListener('click', () => window.toggleItemDone(item.data.id, date));
+          row.querySelector('.task-checkbox').addEventListener('click', () => toggleItemDone(item.data.id, date));
           dateSection.appendChild(row);
         }
       });
@@ -1291,11 +1165,13 @@ function renderHabits() {
       <span style="font-size:20px;">${h.icon}</span>
       <span style="flex:1; font-weight:500; font-size:13.5px; ${done ? 'text-decoration:line-through; color:var(--text3);' : ''}">${h.name}</span>
       ${streak > 0 ? `<span class="habit-streak" style="margin-right:12px;">🔥 ${streak}d</span>` : ''}
-      <button class="icon-btn" onclick="window.editHabit('${h.id}')" title="Edit Habit" style="margin-right: 6px;">✎</button>
-      <button class="icon-btn" onclick="window.deleteHabit('${h.id}')" title="Delete Habit" style="margin-right: 12px; color: var(--red); border-color: rgba(224,107,107,0.3);">✕</button>
+      <button class="icon-btn btn-edit-habit" title="Edit Habit" style="margin-right: 6px;">✎</button>
+      <button class="icon-btn btn-delete-habit" title="Delete Habit" style="margin-right: 12px; color: var(--red); border-color: rgba(224,107,107,0.3);">✕</button>
       <div class="habit-toggle ${done ? 'on' : ''}"></div>
     `;
-    row.querySelector('.habit-toggle').onclick = () => window.toggleItemDone(h.id, TODAY);
+    row.querySelector('.btn-edit-habit').addEventListener('click', () => editHabit(h.id));
+    row.querySelector('.btn-delete-habit').addEventListener('click', () => deleteHabit(h.id));
+    row.querySelector('.habit-toggle').addEventListener('click', () => toggleItemDone(h.id, TODAY));
     todayList.appendChild(row);
   });
 
@@ -1308,12 +1184,10 @@ function renderHabits() {
     last7.push(getLocalISODate(d));
   }
   const table = document.createElement('div'); table.style.cssText = 'overflow-x:auto;';
-  const shortDays = [t('sun'), t('mon'), t('tue'), t('wed'), t('thu'), t('fri'), t('sat')];
   
   let html = `<table style="width:100%; border-collapse:collapse; font-size:12px;"><thead><tr><th style="text-align:left; padding:6px 8px; color:var(--text3); font-weight:400;">Habit</th>`;
   last7.forEach(d => { 
-    const dayName = shortDays[new Date(d+'T12:00:00').getDay()];
-    html += `<th style="text-align:center; padding:6px 8px; color:var(--text3); font-weight:400; font-family:var(--font-mono);">${dayName}<br>${d.slice(5)}</th>`; 
+    html += `<th style="text-align:center; padding:6px 8px; color:var(--text3); font-weight:400; font-family:var(--font-mono);">${new Date(d+'T12:00:00').toLocaleDateString(state.lang, {weekday:'short'})}<br>${d.slice(5)}</th>`; 
   });
   html += `</tr></thead><tbody>`;
   
@@ -1364,15 +1238,15 @@ function renderDiary() {
     card.innerHTML = `
       <div class="diary-day-header">
         <div>
-          <div class="diary-day-date">${formatDate(entry.date)} ${isToday ? '— '+t('titleToday') : ''}</div>
+          <div class="diary-day-date">${formatDate(entry.date)}</div>
           <div class="diary-day-title">${entry.good ? entry.good.slice(0, 60) + (entry.good.length > 60 ? '...' : '') : 'Empty'}</div>
         </div>
         <span style="color:var(--text3); font-size:12px;">▾</span>
       </div>
       <div class="diary-day-body ${isToday ? 'open' : ''}">
-        <div class="diary-q"><div class="form-label diary-q-label good">${t('qGood')}</div><div class="diary-q-text">${entry.good || '—'}</div></div>
-        <div class="diary-q"><div class="form-label diary-q-label bad">${t('qBad')}</div><div class="diary-q-text">${entry.bad || '—'}</div></div>
-        <div class="diary-q"><div class="form-label diary-q-label improve">${t('qImprove')}</div><div class="diary-q-text">${entry.improve || '—'}</div></div>
+        <div class="diary-q"><div class="form-label diary-q-label good">${t('lblDiaryGood')}</div><div class="diary-q-text">${entry.good || '—'}</div></div>
+        <div class="diary-q"><div class="form-label diary-q-label bad">${t('lblDiaryBad')}</div><div class="diary-q-text">${entry.bad || '—'}</div></div>
+        <div class="diary-q"><div class="form-label diary-q-label improve">${t('lblDiaryImprove')}</div><div class="diary-q-text">${entry.improve || '—'}</div></div>
       </div>
     `;
     card.querySelector('.diary-day-header').addEventListener('click', () => card.querySelector('.diary-day-body').classList.toggle('open'));
@@ -1489,7 +1363,7 @@ document.getElementById('btn-save-habit').addEventListener('click', () => {
 // NUEVA TAREA
 document.getElementById('btn-new-task').addEventListener('click', () => {
   state.editingTaskId = null;
-  document.getElementById('modal-task-title').textContent = t('newTask');
+  document.getElementById('modal-task-title').textContent = t('modalTaskTitle');
   getAreaSelect(document.getElementById('task-input-area'));
   document.getElementById('task-input-title').value = '';
   document.getElementById('task-input-date').value = '';
@@ -1507,13 +1381,8 @@ document.getElementById('btn-save-task').addEventListener('click', () => {
   save(); closeModal('modal-task'); render();
 });
 
-document.getElementById('task-filter-tabs').addEventListener('click', (e) => {
-  const tab = e.target.closest('.tab');
-  if (!tab) return;
-  document.querySelectorAll('#task-filter-tabs .tab').forEach(t => t.classList.remove('active'));
-  tab.classList.add('active');
-  state.activeFilter = tab.dataset.filter;
-  renderAllTasks();
+document.querySelectorAll('.modal-close').forEach(btn => {
+  btn.addEventListener('click', (e) => { e.target.closest('.modal-overlay').classList.remove('open'); });
 });
 
 function render() {
@@ -1523,7 +1392,6 @@ function render() {
   applyTheme();
   renderAreaNav();
   
-  // Sincronizar UI de TABS
   document.querySelectorAll('#task-filter-tabs .tab').forEach(t => t.classList.toggle('active', t.dataset.filter === state.activeFilter));
   document.querySelectorAll('#history-filter-tabs .tab').forEach(t => t.classList.toggle('active', t.dataset.filter === state.historyTab));
 
@@ -1548,7 +1416,6 @@ function seedIfEmpty() {
   }
 }
 
-// Init
 render();
 </script>
 </body>
