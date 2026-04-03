@@ -1,0 +1,39 @@
+{
+  "name": "It's Time. — Personal System",
+  "short_name": "It's Time.",
+  "description": "Personal productivity system — tasks, habits, weekly planner, journal.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0c0c0e",
+  "theme_color": "#E53935",
+  "orientation": "portrait-primary",
+  "lang": "en",
+  "categories": ["productivity", "lifestyle"],
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Today",
+      "url": "/?page=today",
+      "description": "Open today's execution list"
+    },
+    {
+      "name": "New Task",
+      "url": "/?action=new-task",
+      "description": "Quickly add a new task"
+    }
+  ]
+}
