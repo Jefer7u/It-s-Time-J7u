@@ -518,6 +518,7 @@
     .today-greeting { font-size: 26px; }
     .kpi-row { grid-template-columns: repeat(2,1fr); }
     .week-grid { grid-template-columns: repeat(2,1fr); }
+    .week-stats-bar { grid-template-columns: repeat(2,1fr); }
     .page-header-row { flex-wrap: wrap; }
     .charts-grid { grid-template-columns: 1fr; }
   }
@@ -534,6 +535,70 @@
     flex-shrink: 0;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ============================
+     WEEK STATS BAR
+     ============================ */
+  .week-stats-bar {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+    margin-bottom: 18px;
+  }
+  .week-stat-card {
+    background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 12px 14px; transition: border-color var(--transition);
+  }
+  .week-stat-card:hover { border-color: var(--border2); }
+  .week-stat-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: .9px; font-family: var(--font-mono); }
+  .week-stat-value { font-size: 22px; font-weight: 700; color: var(--text); margin-top: 3px; letter-spacing: -.5px; }
+  .week-stat-value.accent { color: var(--accent); }
+  .week-stat-value.green  { color: var(--green); }
+  .week-day-tasks { margin-top: 4px; }
+  .week-day-task-row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 4px 0; border-bottom: 1px solid var(--border); cursor: pointer;
+    transition: opacity var(--transition);
+  }
+  .week-day-task-row:last-child { border-bottom: none; }
+  .week-day-task-row:hover { opacity: .8; }
+  .week-day-task-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .week-day-task-label { font-size: 11.5px; color: var(--text2); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .week-day-task-label.done-text { text-decoration: line-through; color: var(--text3); }
+  .week-day-task-check { font-size: 10px; color: var(--green); flex-shrink: 0; }
+  .week-day-empty { font-size: 11px; color: var(--text3); padding: 6px 0; font-family: var(--font-mono); font-style: italic; }
+
+  /* ============================
+     HISTORY CHARTS TOGGLE
+     ============================ */
+  .history-charts-toggle-bar {
+    display: flex; align-items: center; margin: 20px 0 0;
+    padding-top: 14px; border-top: 1px solid var(--border);
+  }
+
+  /* ============================
+     EMOJI PRESETS
+     ============================ */
+  .emoji-preset-btn {
+    font-size: 20px; padding: 5px 8px; border-radius: 8px; cursor: pointer;
+    border: 1.5px solid var(--border2); background: var(--bg3);
+    transition: all var(--transition); line-height: 1;
+  }
+  .emoji-preset-btn:hover { border-color: var(--accent); background: var(--accent-glow); transform: scale(1.1); }
+  .emoji-preset-btn.selected { border-color: var(--accent); background: var(--accent-glow); }
+
+  /* ============================
+     PLAN WEEK MODAL (multi-day)
+     ============================ */
+  .plan-week-day-block { margin-bottom: 16px; }
+  .plan-week-day-label {
+    font-size: 11px; font-family: var(--font-mono); text-transform: uppercase;
+    letter-spacing: 1px; color: var(--text2); font-weight: 600;
+    padding: 8px 10px; background: var(--bg3); border-radius: var(--radius-sm);
+    border: 1px solid var(--border); margin-bottom: 6px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .plan-week-day-label.is-today { color: var(--accent); border-color: rgba(229,57,53,.3); background: var(--accent-glow); }
+  .plan-week-day-label span { font-size: 10px; color: var(--text3); font-weight: 400; }
+  .plan-week-day-items { padding: 0 4px; }
 </style>
 </head>
 <body>
@@ -675,6 +740,7 @@
         </div>
         <div style="display:flex;gap:8px;margin-bottom:4px;flex-wrap:wrap;">
           <button class="btn btn-primary" id="btn-plan-today">◈ <span data-i18n="plan_my_day">Plan my day</span></button>
+          <button class="btn btn-ghost" id="btn-plan-week">▦ <span data-i18n="plan_my_week">Plan my week</span></button>
           <button class="btn btn-ghost" id="btn-open-diary-today">◌ <span data-i18n="daily_reflection">Daily reflection</span></button>
         </div>
         <div class="section-title" data-i18n="execution_list">Execution List</div>
@@ -690,6 +756,7 @@
             <div class="page-title" data-i18n="nav_week">Week</div>
             <div class="page-sub" id="week-sub"></div>
           </div>
+          <button class="btn btn-primary" id="btn-plan-week-header">▦ <span data-i18n="plan_my_week">Plan my week</span></button>
         </div>
       </div>
       <div class="page-body">
@@ -699,6 +766,9 @@
           <button class="btn btn-ghost btn-sm" id="btn-week-next"><span data-i18n="next">Next</span> →</button>
           <button class="btn btn-ghost btn-sm" id="btn-week-today" style="margin-left:auto;">⊙ <span data-i18n="current_week">This week</span></button>
         </div>
+        <!-- Week stats bar -->
+        <div class="week-stats-bar" id="week-stats-bar"></div>
+        <!-- Week day columns -->
         <div class="week-grid" id="week-grid"></div>
       </div>
     </div>
@@ -728,17 +798,33 @@
     <!-- HISTORY PAGE -->
     <div class="page" id="page-history">
       <div class="page-header">
-        <div class="page-title" data-i18n="nav_history">History</div>
-        <div class="page-sub" data-i18n="history_sub">Archive and KPIs of completed tasks and habits</div>
+        <div class="page-header-row">
+          <div style="flex:1;">
+            <div class="page-title" data-i18n="nav_history">History</div>
+            <div class="page-sub" data-i18n="history_sub">Archive and KPIs of completed tasks and habits</div>
+          </div>
+        </div>
       </div>
       <div class="page-body">
         <div id="history-kpi-section"></div>
-        <div id="history-charts-section" class="charts-grid"></div>
-        <div class="tabs" id="history-view-tabs">
-          <div class="tab active" data-hview="daily" data-i18n="view_daily">By Day</div>
-          <div class="tab" data-hview="weekly" data-i18n="view_weekly">By Week</div>
+        <!-- History list FIRST with toggle -->
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap;">
+          <div class="tabs" id="history-view-tabs" style="border-bottom:none;margin-bottom:0;flex:1;">
+            <div class="tab active" data-hview="daily" data-i18n="view_daily">By Day</div>
+            <div class="tab" data-hview="weekly" data-i18n="view_weekly">By Week</div>
+          </div>
+          <button class="btn btn-ghost btn-sm" id="btn-toggle-history-list" style="flex-shrink:0;">
+            <span id="history-list-toggle-icon">▾</span> <span data-i18n="hide_history">Hide entries</span>
+          </button>
         </div>
         <div id="history-list"></div>
+        <!-- Charts at the bottom -->
+        <div class="history-charts-toggle-bar">
+          <button class="btn btn-ghost btn-sm" id="btn-toggle-charts">
+            <span id="charts-toggle-icon">▸</span> <span data-i18n="show_charts">Show charts</span>
+          </button>
+        </div>
+        <div id="history-charts-section" class="charts-grid" style="display:none;"></div>
       </div>
     </div>
 
@@ -837,6 +923,19 @@
   </div>
 </div>
 
+<!-- Plan My WEEK Modal (full week multi-day planner) -->
+<div class="modal-overlay" id="modal-plan-week">
+  <div class="modal" style="width:min(680px,95vw);max-height:90vh;">
+    <div class="modal-title" data-i18n="plan_my_week">Plan my week</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:16px;" data-i18n="plan_week_desc">Select tasks for each day of the week:</p>
+    <div id="plan-week-body" style="max-height:60vh;overflow-y:auto;"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="btn-cancel-plan-week" data-i18n="cancel">Cancel</button>
+      <button class="btn btn-primary" id="btn-save-plan-week" data-i18n="confirm_plan">Save Week Plan</button>
+    </div>
+  </div>
+</div>
+
 <!-- Diary Modal -->
 <div class="modal-overlay" id="modal-diary">
   <div class="modal">
@@ -888,6 +987,18 @@
     </div>
     <div class="form-group">
       <label class="form-label" data-i18n="icon_emoji">Icon (Emoji)</label>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;" id="emoji-presets">
+        <button type="button" class="emoji-preset-btn" data-e="💪">💪</button>
+        <button type="button" class="emoji-preset-btn" data-e="📚">📚</button>
+        <button type="button" class="emoji-preset-btn" data-e="🏃">🏃</button>
+        <button type="button" class="emoji-preset-btn" data-e="🧘">🧘</button>
+        <button type="button" class="emoji-preset-btn" data-e="💧">💧</button>
+        <button type="button" class="emoji-preset-btn" data-e="🥗">🥗</button>
+        <button type="button" class="emoji-preset-btn" data-e="😴">😴</button>
+        <button type="button" class="emoji-preset-btn" data-e="✍️">✍️</button>
+        <button type="button" class="emoji-preset-btn" data-e="🎯">🎯</button>
+        <button type="button" class="emoji-preset-btn" data-e="🧠">🧠</button>
+      </div>
       <input type="text" id="habit-input-icon" placeholder="📚" maxlength="2" style="width:70px;">
     </div>
     <div class="modal-actions">
@@ -956,6 +1067,8 @@ googleProvider.setCustomParameters({ prompt: 'select_account' });
 // TOAST HELPER
 // ============================================================
 function showToast(msg, type = '', duration = 3500) {
+  if (type === 'success') type = 'ok';
+  if (type === 'error')   type = 'err';
   const el = document.getElementById('toast');
   el.textContent = msg;
   el.className = 'show' + (type ? ' ' + type : '');
@@ -1104,7 +1217,13 @@ document.getElementById('btn-toggle-theme').addEventListener('click', () => appl
 document.getElementById('btn-toggle-lang').addEventListener('click', () => {
   currentLang = currentLang === 'en' ? 'es' : 'en';
   localStorage.setItem('its-lang', currentLang);
-  applyI18n(); render();
+  applyI18n();
+  // Sync toggle-button labels that use live state
+  const hBtn = document.getElementById('btn-toggle-history-list');
+  if (hBtn) { const sp=hBtn.querySelector('[data-i18n]'); if(sp) sp.textContent = (typeof historyListVisible!=='undefined'&&!historyListVisible) ? t('show_history') : t('hide_history'); }
+  const cBtn = document.getElementById('btn-toggle-charts');
+  if (cBtn) { const sp=cBtn.querySelector('[data-i18n]'); if(sp) sp.textContent = (typeof chartsVisible!=='undefined'&&chartsVisible) ? t('hide_charts') : t('show_charts'); }
+  render();
 });
 
 document.documentElement.setAttribute('data-theme', currentTheme);
@@ -1155,6 +1274,7 @@ const getInitialState = () => ({
   editingTaskId: null, editingHabitId: null, scoringTaskId: null,
   weekPlanningDay: null, activeFilter: 'all', activeAreaFilter: null,
   selectedAreaColor: '#7ab3e0', historyView: 'daily', weekOffset: 0,
+  lastDiaryDate: null, // tracks last date diary was opened → auto-reset textarea each new day
 });
 let state = getInitialState();
 
@@ -1273,7 +1393,19 @@ async function loadFromFirebase(uid) {
       if (!state.weekPlan)  state.weekPlan  = {};
     } else { seedIfEmpty(); save(); }
   } catch(e) { console.error("Load error:", e); }
+  // Auto-reset diary form if it's a new day
+  checkDiaryDayReset();
   render();
+}
+
+function checkDiaryDayReset() {
+  const today = getLocalISODate();
+  if (state.lastDiaryDate !== today) {
+    // New day: clear the textarea so the modal opens blank
+    state.lastDiaryDate = today;
+    // We don't delete diary[today] if it already exists (user may have saved early),
+    // but if it doesn't exist yet the modal will open clean (the code already does || {})
+  }
 }
 
 function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
@@ -1660,6 +1792,29 @@ function renderWeek() {
   document.getElementById('week-range-label').textContent = `${t('week_number')} ${wn} — ${fmt(days[0])} → ${fmt(days[6])}`;
   document.getElementById('week-sub').textContent = `${t('week_number')} ${getWeekNumber(TODAY)}`;
 
+  // ── Week stats bar ──────────────────────────────────────────
+  let totalPlanned = 0, totalDone = 0;
+  days.forEach(iso => {
+    const plan = state.weekPlan[iso] || [];
+    plan.forEach(id => {
+      totalPlanned++;
+      const h  = state.habits.find(x => x.id === id);
+      const tk = state.tasks.find(x => x.id === id);
+      if (h && state.habitLog[iso]?.[id]) totalDone++;
+      if (tk && tk.done) totalDone++;
+    });
+  });
+  const pct = totalPlanned ? Math.round((totalDone / totalPlanned) * 100) : 0;
+  const allWeekTasks = new Set();
+  days.forEach(iso => (state.weekPlan[iso]||[]).forEach(id => allWeekTasks.add(id)));
+  const statsBar = document.getElementById('week-stats-bar');
+  statsBar.innerHTML = `
+    <div class="week-stat-card"><div class="week-stat-label">${t('week_planned')}</div><div class="week-stat-value accent">${totalPlanned}</div></div>
+    <div class="week-stat-card"><div class="week-stat-label">${t('week_done_w')}</div><div class="week-stat-value green">${totalDone}</div></div>
+    <div class="week-stat-card"><div class="week-stat-label">${t('week_progress_w')}</div><div class="week-stat-value">${pct}<span style="font-size:13px;color:var(--text3);font-weight:400;">%</span></div></div>
+    <div class="week-stat-card"><div class="week-stat-label">${t('week_total_tasks')}</div><div class="week-stat-value">${allWeekTasks.size}</div></div>`;
+
+  // ── Day columns ─────────────────────────────────────────────
   const grid = document.getElementById('week-grid'); grid.innerHTML = '';
   const dayNames = currentLang === 'es' ? ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'] : ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 
@@ -1669,15 +1824,34 @@ function renderWeek() {
     const col = document.createElement('div');
     col.className = 'week-day-col' + (isToday ? ' today-col' : '');
     const d = new Date(dateISO + 'T12:00:00');
+
+    // Count done for this day
+    let dayDone = 0, dayTotal = planned.length;
+    planned.forEach(id => {
+      const h  = state.habits.find(x => x.id === id);
+      const tk = state.tasks.find(x => x.id === id);
+      if (h && state.habitLog[dateISO]?.[id]) dayDone++;
+      if (tk && tk.done) dayDone++;
+    });
+
     col.innerHTML = `
       <div class="week-day-header">
         <div class="week-day-name">${dayNames[i]}</div>
         <div class="week-day-num">${d.getDate()}</div>
+        ${dayTotal > 0 ? `<div style="font-size:9px;font-family:var(--font-mono);color:${dayDone===dayTotal?'var(--green)':'var(--text3)'};">${dayDone}/${dayTotal}</div>` : ''}
       </div>
       <div class="week-day-body" id="wdb-${dateISO}"></div>
       <button class="week-add-btn" data-wday="${dateISO}">＋</button>
     `;
     const body = col.querySelector(`#wdb-${dateISO}`);
+
+    if (planned.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'week-day-empty';
+      empty.textContent = '—';
+      body.appendChild(empty);
+    }
+
     planned.forEach(id => {
       const habit = state.habits.find(h => h.id === id);
       const task  = state.tasks.find(tk => tk.id === id);
@@ -1685,14 +1859,19 @@ function renderWeek() {
       const isDone = habit ? !!(state.habitLog[dateISO]?.[id]) : !!(task?.done);
       const area   = task ? state.areas.find(a => a.id === task.area) : null;
       const color  = area ? area.color : 'var(--accent)';
-      const chip = document.createElement('div');
-      chip.className = 'week-task-chip' + (isDone ? ' done-chip' : '');
-      chip.style.cssText = `background:${color}18;color:${color};border-color:${color}30;`;
-      chip.textContent = (habit ? habit.icon + ' ' : '') + (item.name || item.title);
-      chip.title = item.name || item.title;
-      chip.addEventListener('click', () => window.toggleItemDone(id, dateISO));
-      body.appendChild(chip);
+
+      // Rich task row
+      const row = document.createElement('div');
+      row.className = 'week-day-task-row';
+      row.innerHTML = `
+        <div class="week-day-task-dot" style="background:${isDone ? 'var(--green)' : color};"></div>
+        <span class="week-day-task-label ${isDone ? 'done-text' : ''}">${(habit ? habit.icon + ' ' : '') + (item.name || item.title)}</span>
+        ${isDone ? '<span class="week-day-task-check">✓</span>' : ''}
+      `;
+      row.addEventListener('click', () => window.toggleItemDone(id, dateISO));
+      body.appendChild(row);
     });
+
     col.querySelector(`[data-wday]`).addEventListener('click', () => openWeekPlanModal(dateISO));
     grid.appendChild(col);
   });
@@ -1749,6 +1928,99 @@ document.getElementById('btn-save-week-plan').addEventListener('click', () => {
   const selected = Array.from(document.querySelectorAll('#week-plan-task-list .plan-item.selected')).map(el => el.dataset.id);
   state.weekPlan[state.weekPlanningDay] = selected;
   save(); closeModal('modal-week-plan'); renderWeek();
+});
+
+// ── PLAN MY WEEK (multi-day modal) ──────────────────────────
+function openPlanWeekModal() {
+  const days = getWeekDays(state.weekOffset);
+  const dayNamesLong = currentLang === 'es'
+    ? ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo']
+    : ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+  const dayNamesShort = currentLang === 'es'
+    ? ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom']
+    : ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+
+  const body = document.getElementById('plan-week-body');
+  body.innerHTML = '';
+
+  // Gather pending tasks sorted by priority
+  const PORD = { high:0, medium:1, low:2 };
+  const pending = [...state.tasks].filter(x => !x.done)
+    .sort((a,b) => (PORD[a.priority||'low']||2) - (PORD[b.priority||'low']||2));
+
+  days.forEach((iso, idx) => {
+    const isToday = iso === TODAY;
+    const d = new Date(iso + 'T12:00:00');
+    const curPlan = state.weekPlan[iso] || [];
+
+    const block = document.createElement('div');
+    block.className = 'plan-week-day-block';
+    const fmt = d.toLocaleDateString(currentLang === 'es' ? 'es-AR' : 'en-GB', { day:'numeric', month:'short' });
+
+    const label = document.createElement('div');
+    label.className = 'plan-week-day-label' + (isToday ? ' is-today' : '');
+    label.innerHTML = `<strong>${dayNamesLong[idx]}</strong> <span>${fmt}</span>`;
+    block.appendChild(label);
+
+    const itemsWrap = document.createElement('div');
+    itemsWrap.className = 'plan-week-day-items';
+    itemsWrap.dataset.day = iso;
+
+    // Habits first
+    state.habits.forEach(h => {
+      const div = document.createElement('div');
+      div.className = 'plan-item' + (curPlan.includes(h.id) ? ' selected' : '');
+      div.dataset.id = h.id; div.dataset.dayiso = iso;
+      div.style.padding = '7px 10px';
+      div.innerHTML = `<div class="plan-item-check">${curPlan.includes(h.id)?'✓':''}</div>
+        <div style="display:flex;align-items:center;gap:7px;flex:1;">
+          <span>${h.icon}</span><span style="font-size:13px;font-weight:500;">${h.name}</span>
+          <span style="font-size:10px;background:var(--accent-glow);color:var(--accent);padding:1px 6px;border-radius:20px;font-family:var(--font-mono);">${t('habit')}</span>
+        </div>`;
+      div.onclick = () => { div.classList.toggle('selected'); div.querySelector('.plan-item-check').textContent = div.classList.contains('selected') ? '✓' : ''; };
+      itemsWrap.appendChild(div);
+    });
+
+    // Tasks
+    pending.forEach(tk => {
+      const area = state.areas.find(a => a.id === tk.area);
+      const div = document.createElement('div');
+      div.className = 'plan-item' + (curPlan.includes(tk.id) ? ' selected' : '');
+      div.dataset.id = tk.id; div.dataset.dayiso = iso;
+      div.style.padding = '7px 10px';
+      div.innerHTML = `<div class="plan-item-check">${curPlan.includes(tk.id)?'✓':''}</div>
+        <div style="flex:1;">
+          <div style="font-size:13px;font-weight:500;">${tk.title}</div>
+          <div style="display:flex;gap:5px;margin-top:2px;">${getPriorityBadge(tk.priority)}${area?`<span style="font-size:10px;color:${area.color};">${getAreaName(area)}</span>`:''}</div>
+        </div>`;
+      div.onclick = () => { div.classList.toggle('selected'); div.querySelector('.plan-item-check').textContent = div.classList.contains('selected') ? '✓' : ''; };
+      itemsWrap.appendChild(div);
+    });
+
+    block.appendChild(itemsWrap);
+    body.appendChild(block);
+  });
+
+  openModal('modal-plan-week');
+}
+
+document.getElementById('btn-cancel-plan-week').addEventListener('click', () => closeModal('modal-plan-week'));
+document.getElementById('btn-save-plan-week').addEventListener('click', () => {
+  // Collect selections per day
+  const days = getWeekDays(state.weekOffset);
+  days.forEach(iso => {
+    const selected = Array.from(document.querySelectorAll(`[data-dayiso="${iso}"].selected`)).map(el => el.dataset.id);
+    state.weekPlan[iso] = selected;
+  });
+  save(); closeModal('modal-plan-week');
+  if (state.currentPage === 'week') renderWeek();
+  showToast(currentLang === 'es' ? '¡Semana planeada!' : 'Week planned!', 'success');
+});
+
+// ── Plan my week buttons (today page + week page) ───────────
+['btn-plan-week', 'btn-plan-week-header'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('click', openPlanWeekModal);
 });
 
 // ============================================================
@@ -2030,7 +2302,11 @@ function renderHistory() {
     </div>
   `;
 
-  renderHistoryCharts();
+  // Charts section: only render if currently visible
+  const chartsSection = document.getElementById('history-charts-section');
+  if (chartsSection && chartsSection.style.display !== 'none') {
+    renderHistoryCharts();
+  }
 
   if (state.historyView === 'daily') renderHistoryDaily(container);
   else renderHistoryWeekly(container);
@@ -2262,10 +2538,13 @@ document.getElementById('btn-save-plan').addEventListener('click', () => {
 // DIARY
 // ============================================================
 document.getElementById('btn-open-diary-today').addEventListener('click', () => {
+  TODAY = getLocalISODate(); // refresh in case day changed
+  // If it's a new day and there's no entry yet, the fields open blank
   const entry = state.diary[TODAY] || {};
   document.getElementById('diary-good').value    = entry.good    || '';
   document.getElementById('diary-bad').value     = entry.bad     || '';
   document.getElementById('diary-improve').value = entry.improve || '';
+  state.lastDiaryDate = TODAY;
   openModal('modal-diary');
 });
 document.getElementById('btn-save-diary').addEventListener('click', () => {
@@ -2380,6 +2659,7 @@ document.getElementById('btn-cancel-habit').addEventListener('click', () => clos
 document.getElementById('btn-cancel-area').addEventListener('click',  () => closeModal('modal-area'));
 document.getElementById('btn-cancel-diary').addEventListener('click', () => closeModal('modal-diary'));
 document.getElementById('btn-cancel-score').addEventListener('click', () => closeModal('modal-score'));
+document.getElementById('btn-cancel-plan-week').addEventListener('click', () => closeModal('modal-plan-week'));
 
 // ============================================================
 // ENTER KEY on auth inputs
@@ -2389,6 +2669,53 @@ document.getElementById('auth-pass').addEventListener('keydown', e => {
 });
 document.getElementById('auth-email').addEventListener('keydown', e => {
   if (e.key === 'Enter') document.getElementById('auth-pass').focus();
+});
+
+// ============================================================
+// HISTORY LIST TOGGLE
+// ============================================================
+let historyListVisible = true;
+document.getElementById('btn-toggle-history-list').addEventListener('click', () => {
+  historyListVisible = !historyListVisible;
+  const list = document.getElementById('history-list');
+  const icon = document.getElementById('history-list-toggle-icon');
+  const btn  = document.getElementById('btn-toggle-history-list');
+  list.style.display = historyListVisible ? '' : 'none';
+  icon.textContent   = historyListVisible ? '▾' : '▸';
+  // Update text
+  btn.querySelector('[data-i18n]').textContent = historyListVisible ? t('hide_history') : t('show_history');
+});
+
+let chartsVisible = false;
+document.getElementById('btn-toggle-charts').addEventListener('click', () => {
+  chartsVisible = !chartsVisible;
+  const sec  = document.getElementById('history-charts-section');
+  const icon = document.getElementById('charts-toggle-icon');
+  const btn  = document.getElementById('btn-toggle-charts');
+  sec.style.display = chartsVisible ? 'grid' : 'none';
+  icon.textContent  = chartsVisible ? '▾' : '▸';
+  btn.querySelector('[data-i18n]').textContent = chartsVisible ? t('hide_charts') : t('show_charts');
+  if (chartsVisible) renderHistoryCharts(); // lazy render
+});
+
+// ============================================================
+// EMOJI PRESETS FOR HABITS
+// ============================================================
+document.querySelectorAll('.emoji-preset-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const emoji = btn.dataset.e;
+    document.getElementById('habit-input-icon').value = emoji;
+    document.querySelectorAll('.emoji-preset-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+  });
+});
+
+// Reset emoji selection when habit modal opens
+['btn-new-habit'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('click', () => {
+    document.querySelectorAll('.emoji-preset-btn').forEach(b => b.classList.remove('selected'));
+  }, true); // capture phase so it runs before the existing listener
 });
 
 // ============================================================
