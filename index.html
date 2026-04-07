@@ -271,23 +271,25 @@
   .task-card {
     background: var(--bg2); border: 1px solid var(--border);
     border-radius: var(--radius); padding: 13px 15px; margin-bottom: 7px;
-    transition: all var(--transition); position: relative;
+    transition: all 0.18s ease; position: relative;
   }
-  .task-card:hover { border-color: var(--border2); box-shadow: var(--shadow-sm); }
+  .task-card:hover { border-color: var(--border2); box-shadow: var(--shadow-sm); transform: translateY(-1px); }
   .task-card.done { opacity: 0.45; }
+  .task-card.done:hover { transform: none; }
   .task-card.today-planned { border-left: 2px solid var(--accent); }
-  .task-card.priority-high-card { border-left: 3px solid #E53935; }
+  .task-card.priority-high-card   { border-left: 3px solid #E53935; }
   .task-card.priority-medium-card { border-left: 3px solid #e8b84b; }
-  .task-card.priority-low-card { border-left: 3px solid #6fcb8a; }
+  .task-card.priority-low-card    { border-left: 3px solid #6fcb8a; }
 
   .task-top { display: flex; align-items: flex-start; gap: 10px; }
   .task-checkbox {
     width: 18px; height: 18px; border: 1.5px solid var(--text3); border-radius: 5px;
     cursor: pointer; flex-shrink: 0; margin-top: 2px;
     display: flex; align-items: center; justify-content: center;
-    transition: all var(--transition); font-size: 10px;
+    transition: all 0.2s ease; font-size: 10px;
   }
-  .task-checkbox.checked { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .task-checkbox.checked { background: var(--accent); border-color: var(--accent); color: #fff; transform: scale(1.1); }
+  .task-checkbox:hover:not(.checked) { border-color: var(--accent); background: var(--accent-glow); }
   .task-title-wrap { flex: 1; min-width: 0; }
   .task-title { font-size: 14px; font-weight: 500; color: var(--text); cursor: pointer; }
   .task-title.strikethrough { text-decoration: line-through; color: var(--text3); }
@@ -298,19 +300,39 @@
   .task-actions { display: flex; align-items: center; gap: 3px; margin-left: auto; flex-shrink: 0; }
 
   .progress-wrap { margin-top: 7px; display: flex; align-items: center; gap: 8px; }
-  .progress-bar-bg { flex: 1; height: 3px; background: var(--bg4); border-radius: 4px; overflow: hidden; }
-  .progress-bar-fill { height: 100%; background: var(--accent); border-radius: 4px; transition: width 0.3s ease; }
+  .progress-bar-bg { flex: 1; height: 4px; background: var(--bg4); border-radius: 4px; overflow: hidden; }
+  .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent2), var(--accent)); border-radius: 4px; transition: width 0.4s ease; }
   .progress-label { font-size: 10px; font-family: var(--font-mono); color: var(--text3); width: 28px; text-align: right; white-space: nowrap; }
 
-  .subtask-list { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); display: none; }
-  .subtask-list.open { display: block; }
-  .subtask-item { display: flex; align-items: center; gap: 8px; padding: 4px 0; }
+  .subtask-list {
+    margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border);
+    overflow: hidden; max-height: 0; opacity: 0;
+    transition: max-height 0.3s ease, opacity 0.2s ease;
+  }
+  .subtask-list.open { max-height: 600px; opacity: 1; }
+  .subtask-item { display: flex; align-items: center; gap: 8px; padding: 5px 0; }
+  .subtask-item:hover .subtask-delete { opacity: 1; }
   .subtask-check { width: 14px; height: 14px; border: 1.5px solid var(--text3); border-radius: 3px; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 9px; transition: all var(--transition); }
   .subtask-check.checked { background: var(--green); border-color: var(--green); color: var(--bg); }
   .subtask-text { font-size: 12.5px; color: var(--text2); flex: 1; }
   .subtask-text.done { text-decoration: line-through; color: var(--text3); }
-  .add-subtask-row { display: flex; gap: 6px; margin-top: 6px; }
-  .add-subtask-row input { font-size: 12px; padding: 5px 8px; }
+  .subtask-delete { opacity: 0; font-size: 11px; color: var(--text3); cursor: pointer; padding: 2px 5px; border-radius: 4px; border: none; background: none; transition: opacity 0.15s, color 0.15s; flex-shrink: 0; }
+  .subtask-delete:hover { color: var(--red); }
+  .add-subtask-row { display: flex; gap: 6px; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); }
+  .add-subtask-row input { font-size: 12px; padding: 6px 10px; border-radius: var(--radius-sm); }
+  .add-subtask-hint { font-size: 10px; color: var(--text3); font-family: var(--font-mono); margin-top: 4px; }
+
+  /* Save indicator */
+  #save-indicator {
+    display: none; align-items: center; gap: 5px;
+    font-size: 10.5px; font-family: var(--font-mono);
+    padding: 3px 9px; border-radius: 20px;
+    transition: all 0.25s ease; margin-left: 10px;
+  }
+  #save-indicator.saving { display: inline-flex; background: rgba(122,179,224,0.12); color: var(--blue); border: 1px solid rgba(122,179,224,0.35); }
+  #save-indicator.saved  { display: inline-flex; background: rgba(111,203,138,0.12); color: var(--green); border: 1px solid rgba(111,203,138,0.3); }
+  #save-indicator.error  { display: inline-flex; background: rgba(229,57,53,0.1); color: var(--accent); border: 1px solid rgba(229,57,53,0.3); }
+  .save-spin { width: 9px; height: 9px; border: 1.5px solid currentColor; border-top-color: transparent; border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0; }
 
   /* ============================
      HABITS
@@ -417,15 +439,15 @@
     position: fixed; inset: 0; background: rgba(0,0,0,0.65);
     display: flex; align-items: center; justify-content: center;
     z-index: 2000; opacity: 0; pointer-events: none;
-    transition: opacity 0.18s ease; backdrop-filter: blur(5px);
+    transition: opacity 0.2s ease; backdrop-filter: blur(6px);
   }
   .modal-overlay.open { opacity: 1; pointer-events: all; }
   .modal {
     background: var(--bg2); border: 1px solid var(--border2); border-radius: var(--radius);
-    padding: 26px; width: min(540px, 92vw); max-height: 88vh; overflow-y: auto;
-    transform: translateY(12px); transition: transform 0.18s ease; box-shadow: var(--shadow);
+    padding: 28px; width: min(540px, 92vw); max-height: 88vh; overflow-y: auto;
+    transform: translateY(16px) scale(0.98); transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: var(--shadow);
   }
-  .modal-overlay.open .modal { transform: translateY(0); }
+  .modal-overlay.open .modal { transform: translateY(0) scale(1); }
   .modal-title { font-weight: 700; font-size: 20px; margin-bottom: 18px; color: var(--text); letter-spacing: -0.3px; }
   .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
 
@@ -434,12 +456,12 @@
      ============================ */
   .plan-item {
     display: flex; align-items: center; gap: 10px; padding: 10px 12px;
-    border-radius: var(--radius-sm); cursor: pointer; transition: background var(--transition);
-    border: 1px solid transparent;
+    border-radius: var(--radius-sm); cursor: pointer; transition: all 0.15s ease;
+    border: 1px solid transparent; margin-bottom: 3px;
   }
-  .plan-item:hover { background: var(--bg3); }
+  .plan-item:hover { background: var(--bg3); border-color: var(--border); transform: translateX(2px); }
   .plan-item.selected { background: var(--accent-glow); border-color: rgba(229,57,53,0.3); }
-  .plan-item-check { width: 16px; height: 16px; border: 1.5px solid var(--text3); border-radius: 4px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 9px; transition: all var(--transition); }
+  .plan-item-check { width: 16px; height: 16px; border: 1.5px solid var(--text3); border-radius: 4px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 9px; transition: all 0.15s; }
   .plan-item.selected .plan-item-check { background: var(--accent); border-color: var(--accent); color: #fff; }
 
   /* ============================
@@ -801,10 +823,11 @@
             <div class="stat-value" id="stat-pending">0</div>
           </div>
         </div>
-        <div style="display:flex;gap:8px;margin-bottom:4px;flex-wrap:wrap;">
+        <div style="display:flex;gap:8px;margin-bottom:4px;flex-wrap:wrap;align-items:center;">
           <button class="btn btn-primary" id="btn-plan-today">◈ <span data-i18n="plan_my_day">Plan my day</span></button>
           <button class="btn btn-ghost" id="btn-plan-week">▦ <span data-i18n="plan_my_week">Plan my week</span></button>
           <button class="btn btn-ghost" id="btn-open-diary-today">◌ <span data-i18n="daily_reflection">Daily reflection</span></button>
+          <span id="save-indicator"></span>
         </div>
         <div class="section-title" data-i18n="execution_list">Execution List</div>
         <div id="today-task-list"></div>
@@ -1456,10 +1479,34 @@ onAuthStateChanged(auth, async (user) => {
 // ============================================================
 // FIREBASE SAVE / LOAD
 // ============================================================
+let _saveIndicatorTimer;
+
+function showSaveIndicator(state) {
+  const el = document.getElementById('save-indicator');
+  if (!el) return;
+  clearTimeout(_saveIndicatorTimer);
+  el.className = state;
+  if (state === 'saving') {
+    el.innerHTML = `<span class="save-spin"></span>${currentLang === 'es' ? 'Guardando...' : 'Saving...'}`;
+  } else if (state === 'saved') {
+    el.innerHTML = `✓ ${currentLang === 'es' ? 'Guardado' : 'Saved'}`;
+    _saveIndicatorTimer = setTimeout(() => { el.className = ''; el.innerHTML = ''; }, 2200);
+  } else {
+    el.innerHTML = `⚠ ${currentLang === 'es' ? 'Error al guardar' : 'Save failed'}`;
+  }
+}
+
 async function save() {
   if (!auth.currentUser) return;
-  try { await setDoc(doc(db, "users", auth.currentUser.uid), { data: state }); }
-  catch(e) { console.error("Save error:", e); showToast('Save failed', 'error'); }
+  showSaveIndicator('saving');
+  try {
+    await setDoc(doc(db, "users", auth.currentUser.uid), { data: state });
+    showSaveIndicator('saved');
+  } catch(e) {
+    console.error("Save error:", e);
+    showSaveIndicator('error');
+    showToast(currentLang === 'es' ? 'Error al guardar' : 'Save failed', 'err');
+  }
 }
 
 async function loadFromFirebase(uid) {
@@ -1728,16 +1775,18 @@ function buildTaskCard(task, container, readOnly = false) {
       </div>` : ''}
     </div>
     ${!readOnly ? `
-    <div class="subtask-list" id="sub-${task.id}">
+    <div class="subtask-list${openSubtaskPanels.has(task.id) ? ' open' : ''}" id="sub-${task.id}">
       ${(task.subtasks||[]).map(s => `
         <div class="subtask-item">
           <div class="subtask-check ${s.done?'checked':''}" data-sub="${task.id}" data-subid="${s.id}">${s.done?'✓':''}</div>
           <span class="subtask-text ${s.done?'done':''}">${s.text}</span>
+          <button class="subtask-delete" data-delsub="${task.id}" data-delsubid="${s.id}" title="Delete subtask">✕</button>
         </div>`).join('')}
       <div class="add-subtask-row">
-        <input type="text" placeholder="${currentLang==='es'?'Agregar subtarea...':'Add subtask...'}" data-newsub="${task.id}">
+        <input type="text" placeholder="${currentLang==='es'?'Nueva subtarea...':'Add subtask...'}" data-newsub="${task.id}">
         <button class="btn btn-ghost btn-sm" data-addsub="${task.id}">＋</button>
       </div>
+      <div class="add-subtask-hint">↵ ${currentLang==='es'?'Enter para agregar otra sin cerrar':'Enter to add another without closing'}</div>
     </div>` : ''}
   `;
 
@@ -1750,7 +1799,14 @@ function buildTaskCard(task, container, readOnly = false) {
     card.querySelector(`[data-edit-btn="${task.id}"]`).addEventListener('click', () => editTask(task.id));
     card.querySelector(`[data-score="${task.id}"]`).addEventListener('click', () => openScoreModal(task.id));
     card.querySelector(`[data-subtask-toggle="${task.id}"]`).addEventListener('click', () => {
-      document.getElementById('sub-'+task.id).classList.toggle('open');
+      const panel = document.getElementById('sub-'+task.id);
+      panel.classList.toggle('open');
+      if (panel.classList.contains('open')) {
+        openSubtaskPanels.add(task.id);
+        setTimeout(() => panel.querySelector(`[data-newsub="${task.id}"]`)?.focus(), 50);
+      } else {
+        openSubtaskPanels.delete(task.id);
+      }
     });
     card.querySelector(`[data-addsub="${task.id}"]`).addEventListener('click', () => {
       const inp = card.querySelector(`[data-newsub="${task.id}"]`);
@@ -1760,20 +1816,86 @@ function buildTaskCard(task, container, readOnly = false) {
       if (e.key === 'Enter' && e.target.value.trim()) addSubtask(task.id, e.target.value.trim());
     });
     card.querySelectorAll('.subtask-check').forEach(el => el.addEventListener('click', () => toggleSubtask(el.dataset.sub, el.dataset.subid)));
+    card.querySelectorAll('.subtask-delete').forEach(el => el.addEventListener('click', () => deleteSubtask(el.dataset.delsub, el.dataset.delsubid)));
   }
   container.appendChild(card);
 }
 
+function _updateSubtaskMeta(taskId) {
+  const task = state.tasks.find(x => x.id === taskId); if (!task) return;
+  const total = (task.subtasks || []).length;
+  const done  = (task.subtasks || []).filter(s => s.done).length;
+  const card  = document.querySelector(`[data-task-id="${taskId}"]`);
+  if (!card) return;
+  let ctr = card.querySelector('.subtask-ctr');
+  if (total > 0) {
+    if (!ctr) {
+      ctr = document.createElement('span');
+      ctr.className = 'subtask-ctr';
+      ctr.style.cssText = 'font-size:11px;color:var(--text3);font-family:var(--font-mono);';
+      const meta = card.querySelector('.task-meta');
+      if (meta) meta.appendChild(ctr);
+    }
+    ctr.textContent = `${done}/${total} sub`;
+  } else if (ctr) {
+    ctr.remove();
+  }
+}
+
 function addSubtask(taskId, text) {
-  const t2 = state.tasks.find(x => x.id === taskId); if (!t2) return;
-  if (!t2.subtasks) t2.subtasks = [];
-  t2.subtasks.push({ id:uid(), text, done:false }); save(); render();
+  const task = state.tasks.find(x => x.id === taskId); if (!task) return;
+  if (!task.subtasks) task.subtasks = [];
+  const newSub = { id: uid(), text, done: false };
+  task.subtasks.push(newSub);
+
+  // Optimistic DOM update — panel stays open
+  const subList = document.getElementById('sub-' + taskId);
+  if (subList) {
+    const addRow = subList.querySelector('.add-subtask-row');
+    const item = document.createElement('div');
+    item.className = 'subtask-item';
+    item.innerHTML = `
+      <div class="subtask-check" data-sub="${taskId}" data-subid="${newSub.id}"></div>
+      <span class="subtask-text">${newSub.text}</span>
+      <button class="subtask-delete" data-delsub="${taskId}" data-delsubid="${newSub.id}" title="Delete subtask">✕</button>`;
+    item.querySelector('.subtask-check').addEventListener('click', function() {
+      toggleSubtask(this.dataset.sub, this.dataset.subid);
+    });
+    item.querySelector('.subtask-delete').addEventListener('click', function() {
+      deleteSubtask(this.dataset.delsub, this.dataset.delsubid);
+    });
+    subList.insertBefore(item, addRow);
+    const inp = subList.querySelector(`[data-newsub="${taskId}"]`);
+    if (inp) { inp.value = ''; inp.focus(); }
+  }
+  _updateSubtaskMeta(taskId);
+  save();
 }
 
 function toggleSubtask(taskId, subId) {
-  const t2 = state.tasks.find(x => x.id === taskId); if (!t2) return;
-  const s = t2.subtasks.find(x => x.id === subId);
-  if (s) { s.done = !s.done; save(); render(); }
+  const task = state.tasks.find(x => x.id === taskId); if (!task) return;
+  const sub  = (task.subtasks || []).find(x => x.id === subId); if (!sub) return;
+  sub.done = !sub.done;
+  // Targeted DOM update — no full re-render
+  const checkEl = document.querySelector(`[data-sub="${taskId}"][data-subid="${subId}"]`);
+  if (checkEl) {
+    checkEl.classList.toggle('checked', sub.done);
+    checkEl.textContent = sub.done ? '✓' : '';
+    const textEl = checkEl.nextElementSibling;
+    if (textEl) textEl.classList.toggle('done', sub.done);
+  }
+  _updateSubtaskMeta(taskId);
+  save();
+}
+
+function deleteSubtask(taskId, subId) {
+  const task = state.tasks.find(x => x.id === taskId); if (!task) return;
+  task.subtasks = (task.subtasks || []).filter(s => s.id !== subId);
+  // Remove DOM element
+  const checkEl = document.querySelector(`[data-sub="${taskId}"][data-subid="${subId}"]`);
+  if (checkEl) checkEl.closest('.subtask-item')?.remove();
+  _updateSubtaskMeta(taskId);
+  save();
 }
 
 function editTask(id) {
@@ -2799,6 +2921,11 @@ document.querySelectorAll('.emoji-preset-btn').forEach(btn => {
     document.querySelectorAll('.emoji-preset-btn').forEach(b => b.classList.remove('selected'));
   }, true); // capture phase so it runs before the existing listener
 });
+
+// ============================================================
+// SUBTASK PANEL STATE — keeps panels open across renders
+// ============================================================
+const openSubtaskPanels = new Set();
 
 // ============================================================
 // MAIN RENDER
