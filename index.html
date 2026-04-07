@@ -1879,9 +1879,19 @@ async function loadFromFirebase(uid) {
       if (!state.habitLog)  state.habitLog  = {};
       if (!state.diary)     state.diary     = {};
       if (!state.weekPlan)  state.weekPlan  = {};
+
+      // Reconcile todayPlan ↔ weekPlan[TODAY] on load:
+      // Priority: whichever has more items wins (user may have planned via either path)
+      const weekToday = state.weekPlan[TODAY] || [];
+      if (state.todayPlan.length >= weekToday.length) {
+        // todayPlan is the source of truth → sync to week
+        state.weekPlan[TODAY] = [...state.todayPlan];
+      } else {
+        // weekPlan[TODAY] has more → sync to todayPlan
+        state.todayPlan = [...weekToday];
+      }
     } else { seedIfEmpty(); save(); }
   } catch(e) { console.error("Load error:", e); }
-  // Auto-reset diary form if it's a new day
   checkDiaryDayReset();
   render();
 }
@@ -2452,6 +2462,7 @@ function attachDragEvents(el, container) {
     // Sync state.todayPlan order from DOM
     const newOrder = [...container.querySelectorAll('.today-draggable')].map(c => c.dataset.planId);
     state.todayPlan = newOrder;
+    syncTodayToWeek();
     save();
   });
   // Also attach touch drag for iOS
@@ -2603,6 +2614,8 @@ document.getElementById('btn-cancel-week-plan').addEventListener('click', () => 
 document.getElementById('btn-save-week-plan').addEventListener('click', () => {
   const selected = Array.from(document.querySelectorAll('#week-plan-task-list .plan-item.selected')).map(el => el.dataset.id);
   state.weekPlan[state.weekPlanningDay] = selected;
+  // If editing today's slot in the week → sync todayPlan too
+  if (state.weekPlanningDay === TODAY) syncWeekToToday();
   save(); closeModal('modal-week-plan'); renderWeek();
 });
 
@@ -2688,8 +2701,11 @@ document.getElementById('btn-save-plan-week').addEventListener('click', () => {
     const selected = Array.from(document.querySelectorAll(`[data-dayiso="${iso}"].selected`)).map(el => el.dataset.id);
     state.weekPlan[iso] = selected;
   });
+  // If today's slot was edited → sync todayPlan
+  if (state.weekPlan[TODAY]) syncWeekToToday();
   save(); closeModal('modal-plan-week');
   if (state.currentPage === 'week') renderWeek();
+  if (state.currentPage === 'today') renderToday();
   showToast(currentLang === 'es' ? '¡Semana planeada!' : 'Week planned!', 'success');
 });
 
@@ -3205,10 +3221,29 @@ document.getElementById('btn-plan-today').addEventListener('click', () => {
   }
   openModal('modal-plan');
 });
+// ============================================================
+// SYNC TODAY ↔ WEEK — mantiene ambas estructuras sincronizadas
+// Regla: weekPlan[TODAY] siempre refleja todayPlan, y viceversa
+// ============================================================
+function syncTodayToWeek() {
+  // Today → Week: el plan del día siempre se refleja en la semana
+  state.weekPlan[TODAY] = [...state.todayPlan];
+}
+
+function syncWeekToToday() {
+  // Week → Today: si se edita el día de hoy en la semana, actualiza todayPlan
+  if (state.weekPlan[TODAY]) {
+    state.todayPlan = [...state.weekPlan[TODAY]];
+  }
+}
+
 document.getElementById('btn-save-plan').addEventListener('click', () => {
   const prevPlan = [...state.todayPlan];
   state.todayPlan = Array.from(document.querySelectorAll('#plan-task-list .plan-item.selected')).map(el => el.dataset.id);
   const newIds = state.todayPlan.filter(id => !prevPlan.includes(id));
+
+  // Sync: today plan always mirrors weekPlan[TODAY]
+  syncTodayToWeek();
 
   // 1. Close modal immediately
   closeModal('modal-plan');
