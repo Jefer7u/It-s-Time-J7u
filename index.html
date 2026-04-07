@@ -71,6 +71,8 @@
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
+  /* Mobile base fixes */
+  html { -webkit-tap-highlight-color: transparent; overscroll-behavior: none; }
   body {
     font-family: var(--font-sans);
     background: var(--bg);
@@ -79,6 +81,19 @@
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     transition: background 0.25s ease, color 0.25s ease;
+    /* Safe area for iPhone notch */
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  /* Touch-action on all interactive elements — eliminates 300ms tap delay */
+  button, .btn, .nav-item, .task-checkbox, .subtask-check, .plan-item,
+  .ctrl-btn, .tab, .habit-toggle, .emoji-preset-btn, .area-color-opt,
+  .score-badge, .week-day-task-row, .drag-handle, [data-subtask-toggle],
+  [data-edit], [data-addsub], [data-addsub], .diary-day-header,
+  .history-week-header, .week-add-btn, #btn-search-sidebar {
+    touch-action: manipulation;
+    -webkit-user-select: none;
+    user-select: none;
   }
 
   ::-webkit-scrollbar { width: 4px; height: 4px; }
@@ -273,9 +288,52 @@
     border-radius: var(--radius); padding: 13px 15px; margin-bottom: 7px;
     transition: all 0.18s ease; position: relative;
   }
-  .task-card:hover { border-color: var(--border2); box-shadow: var(--shadow-sm); transform: translateY(-1px); }
+  /* ============================
+     HOVER EFFECTS — solo en dispositivos que soportan hover real
+     En touch, :hover queda pegado hasta el próximo tap
+     ============================ */
+  @media (hover: hover) and (pointer: fine) {
+    .task-card:hover { border-color: var(--border2); box-shadow: var(--shadow-sm); transform: translateY(-1px); }
+    .task-card.done:hover { transform: none; }
+    .task-checkbox:hover:not(.checked) { border-color: var(--accent); background: var(--accent-glow); }
+    .stat-card:hover { border-color: var(--border2); }
+    .btn-primary:hover { background: var(--accent2); transform: translateY(-1px); }
+    .btn-ghost:hover { background: var(--bg3); color: var(--text); }
+    .btn-danger:hover { background: rgba(224,107,107,0.1); }
+    .btn-google-auth:hover { background: var(--bg4); border-color: var(--accent); transform: translateY(-1px); }
+    .ctrl-btn:hover { background: var(--bg4); color: var(--text); }
+    .nav-item:hover { background: var(--bg3); color: var(--text); }
+    .habit-row:hover { border-color: var(--border2); }
+    .plan-item:hover { background: var(--bg3); border-color: var(--border); transform: translateX(2px); }
+    .kpi-card:hover { border-color: var(--border2); }
+    .history-week-header:hover { background: var(--bg4); }
+    .tab:hover { color: var(--text); }
+    .diary-day-header:hover { background: var(--bg3); }
+    .week-task-chip:hover { opacity: 0.8; }
+    .week-add-btn:hover { color: var(--accent); background: var(--accent-glow); }
+    .week-day-task-row:hover { opacity: .8; }
+    .week-stat-card:hover { border-color: var(--border2); }
+    .score-badge:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-glow); }
+    .emoji-preset-btn:hover { border-color: var(--accent); background: var(--accent-glow); transform: scale(1.1); }
+    .area-color-opt:hover { transform: scale(1.1); }
+    .subtask-item:hover .subtask-delete { opacity: 1; }
+    .subtask-delete:hover { color: var(--red); }
+    .task-card:hover .drag-handle,
+    .today-habit-row:hover .drag-handle { opacity: 0.6; }
+    .drag-handle:hover { opacity: 1 !important; }
+    .search-result-item:hover { background: var(--bg3); }
+    #btn-search-sidebar:hover { background: var(--bg3); color: var(--text); }
+    #btn-install-pwa:hover { background: var(--bg3); color: var(--text); }
+  }
+
+  /* :active press feedback para touch (reemplaza hover en mobile) */
+  .task-card:active:not(.done) { border-color: var(--border2); }
+  .btn:active { transform: scale(0.97); }
+  .nav-item:active { background: var(--bg3); }
+  .plan-item:active { background: var(--bg3); }
+  .bnav-btn:active { opacity: 0.7; }
+
   .task-card.done { opacity: 0.45; }
-  .task-card.done:hover { transform: none; }
   .task-card.today-planned { border-left: 2px solid var(--accent); }
   .task-card.priority-high-card   { border-left: 3px solid #E53935; }
   .task-card.priority-medium-card { border-left: 3px solid #e8b84b; }
@@ -523,6 +581,9 @@
   /* ============================
      RESPONSIVE MOBILE
      ============================ */
+  /* ============================
+     RESPONSIVE MOBILE
+     ============================ */
   @media (max-width: 700px) {
     #sidebar {
       left: -268px; width: 268px;
@@ -534,23 +595,143 @@
       display: block; opacity: 0; pointer-events: none; transition: opacity 0.28s ease;
     }
     #sidebar-overlay.open { opacity: 1; pointer-events: all; }
-    #main { margin-left: 0; }
+    #main { margin-left: 0; padding-bottom: calc(64px + env(safe-area-inset-bottom)); }
     #mobile-header {
-      display: flex; align-items: center; background: var(--bg2); padding: 14px 18px;
+      display: flex; align-items: center; background: var(--bg2); padding: 12px 16px;
       border-bottom: 1px solid var(--border); z-index: 10; position: sticky; top: 0;
+      gap: 10px;
     }
-    #mobile-menu-btn { background: none; border: none; color: var(--text); font-size: 22px; cursor: pointer; padding: 0 12px 0 0; }
-    .today-stats { grid-template-columns: repeat(2, 1fr); }
-    .page-body { padding: 16px 18px; }
-    .page-header { padding: 18px 18px 13px; }
-    .today-greeting { font-size: 26px; }
+    #mobile-menu-btn { background: none; border: none; color: var(--text); font-size: 22px; cursor: pointer; padding: 0; touch-action: manipulation; }
+    .today-stats { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .page-body { padding: 14px 16px; }
+    .page-header { padding: 16px 16px 12px; }
+    .today-greeting { font-size: 24px; }
     .kpi-row { grid-template-columns: repeat(2,1fr); }
-    .week-grid { grid-template-columns: repeat(2,1fr); }
+    .week-grid { grid-template-columns: repeat(2,1fr); gap: 6px; }
     .week-stats-bar { grid-template-columns: repeat(2,1fr); }
-    .page-header-row { flex-wrap: wrap; }
+    .page-header-row { flex-wrap: wrap; gap: 8px; }
     .charts-grid { grid-template-columns: 1fr; }
+    .page-title { font-size: 22px; }
+
+    /* Fix 2: Subtask delete — always visible on mobile (not hover-dependent) */
+    .subtask-delete { opacity: 0.7; width: 36px; height: 36px; border-radius: 8px; border: 0.5px solid var(--border); display: flex; align-items: center; justify-content: center; }
+
+    /* Fix 3: Drag handle — always visible on mobile */
+    .drag-handle { opacity: 0.55; }
+
+    /* Fix 4: Bigger score badge tap area */
+    .score-badge { padding: 6px 13px; font-size: 12.5px; min-height: 36px; }
+
+    /* Bigger touch targets on mobile */
+    .task-checkbox {
+      width: 26px; height: 26px; border-radius: 7px; font-size: 12px;
+    }
+    .subtask-check {
+      width: 22px; height: 22px; border-radius: 5px; font-size: 11px;
+    }
+    .btn-icon { width: 36px; height: 36px; }
+    .task-actions { gap: 6px; }
+    .score-badge { padding: 5px 11px; font-size: 12px; }
+    .task-card { padding: 14px 13px; margin-bottom: 8px; }
+    .add-subtask-row input { font-size: 14px; padding: 9px 12px; }
+    .add-subtask-row .btn { padding: 9px 14px; }
+
+    /* Bottom sheet modal on mobile — override desktop scale animation */
+    .modal-overlay { align-items: flex-end; padding: 0; }
+    .modal {
+      width: 100%; max-width: 100%; border-radius: 20px 20px 0 0;
+      padding: 20px 20px calc(20px + env(safe-area-inset-bottom, 0px));
+      max-height: 92vh;
+      transform: translateY(100%) !important;
+      transition: transform 0.28s cubic-bezier(0.34, 1.1, 0.64, 1) !important;
+    }
+    .modal-overlay.open .modal { transform: translateY(0) !important; }
+    .modal::before {
+      content: ''; display: block; width: 36px; height: 4px;
+      background: var(--border2); border-radius: 2px; margin: -8px auto 18px;
+    }
+
+    /* Drag handle bigger on touch */
+    .drag-handle { width: 28px; opacity: 0.5; }
+    .drag-handle span { width: 16px; height: 2px; }
+
+    /* Plan items bigger on mobile */
+    .plan-item { padding: 13px 14px; }
+    .plan-item-check { width: 22px; height: 22px; }
+
+    /* Hide subtask hint on mobile */
+    .add-subtask-hint { display: none; }
+
+    /* iOS input zoom prevention — inputs must be >= 16px */
+    input[type="text"], input[type="email"], input[type="password"],
+    input[type="date"], textarea, select { font-size: 16px !important; }
+    .add-subtask-row input { font-size: 15px !important; }
+
+    /* Search overlay — bottom sheet on mobile */
+    #search-overlay { align-items: flex-end; padding: 0; }
+    #search-box {
+      width: 100%; border-radius: 20px 20px 0 0;
+      transform: translateY(100%);
+      transition: transform 0.28s cubic-bezier(0.34, 1.1, 0.64, 1);
+    }
+    #search-overlay.open #search-box { transform: translateY(0) scale(1); }
+    #search-global-inp { font-size: 16px !important; }
+    #search-results-list { max-height: 55vh; }
+
+    /* Toast — above bottom nav */
+    #toast {
+      bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+      left: 16px; right: 16px; max-width: none; text-align: center;
+    }
+
+    /* Week day cols more compact */
+    .week-day-header { padding: 7px 8px 6px; }
+    .week-day-num { font-size: 16px; }
   }
 
+  /* ============================
+     BOTTOM NAVIGATION (mobile)
+     ============================ */
+  #bottom-nav {
+    display: none;
+  }
+  @media (max-width: 700px) {
+    #bottom-nav {
+      display: flex; position: fixed; bottom: 0; left: 0; right: 0;
+      background: var(--bg2); border-top: 1px solid var(--border);
+      z-index: 1500; padding-bottom: env(safe-area-inset-bottom);
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+    }
+    .bnav-item {
+      flex: 1; display: flex; flex-direction: column; align-items: center;
+      justify-content: center; padding: 8px 4px 6px; cursor: pointer;
+      color: var(--text3); transition: color 0.15s; touch-action: manipulation;
+      font-size: 10px; font-family: var(--font-mono); letter-spacing: 0.3px;
+      gap: 3px; border: none; background: none; -webkit-user-select: none;
+    }
+    .bnav-item.active { color: var(--accent); }
+    .bnav-icon {
+      font-size: 20px; line-height: 1;
+      display: flex; align-items: center; justify-content: center;
+      width: 32px; height: 24px; position: relative;
+    }
+    .bnav-badge {
+      position: absolute; top: -2px; right: -4px;
+      background: var(--accent); color: #fff; font-size: 9px; font-weight: 700;
+      padding: 1px 5px; border-radius: 10px; font-family: var(--font-mono);
+    }
+    /* Search button in mobile header */
+    #mobile-search-btn {
+      margin-left: auto; background: none; border: none;
+      color: var(--text2); font-size: 20px; padding: 6px; cursor: pointer;
+      touch-action: manipulation; display: flex; align-items: center;
+    }
+  }
+
+  /* Swipe sidebar hint on first open (subtle) */
+  @media (min-width: 701px) {
+    #bottom-nav { display: none !important; }
+  }
   @media (min-width: 701px) and (max-width: 1100px) {
     .week-grid { grid-template-columns: repeat(4,1fr); }
     .charts-grid { grid-template-columns: 1fr 1fr; }
@@ -940,6 +1121,7 @@
     <div id="mobile-header">
       <button id="mobile-menu-btn">☰</button>
       <div style="font-weight:700;font-size:17px;color:var(--text);">It's Time<span style="color:var(--accent);">.</span></div>
+      <button id="mobile-search-btn" onclick="openSearch()" title="Search">⌕</button>
     </div>
 
     <!-- TODAY PAGE -->
@@ -1094,6 +1276,33 @@
 
   </main>
 </div>
+
+<!-- BOTTOM NAVIGATION (mobile only) -->
+<nav id="bottom-nav">
+  <button class="bnav-item active" data-bnav="today" onclick="navigateTo('today')">
+    <div class="bnav-icon">◈</div>
+    <span data-i18n="nav_today">Today</span>
+  </button>
+  <button class="bnav-item" data-bnav="week" onclick="navigateTo('week')">
+    <div class="bnav-icon">▦</div>
+    <span data-i18n="nav_week">Week</span>
+  </button>
+  <button class="bnav-item" data-bnav="tasks" onclick="navigateTo('tasks')">
+    <div class="bnav-icon">
+      ◻
+      <span class="bnav-badge" id="bnav-badge-tasks" style="display:none;"></span>
+    </div>
+    <span data-i18n="nav_tasks">Tasks</span>
+  </button>
+  <button class="bnav-item" data-bnav="habits" onclick="navigateTo('habits')">
+    <div class="bnav-icon">⟳</div>
+    <span data-i18n="nav_habits">Habits</span>
+  </button>
+  <button class="bnav-item" data-bnav="diary" onclick="navigateTo('diary')">
+    <div class="bnav-icon">◌</div>
+    <span data-i18n="nav_journal">Journal</span>
+  </button>
+</nav>
 
 <!-- MODALS -->
 
@@ -1758,6 +1967,8 @@ function navigateTo(page) {
   if (pageEl) pageEl.classList.add('active');
   sidebar.classList.remove('open'); sidebarOverlay.classList.remove('open');
   window.scrollTo(0, 0);
+  // Sync bottom nav active state
+  document.querySelectorAll('.bnav-item').forEach(b => b.classList.toggle('active', b.dataset.bnav === page));
   render();
 }
 document.querySelectorAll('.nav-item[data-page]').forEach(el => el.addEventListener('click', () => navigateTo(el.dataset.page)));
@@ -1885,7 +2096,17 @@ function _updateTodayStats() {
   const statPend = document.getElementById('stat-pending');
   if (statDone) statDone.textContent = doneCount;
   if (statProg) statProg.innerHTML = `${plannedCount ? Math.round((doneCount/plannedCount)*100) : 0}<small>%</small>`;
-  if (statPend) statPend.textContent = state.tasks.filter(t => !t.done).length;
+  const pendingCount = state.tasks.filter(t => !t.done).length;
+  if (statPend) statPend.textContent = pendingCount;
+  // Sync bottom nav badge
+  const bnavBadge = document.getElementById('bnav-badge-tasks');
+  if (bnavBadge) {
+    bnavBadge.textContent = pendingCount;
+    bnavBadge.style.display = pendingCount > 0 ? '' : 'none';
+  }
+  // Sync sidebar badge
+  const sidebarBadge = document.getElementById('badge-tasks');
+  if (sidebarBadge) sidebarBadge.textContent = pendingCount;
 }
 
 window.deleteTask = function(id) {
@@ -2233,6 +2454,8 @@ function attachDragEvents(el, container) {
     state.todayPlan = newOrder;
     save();
   });
+  // Also attach touch drag for iOS
+  addTouchDrag(el, container);
 }
 
 // ============================================================
@@ -3206,8 +3429,86 @@ document.querySelectorAll('.emoji-preset-btn').forEach(btn => {
 });
 
 // ============================================================
-// GLOBAL SEARCH
+// SWIPE TO CLOSE SIDEBAR (mobile)
 // ============================================================
+let _swipeStartX = 0, _swipeStartY = 0;
+document.addEventListener('touchstart', e => {
+  _swipeStartX = e.touches[0].clientX;
+  _swipeStartY = e.touches[0].clientY;
+}, { passive: true });
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - _swipeStartX;
+  const dy = Math.abs(e.changedTouches[0].clientY - _swipeStartY);
+  if (dy > 60) return; // mostly vertical swipe — ignore
+  if (sidebar.classList.contains('open') && dx < -60) {
+    sidebar.classList.remove('open'); sidebarOverlay.classList.remove('open');
+  }
+  if (!sidebar.classList.contains('open') && dx > 60 && _swipeStartX < 30) {
+    sidebar.classList.add('open'); sidebarOverlay.classList.add('open');
+  }
+}, { passive: true });
+
+// ============================================================
+// TOUCH DRAG & DROP for today plan (iOS compatible)
+// ============================================================
+let _touchDragEl = null, _touchClone = null, _touchOffY = 0;
+
+function addTouchDrag(el, container) {
+  el.addEventListener('touchstart', e => {
+    // Only start drag from the handle
+    if (!e.target.closest('.drag-handle')) return;
+    e.preventDefault();
+    _touchDragEl = el;
+    _touchOffY = e.touches[0].clientY - el.getBoundingClientRect().top;
+    // Clone for visual drag indicator
+    _touchClone = el.cloneNode(true);
+    _touchClone.style.cssText = `
+      position: fixed; left: ${el.getBoundingClientRect().left}px;
+      width: ${el.offsetWidth}px; z-index: 9999; opacity: 0.85;
+      pointer-events: none; border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+      transform: scale(1.02);
+    `;
+    document.body.appendChild(_touchClone);
+    el.style.opacity = '0.3';
+  }, { passive: false });
+
+  el.addEventListener('touchmove', e => {
+    if (!_touchDragEl || _touchDragEl !== el) return;
+    e.preventDefault();
+    const y = e.touches[0].clientY;
+    if (_touchClone) _touchClone.style.top = (y - _touchOffY) + 'px';
+    // Find drop target
+    container.querySelectorAll('.today-draggable').forEach(c => {
+      c.classList.remove('drag-over-top', 'drag-over-bot');
+      if (c === el) return;
+      const rect = c.getBoundingClientRect();
+      if (y >= rect.top && y <= rect.bottom) {
+        c.classList.add(y < rect.top + rect.height / 2 ? 'drag-over-top' : 'drag-over-bot');
+      }
+    });
+  }, { passive: false });
+
+  el.addEventListener('touchend', e => {
+    if (!_touchDragEl || _touchDragEl !== el) return;
+    const y = e.changedTouches[0].clientY;
+    if (_touchClone) { _touchClone.remove(); _touchClone = null; }
+    el.style.opacity = '';
+    container.querySelectorAll('.today-draggable').forEach(c => {
+      const hasTop = c.classList.contains('drag-over-top');
+      const hasBot = c.classList.contains('drag-over-bot');
+      c.classList.remove('drag-over-top', 'drag-over-bot');
+      if (c === el) return;
+      if (hasTop) c.before(el);
+      else if (hasBot) c.after(el);
+    });
+    // Sync state
+    const newOrder = [...container.querySelectorAll('.today-draggable')].map(c => c.dataset.planId);
+    state.todayPlan = newOrder;
+    save();
+    _touchDragEl = null;
+  }, { passive: true });
+}
 const searchOverlay = document.getElementById('search-overlay');
 const searchInp     = document.getElementById('search-global-inp');
 let searchFocusIdx  = -1;
@@ -3349,7 +3650,14 @@ const openSubtaskPanels = new Set();
 function render() {
   TODAY = getLocalISODate();
   applyI18n(); setDateLabels(); renderAreaNav();
-  document.getElementById('badge-tasks').textContent = state.tasks.filter(t => !t.done).length;
+  const pendingCount = state.tasks.filter(t => !t.done).length;
+  document.getElementById('badge-tasks').textContent = pendingCount;
+  // Bottom nav badge
+  const bnavBadge = document.getElementById('bnav-badge-tasks');
+  if (bnavBadge) {
+    bnavBadge.textContent = pendingCount;
+    bnavBadge.style.display = pendingCount > 0 ? '' : 'none';
+  }
   if (state.currentPage === 'today')   renderToday();
   if (state.currentPage === 'week')    renderWeek();
   if (state.currentPage === 'tasks')   renderAllTasks();
