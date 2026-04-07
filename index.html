@@ -307,9 +307,9 @@
   .subtask-list {
     margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border);
     overflow: hidden; max-height: 0; opacity: 0;
-    transition: max-height 0.3s ease, opacity 0.2s ease;
+    transition: max-height 0.18s ease-out, opacity 0.12s ease-out;
   }
-  .subtask-list.open { max-height: 600px; opacity: 1; }
+  .subtask-list.open { max-height: 320px; opacity: 1; }
   .subtask-item { display: flex; align-items: center; gap: 8px; padding: 5px 0; }
   .subtask-item:hover .subtask-delete { opacity: 1; }
   .subtask-check { width: 14px; height: 14px; border: 1.5px solid var(--text3); border-radius: 3px; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 9px; transition: all var(--transition); }
@@ -664,11 +664,138 @@
     align-items: center; gap: 12px; font-size: 13px; white-space: nowrap;
   }
   #sw-update-banner.show { display: flex; }
+
+  /* ============================
+     GLOBAL SEARCH OVERLAY
+     ============================ */
+  #search-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+    display: flex; align-items: flex-start; justify-content: center;
+    z-index: 3000; opacity: 0; pointer-events: none;
+    transition: opacity 0.18s ease; backdrop-filter: blur(4px);
+    padding-top: clamp(60px, 10vh, 120px);
+  }
+  #search-overlay.open { opacity: 1; pointer-events: all; }
+  #search-box {
+    background: var(--bg2); border: 1px solid var(--border2);
+    border-radius: var(--radius); width: min(600px, 92vw);
+    box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+    transform: translateY(-10px) scale(0.98);
+    transition: transform 0.2s cubic-bezier(0.34,1.3,0.64,1);
+    overflow: hidden;
+  }
+  #search-overlay.open #search-box { transform: translateY(0) scale(1); }
+  #search-input-wrap {
+    display: flex; align-items: center; gap: 10px;
+    padding: 14px 16px; border-bottom: 1px solid var(--border);
+  }
+  #search-icon-lbl { font-size: 16px; color: var(--text3); flex-shrink: 0; }
+  #search-global-inp {
+    flex: 1; background: transparent; border: none; outline: none;
+    font-size: 15px; color: var(--text); font-family: var(--font-sans);
+  }
+  #search-global-inp::placeholder { color: var(--text3); }
+  #search-kbd {
+    font-size: 10px; font-family: var(--font-mono); color: var(--text3);
+    border: 1px solid var(--border2); border-radius: 5px;
+    padding: 2px 6px; flex-shrink: 0;
+  }
+  #search-results-list { max-height: 420px; overflow-y: auto; }
+  .search-group-label {
+    font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px;
+    color: var(--text3); padding: 10px 16px 4px; font-family: var(--font-mono);
+  }
+  .search-result-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 16px; cursor: pointer; transition: background 0.1s;
+    border-bottom: 1px solid var(--border);
+  }
+  .search-result-item:last-child { border-bottom: none; }
+  .search-result-item:hover, .search-result-item.focused { background: var(--bg3); }
+  .search-result-icon { font-size: 16px; width: 28px; text-align: center; flex-shrink: 0; }
+  .search-result-body { flex: 1; min-width: 0; }
+  .search-result-title { font-size: 13.5px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .search-result-sub { font-size: 11.5px; color: var(--text2); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .search-result-badge { font-size: 10px; font-family: var(--font-mono); padding: 2px 7px; border-radius: 20px; flex-shrink: 0; }
+  .srb-task   { background: rgba(229,57,53,0.1); color: #E53935; border: 1px solid rgba(229,57,53,0.2); }
+  .srb-habit  { background: rgba(122,179,224,0.1); color: var(--blue); border: 1px solid rgba(122,179,224,0.2); }
+  .srb-diary  { background: rgba(111,203,138,0.1); color: var(--green); border: 1px solid rgba(111,203,138,0.2); }
+  .search-highlight { background: rgba(229,57,53,0.18); border-radius: 2px; padding: 0 1px; color: var(--text); }
+  #search-empty { padding: 28px; text-align: center; color: var(--text3); font-size: 13px; }
+  #search-footer {
+    padding: 8px 16px; border-top: 1px solid var(--border);
+    display: flex; align-items: center; gap: 14px;
+    font-size: 10.5px; font-family: var(--font-mono); color: var(--text3);
+  }
+  #search-footer span { display: flex; align-items: center; gap: 4px; }
+  #search-footer kbd { background: var(--bg4); border: 1px solid var(--border2); border-radius: 4px; padding: 1px 5px; font-size: 10px; }
+
+  /* Search button in sidebar */
+  #btn-search-sidebar {
+    display: flex; align-items: center; gap: 9px; padding: 8px 10px;
+    border-radius: var(--radius-sm); cursor: pointer; color: var(--text2);
+    transition: all var(--transition); font-size: 13.5px; user-select: none;
+    margin: 4px 0;
+  }
+  #btn-search-sidebar:hover { background: var(--bg3); color: var(--text); }
+
+  /* ============================
+     DRAG & DROP TODAY LIST
+     ============================ */
+  .today-draggable { cursor: default; }
+  .today-draggable.dragging { opacity: 0.4; transform: scale(0.98); }
+  .today-draggable.drag-over-top { border-top: 2px solid var(--accent) !important; }
+  .today-draggable.drag-over-bot { border-bottom: 2px solid var(--accent) !important; }
+  .drag-handle {
+    display: flex; flex-direction: column; gap: 3px;
+    align-items: center; justify-content: center;
+    width: 20px; flex-shrink: 0; opacity: 0; cursor: grab;
+    transition: opacity 0.15s; padding: 4px 2px;
+  }
+  .drag-handle span { display: block; width: 12px; height: 1.5px; background: var(--text3); border-radius: 2px; }
+  .task-card:hover .drag-handle,
+  .today-habit-row:hover .drag-handle { opacity: 0.6; }
+  .drag-handle:hover { opacity: 1 !important; }
+  .drag-handle:active { cursor: grabbing; }
+
+  /* ============================
+     SCORE BADGE — más intuitivo
+     ============================ */
+  .score-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 9px; border-radius: 20px; cursor: pointer;
+    font-size: 11px; font-family: var(--font-mono); font-weight: 600;
+    border: 1px solid var(--border2); background: var(--bg3);
+    color: var(--text2); transition: all 0.15s; flex-shrink: 0;
+    user-select: none;
+  }
+  .score-badge:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-glow); }
+  .score-badge .sb-icon { font-size: 10px; opacity: 0.7; }
+  .score-badge.score-high  { border-color: rgba(111,203,138,0.4); color: var(--green); background: rgba(111,203,138,0.1); }
+  .score-badge.score-mid   { border-color: rgba(232,184,75,0.4);  color: var(--amber); background: rgba(232,184,75,0.1); }
+  .score-badge.score-low   { border-color: var(--border2); color: var(--text3); }
 </style>
 </head>
 <body>
 
 <!-- TOAST -->
+<!-- GLOBAL SEARCH OVERLAY -->
+<div id="search-overlay">
+  <div id="search-box">
+    <div id="search-input-wrap">
+      <span id="search-icon-lbl">⌕</span>
+      <input id="search-global-inp" type="text" placeholder="Buscar tareas, hábitos, diario..." autocomplete="off" spellcheck="false">
+      <span id="search-kbd">ESC</span>
+    </div>
+    <div id="search-results-list"></div>
+    <div id="search-footer">
+      <span><kbd>↑↓</kbd> navegar</span>
+      <span><kbd>↵</kbd> abrir</span>
+      <span><kbd>ESC</kbd> cerrar</span>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <!-- AUTH SCREEN -->
@@ -747,6 +874,10 @@
 
     <div class="sidebar-nav">
       <div class="nav-section-label" data-i18n="nav_main">Main</div>
+      <div id="btn-search-sidebar">
+        <span class="nav-icon">⌕</span> <span data-i18n="search">Search</span>
+        <span style="margin-left:auto;font-size:10px;font-family:var(--font-mono);color:var(--text3);border:1px solid var(--border2);border-radius:4px;padding:1px 5px;">⌘K</span>
+      </div>
       <div class="nav-item active" data-page="today">
         <span class="nav-icon">◈</span> <span data-i18n="nav_today">Today</span>
       </div>
@@ -1226,7 +1357,9 @@ const translations = {
     week_planned: "Planned", week_done_w: "Completed", week_progress_w: "Progress", week_total_tasks: "Total tasks",
     install_app: "Install App",
     offline_msg: "You're offline — data syncs when connection returns",
-    online_msg: "Back online"
+    online_msg: "Back online",
+    search: "Search", search_placeholder: "Search tasks, habits, journal...",
+    search_no_results: "No results found"
   },
   es: {
     email: "Email", password: "Contraseña", login: "Iniciar Sesión", register: "Registrarse",
@@ -1284,7 +1417,9 @@ const translations = {
     week_planned: "Planeadas", week_done_w: "Completadas", week_progress_w: "Progreso", week_total_tasks: "Total tareas",
     install_app: "Instalar App",
     offline_msg: "Sin conexión — datos se sincronizan al reconectar",
-    online_msg: "Conexión restaurada"
+    online_msg: "Conexión restaurada",
+    search: "Buscar", search_placeholder: "Buscar tareas, hábitos, diario...",
+    search_no_results: "Sin resultados"
   }
 };
 
@@ -1764,7 +1899,7 @@ function buildTaskCard(task, container, readOnly = false) {
         </div>
         <div class="progress-wrap">
           <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${score*10}%;"></div></div>
-          <span class="progress-label" style="cursor:${readOnly?'default':'pointer'};" data-score="${task.id}">${score}/10</span>
+          ${!readOnly ? `<span class="score-badge ${score>=8?'score-high':score>=4?'score-mid':'score-low'}" data-score="${task.id}" title="${currentLang==='es'?'Actualizar progreso':'Update progress'}"><span class="sb-icon">✎</span> ${score}/10</span>` : `<span class="progress-label">${score}/10</span>`}
         </div>
       </div>
       ${!readOnly ? `
@@ -1968,21 +2103,77 @@ function renderToday() {
     if (habit) {
       const isDone = !!(state.habitLog[TODAY]?.[id]);
       const row = document.createElement('div');
-      row.className = 'task-card today-planned' + (isDone ? ' done' : '');
-      row.style.cssText = 'display:flex;align-items:center;gap:12px;';
+      row.className = 'task-card today-planned today-draggable' + (isDone ? ' done' : '');
+      row.dataset.planId = id;
+      row.draggable = true;
+      row.style.cssText = 'display:flex;align-items:center;gap:10px;';
       row.innerHTML = `
+        <div class="drag-handle" title="${currentLang==='es'?'Arrastrar':'Drag'}"><span></span><span></span><span></span></div>
         <div class="task-checkbox ${isDone?'checked':''}" style="margin:0;">${isDone?'✓':''}</div>
-        <span style="font-size:20px;">${habit.icon}</span>
+        <span style="font-size:18px;">${habit.icon}</span>
         <span style="flex:1;font-weight:500;font-size:14px;${isDone?'text-decoration:line-through;color:var(--text3);':''}">${habit.name}</span>
         <span style="font-size:10px;background:var(--accent-glow);color:var(--accent);padding:2px 7px;border-radius:20px;font-family:var(--font-mono);">${t('habit')}</span>
         <span style="font-size:11px;font-family:var(--font-mono);color:var(--amber);">${getHabitStreak(id) > 0 ? '🔥 '+getHabitStreak(id)+'d' : ''}</span>
       `;
       row.querySelector('.task-checkbox').addEventListener('click', () => window.toggleItemDone(id, TODAY));
+      attachDragEvents(row, list);
       list.appendChild(row);
     } else {
       const task = state.tasks.find(tk => tk.id === id);
-      if (task) buildTaskCard(task, list, false);
+      if (task) {
+        buildTaskCard(task, list, false);
+        const card = list.lastElementChild;
+        if (card) {
+          card.classList.add('today-draggable');
+          card.dataset.planId = id;
+          card.draggable = true;
+          const handle = document.createElement('div');
+          handle.className = 'drag-handle';
+          handle.title = currentLang === 'es' ? 'Arrastrar' : 'Drag';
+          handle.innerHTML = '<span></span><span></span><span></span>';
+          card.querySelector('.task-top')?.prepend(handle);
+          attachDragEvents(card, list);
+        }
+      }
     }
+  });
+}
+
+let _dragSrcEl = null;
+function attachDragEvents(el, container) {
+  el.addEventListener('dragstart', e => {
+    _dragSrcEl = el;
+    el.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', el.dataset.planId);
+  });
+  el.addEventListener('dragend', () => {
+    el.classList.remove('dragging');
+    container.querySelectorAll('.today-draggable').forEach(c => {
+      c.classList.remove('drag-over-top', 'drag-over-bot');
+    });
+  });
+  el.addEventListener('dragover', e => {
+    e.preventDefault();
+    if (!_dragSrcEl || _dragSrcEl === el) return;
+    const rect = el.getBoundingClientRect();
+    const mid  = rect.top + rect.height / 2;
+    el.classList.remove('drag-over-top', 'drag-over-bot');
+    el.classList.add(e.clientY < mid ? 'drag-over-top' : 'drag-over-bot');
+  });
+  el.addEventListener('dragleave', () => el.classList.remove('drag-over-top', 'drag-over-bot'));
+  el.addEventListener('drop', e => {
+    e.preventDefault();
+    if (!_dragSrcEl || _dragSrcEl === el) return;
+    const rect  = el.getBoundingClientRect();
+    const mid   = rect.top + rect.height / 2;
+    const before = e.clientY < mid;
+    el.classList.remove('drag-over-top', 'drag-over-bot');
+    if (before) el.before(_dragSrcEl); else el.after(_dragSrcEl);
+    // Sync state.todayPlan order from DOM
+    const newOrder = [...container.querySelectorAll('.today-draggable')].map(c => c.dataset.planId);
+    state.todayPlan = newOrder;
+    save();
   });
 }
 
@@ -2923,8 +3114,141 @@ document.querySelectorAll('.emoji-preset-btn').forEach(btn => {
 });
 
 // ============================================================
-// SUBTASK PANEL STATE — keeps panels open across renders
+// GLOBAL SEARCH
 // ============================================================
+const searchOverlay = document.getElementById('search-overlay');
+const searchInp     = document.getElementById('search-global-inp');
+let searchFocusIdx  = -1;
+
+function openSearch() {
+  searchOverlay.classList.add('open');
+  searchInp.value = '';
+  searchFocusIdx = -1;
+  document.getElementById('search-results-list').innerHTML = '';
+  setTimeout(() => searchInp.focus(), 50);
+}
+function closeSearch() {
+  searchOverlay.classList.remove('open');
+  searchInp.value = '';
+}
+
+function hl(text, q) {
+  if (!q) return text;
+  const safe = q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  return text.replace(new RegExp('('+safe+')', 'gi'), '<span class="search-highlight">$1</span>');
+}
+
+function runSearch(q) {
+  const container = document.getElementById('search-results-list');
+  container.innerHTML = '';
+  searchFocusIdx = -1;
+  if (!q.trim()) return;
+  const ql = q.toLowerCase();
+  const results = [];
+
+  // Tasks
+  state.tasks.forEach(tk => {
+    if (tk.title.toLowerCase().includes(ql)) {
+      const area = state.areas.find(a => a.id === tk.area);
+      results.push({
+        type: 'task', icon: tk.done ? '✓' : '◻',
+        title: tk.title,
+        sub: [getPriorityText(tk.priority), area ? getAreaName(area) : ''].filter(Boolean).join(' · '),
+        badge: currentLang === 'es' ? 'tarea' : 'task',
+        cls: 'srb-task',
+        action: () => { closeSearch(); navigateTo('tasks'); }
+      });
+    }
+  });
+
+  // Habits
+  state.habits.forEach(h => {
+    if (h.name.toLowerCase().includes(ql)) {
+      const streak = getHabitStreak(h.id);
+      results.push({
+        type: 'habit', icon: h.icon,
+        title: h.name,
+        sub: streak > 0 ? `🔥 ${streak}d streak` : (currentLang==='es'?'Hábito':'Habit'),
+        badge: currentLang === 'es' ? 'hábito' : 'habit',
+        cls: 'srb-habit',
+        action: () => { closeSearch(); navigateTo('habits'); }
+      });
+    }
+  });
+
+  // Diary
+  Object.values(state.diary || {}).forEach(entry => {
+    const combined = [entry.good, entry.bad, entry.improve].filter(Boolean).join(' ');
+    if (combined.toLowerCase().includes(ql) || entry.date.includes(ql)) {
+      results.push({
+        type: 'diary', icon: '◌',
+        title: formatDate(entry.date),
+        sub: entry.good ? entry.good.slice(0, 60) : '—',
+        badge: currentLang === 'es' ? 'diario' : 'journal',
+        cls: 'srb-diary',
+        action: () => { closeSearch(); navigateTo('diary'); }
+      });
+    }
+  });
+
+  if (results.length === 0) {
+    container.innerHTML = `<div id="search-empty">${t('search_no_results')} — "${q}"</div>`;
+    return;
+  }
+
+  results.forEach((r, i) => {
+    const el = document.createElement('div');
+    el.className = 'search-result-item';
+    el.dataset.idx = i;
+    el.innerHTML = `
+      <span class="search-result-icon">${r.icon}</span>
+      <div class="search-result-body">
+        <div class="search-result-title">${hl(r.title, q)}</div>
+        <div class="search-result-sub">${hl(r.sub, q)}</div>
+      </div>
+      <span class="search-result-badge ${r.cls}">${r.badge}</span>`;
+    el.addEventListener('click', r.action);
+    el.addEventListener('mouseenter', () => {
+      container.querySelectorAll('.search-result-item').forEach(x => x.classList.remove('focused'));
+      el.classList.add('focused');
+      searchFocusIdx = i;
+    });
+    container.appendChild(el);
+  });
+}
+
+function getPriorityText(p) {
+  if (p === 'high')   return currentLang === 'es' ? 'Alta'  : 'High';
+  if (p === 'medium') return currentLang === 'es' ? 'Media' : 'Medium';
+  return currentLang === 'es' ? 'Baja' : 'Low';
+}
+
+searchInp.addEventListener('input', () => runSearch(searchInp.value));
+
+searchInp.addEventListener('keydown', e => {
+  const items = document.querySelectorAll('.search-result-item');
+  if (e.key === 'ArrowDown') { e.preventDefault(); searchFocusIdx = Math.min(searchFocusIdx+1, items.length-1); }
+  else if (e.key === 'ArrowUp') { e.preventDefault(); searchFocusIdx = Math.max(searchFocusIdx-1, 0); }
+  else if (e.key === 'Enter' && searchFocusIdx >= 0) { items[searchFocusIdx]?.click(); return; }
+  else if (e.key === 'Escape') { closeSearch(); return; }
+  items.forEach((el,i) => el.classList.toggle('focused', i === searchFocusIdx));
+  if (items[searchFocusIdx]) items[searchFocusIdx].scrollIntoView({ block: 'nearest' });
+});
+
+searchOverlay.addEventListener('click', e => { if (e.target === searchOverlay) closeSearch(); });
+document.getElementById('btn-search-sidebar').addEventListener('click', openSearch);
+
+// Keyboard shortcut Ctrl+K / Cmd+K
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); openSearch(); }
+  if (e.key === 'Escape' && searchOverlay.classList.contains('open')) closeSearch();
+});
+
+// Score badge fix — delegate click on document (badges are dynamically rendered)
+document.addEventListener('click', e => {
+  const badge = e.target.closest('[data-score]');
+  if (badge) openScoreModal(badge.dataset.score);
+});
 const openSubtaskPanels = new Set();
 
 // ============================================================
