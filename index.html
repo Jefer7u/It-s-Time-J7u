@@ -758,6 +758,22 @@
   .drag-handle:hover { opacity: 1 !important; }
   .drag-handle:active { cursor: grabbing; }
 
+  /* Today plan — new item entry animation */
+  @keyframes slideInPlan {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .plan-item-new {
+    animation: slideInPlan 0.22s ease-out forwards;
+  }
+  @keyframes flashBorder {
+    0%   { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+    100% { border-color: var(--border); box-shadow: none; }
+  }
+  .plan-item-highlight {
+    animation: flashBorder 1.2s ease-out forwards;
+  }
+
   /* ============================
      SCORE BADGE — más intuitivo
      ============================ */
@@ -1827,8 +1843,50 @@ window.toggleItemDone = function(id, dateCtx = TODAY) {
       task.completedAt = task.done ? dateCtx : null;
     }
   }
-  save(); render();
+
+  // Surgical DOM update for the checkbox — no full re-render needed
+  const card = document.querySelector(`[data-plan-id="${id}"], [data-task-id="${id}"]`);
+  if (card && state.currentPage === 'today') {
+    const cb   = card.querySelector('.task-checkbox');
+    const isDone = habit
+      ? !!(state.habitLog[dateCtx]?.[id])
+      : !!(state.tasks.find(t => t.id === id)?.done);
+    if (cb) {
+      cb.classList.toggle('checked', isDone);
+      cb.textContent = isDone ? '✓' : '';
+    }
+    card.classList.toggle('done', isDone);
+    // Update label strikethrough
+    const lbl = card.querySelector('.task-title, [style*="font-weight:500"]');
+    if (lbl) {
+      lbl.style.textDecoration = isDone ? 'line-through' : '';
+      lbl.style.color = isDone ? 'var(--text3)' : '';
+    }
+    // Update stat counters without full render
+    _updateTodayStats();
+  } else {
+    render();
+  }
+
+  save();
 };
+
+function _updateTodayStats() {
+  let doneCount = 0;
+  const plannedCount = state.todayPlan.length;
+  state.todayPlan.forEach(id => {
+    const h  = state.habits.find(x => x.id === id);
+    const tk = state.tasks.find(x => x.id === id);
+    if (h && state.habitLog[TODAY]?.[id]) doneCount++;
+    if (tk && tk.done) doneCount++;
+  });
+  const statDone = document.getElementById('stat-done');
+  const statProg = document.getElementById('stat-progress');
+  const statPend = document.getElementById('stat-pending');
+  if (statDone) statDone.textContent = doneCount;
+  if (statProg) statProg.innerHTML = `${plannedCount ? Math.round((doneCount/plannedCount)*100) : 0}<small>%</small>`;
+  if (statPend) statPend.textContent = state.tasks.filter(t => !t.done).length;
+}
 
 window.deleteTask = function(id) {
   state.tasks = state.tasks.filter(t => t.id !== id);
@@ -2925,8 +2983,42 @@ document.getElementById('btn-plan-today').addEventListener('click', () => {
   openModal('modal-plan');
 });
 document.getElementById('btn-save-plan').addEventListener('click', () => {
+  const prevPlan = [...state.todayPlan];
   state.todayPlan = Array.from(document.querySelectorAll('#plan-task-list .plan-item.selected')).map(el => el.dataset.id);
-  save(); closeModal('modal-plan'); render();
+  const newIds = state.todayPlan.filter(id => !prevPlan.includes(id));
+
+  // 1. Close modal immediately
+  closeModal('modal-plan');
+
+  // 2. Save to Firebase in background
+  save();
+
+  // 3. Wait for modal fade-out animation (200ms) then render + scroll + highlight
+  setTimeout(() => {
+    renderToday();
+    // Scroll the task list into view smoothly
+    const listEl = document.getElementById('today-task-list');
+    if (listEl) {
+      listEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    // Highlight newly added items
+    if (newIds.length > 0) {
+      setTimeout(() => {
+        newIds.forEach(id => {
+          const el = document.querySelector(`[data-plan-id="${id}"], [data-task-id="${id}"]`);
+          if (el) {
+            el.classList.add('plan-item-new');
+            setTimeout(() => {
+              el.classList.remove('plan-item-new');
+              el.classList.add('plan-item-highlight');
+              setTimeout(() => el.classList.remove('plan-item-highlight'), 1300);
+            }, 230);
+          }
+        });
+      }, 50);
+    }
+    showToast(currentLang === 'es' ? `¡Plan del día actualizado! ${state.todayPlan.length} items` : `Day plan updated! ${state.todayPlan.length} items`, 'ok');
+  }, 210);
 });
 
 // ============================================================
