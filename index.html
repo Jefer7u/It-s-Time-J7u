@@ -40,16 +40,11 @@ T = {
         "no_sel_warning":          "Select at least one resource to continue.",
         "sel_label":               "selected",
         "resources_n":             "resources",
-        "footer":                  "Simetrik Flow Docs · v3.0",
         "lang_label":              "Language / Idioma",
         # Disclaimers
         "disc_privacy_title":  "🔒 Your files are never stored",
         "disc_privacy_body":   "Everything runs privately in your browser session. No file is saved, shared, or sent anywhere — feel free to use it.",
-        "disc_output_title":   "",
-        "disc_output_body":    "",
         "disc_footer_1":       "🔒 Private by design — files are processed in memory and discarded when you close the tab.",
-        "disc_footer_2":       "",
-        "disc_footer_3":       "",
         "theme_label":             "Dark mode",
         # Metrics
         "m_total":    "Total",
@@ -182,16 +177,11 @@ T = {
         "no_sel_warning":          "Seleccioná al menos un recurso para continuar.",
         "sel_label":               "seleccionados",
         "resources_n":             "recursos",
-        "footer":                  "Simetrik Flow Docs · v3.0",
         "lang_label":              "Language / Idioma",
         # Disclaimers
         "disc_privacy_title":  "🔒 Tus archivos nunca se guardan",
         "disc_privacy_body":   "Todo corre de forma privada en tu sesión del navegador. Ningún archivo se almacena, comparte ni envía a ningún lado — podés usarlo con total tranquilidad.",
-        "disc_output_title":   "",
-        "disc_output_body":    "",
         "disc_footer_1":       "🔒 Privacidad garantizada — los archivos se procesan en memoria y se descartan al cerrar la pestaña.",
-        "disc_footer_2":       "",
-        "disc_footer_3":       "",
         "theme_label":             "Modo oscuro",
         # Metrics
         "m_total":    "Total",
@@ -1395,72 +1385,64 @@ def generar_excel(data, selected_ids, lang):
 # ══════════════════════════════════════════════════════════════════════════════
 lang = st.session_state.lang
 dark = st.session_state.dark
-S = T[lang]
-TH = get_theme(dark)
+S    = T[lang]
+TH   = get_theme(dark)
 inject_css(TH)
 
-# ── TOP BAR: language + theme ─────────────────────────────────────────────────
-top_l, top_m, top_r = st.columns([2, 2, 6])
+# ── TOP BAR — language + theme ────────────────────────────────────────────────
+_tb_l, _tb_m, _tb_r = st.columns([3, 2, 5])
 
-with top_l:
+with _tb_l:
     new_lang = st.radio(
-        S["lang_label"],
-        options=["en", "es"],
+        S["lang_label"], options=["en", "es"],
         format_func=lambda x: "🇬🇧 English" if x == "en" else "🇦🇷 Español",
         index=0 if lang == "en" else 1,
-        horizontal=True,
-        key="lang_radio",
+        horizontal=True, key="lang_radio",
     )
     if new_lang != st.session_state.lang:
         st.session_state.lang = new_lang
         st.rerun()
 
-with top_m:
+with _tb_m:
     dark_toggle = st.toggle(S["theme_label"], value=dark, key="dark_toggle")
     if dark_toggle != st.session_state.dark:
         st.session_state.dark = dark_toggle
         st.rerun()
 
 # ── HEADER ────────────────────────────────────────────────────────────────────
-st.markdown(f"""
-<div style='background:linear-gradient(135deg,#EA0050 0%,#C0003A 100%);padding:28px 32px;
-    border-radius:12px;margin-bottom:32px;box-shadow:0 8px 20px -5px rgba(234,0,80,0.3)'>
-  <div style='color:#FFF;font-family:Inter,sans-serif;font-size:1.75rem;font-weight:700;letter-spacing:-0.5px'>
-    {S['header_title']}
-  </div>
-  <div style='color:rgba(255,255,255,0.85);font-family:Inter,sans-serif;font-size:0.95rem;margin-top:6px;font-weight:500'>
-    {S['header_sub']}
-  </div>
-</div>""", unsafe_allow_html=True)
+st.markdown(
+    f"<div style='background:#EA0050;padding:22px 28px;border-radius:10px;margin:8px 0 24px'>"
+    f"<div style='color:#fff;font-size:1.5rem;font-weight:700;letter-spacing:-0.3px'>{S['header_title']}</div>"
+    f"<div style='color:rgba(255,255,255,0.8);font-size:0.88rem;margin-top:4px'>{S['header_sub']}</div>"
+    f"</div>",
+    unsafe_allow_html=True,
+)
 
 # ── UPLOAD ────────────────────────────────────────────────────────────────────
 up = st.file_uploader(
-    S["upload_label"],
-    type=["json"],
-    help=S["upload_help"],
-    label_visibility="visible",
+    S["upload_label"], type=["json"],
+    help=S["upload_help"], label_visibility="visible",
 )
 
 if not up:
-    st.markdown(f"""
-<div style='background:{TH['card_bg']};border:1px solid {TH['card_border']};border-radius:12px;
-    padding:48px 32px;text-align:center;margin-top:16px'>
-  <div style='font-size:2.5rem;margin-bottom:12px'>📂</div>
-  <p style='color:{TH['text']};font-size:1.1rem;font-weight:600;margin:0'>{S['upload_placeholder_h']}</p>
-  <p style='color:{TH['text2']};font-size:0.9rem;margin:8px 0 0'>{S['upload_placeholder_p']}</p>
-</div>""", unsafe_allow_html=True)
-    # Privacy notice on empty state
     st.markdown(
-        f"<div style='background:{'#0D2B0D' if dark else '#F0FDF4'};border:1px solid {'#1A4A1A' if dark else '#BBF7D0'};"
-        f"border-radius:10px;padding:14px 18px;margin-top:16px;display:flex;gap:12px;align-items:flex-start'>"
-        f"<div><p style='margin:0;font-size:0.85rem;font-weight:600;color:{'#4ADE80' if dark else '#166534'}'>"
-        f"{S['disc_privacy_title']}</p>"
-        f"<p style='margin:4px 0 0;font-size:0.8rem;color:{'#86EFAC' if dark else '#15803D'};line-height:1.5'>"
-        f"{S['disc_privacy_body']}</p></div></div>",
+        f"<div style='background:{TH['card_bg']};border:2px dashed {TH['border2']};"
+        f"border-radius:12px;padding:40px 28px;text-align:center;margin-top:8px'>"
+        f"<div style='font-size:2rem;margin-bottom:10px'>📂</div>"
+        f"<p style='color:{TH['text']};font-size:1rem;font-weight:600;margin:0 0 6px'>"
+        f"{S['upload_placeholder_h']}</p>"
+        f"<p style='color:{TH['text2']};font-size:0.85rem;margin:0 0 18px'>{S['upload_placeholder_p']}</p>"
+        f"<span style='background:{'#0D2B0D' if dark else '#F0FDF4'};"
+        f"border:1px solid {'#1A4A1A' if dark else '#BBF7D0'};"
+        f"border-radius:8px;padding:8px 14px;font-size:0.8rem;font-weight:500;"
+        f"color:{'#4ADE80' if dark else '#166534'}'>"
+        f"🔒 {S['disc_privacy_title']} — {S['disc_privacy_body']}</span>"
+        f"</div>",
         unsafe_allow_html=True,
     )
     st.markdown(
-        f"<p style='text-align:center;color:{TH['text2']};font-size:0.78rem;margin-top:24px'>{S['footer']}</p>",
+        f"<p style='text-align:center;color:{TH['text3']};font-size:0.75rem;margin-top:20px'>"
+        f"Simetrik Flow Docs · v3.0 · MIT License</p>",
         unsafe_allow_html=True,
     )
     st.stop()
@@ -1472,7 +1454,7 @@ except Exception as e:
     st.stop()
 
 all_resources = data.get("resources", [])
-nodes = data.get("nodes", [])
+nodes         = data.get("nodes", [])
 
 seen_load, resources_unique = set(), []
 for r in all_resources:
@@ -1486,125 +1468,120 @@ resources_unique.sort(key=sort_key)
 rels_all = build_relations(resources_unique, nodes, res_map)
 
 # ── METRICS ───────────────────────────────────────────────────────────────────
-_tc = Counter(r.get("resource_type", "") for r in resources_unique)
+_tc    = Counter(r.get("resource_type", "") for r in resources_unique)
 _total = len(resources_unique)
-_nombre = up.name if len(up.name) <= 30 else up.name[:27] + "…"
+_nombre = up.name if len(up.name) <= 32 else up.name[:29] + "…"
+_recon_n = _tc.get("reconciliation", 0) + _tc.get("advanced_reconciliation", 0)
 
-def _card(label, value, color="#EA0050"):
+def _metric(label, val, color=None):
+    color = color or TH["text"]
     return (
         f"<div style='background:{TH['card_bg']};border:1px solid {TH['card_border']};"
-        f"border-radius:12px;box-shadow:0 2px 4px rgba(0,0,0,0.04);padding:16px;text-align:center'>"
-        f"<div style='font-size:0.72rem;color:{TH['text2']};font-family:Inter,sans-serif;"
-        f"font-weight:600;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px'>{label}</div>"
-        f"<div style='font-size:1.7rem;font-weight:700;color:{color};font-family:Inter,sans-serif;"
-        f"line-height:1'>{value}</div></div>"
-    )
-
-_cards = (
-    f"<div style='display:grid;grid-template-columns:repeat(7,1fr);gap:12px;margin-bottom:8px'>"
-    + _card(S["m_total"], _total, TH["text"])
-    + _card(S["m_sources"], _tc.get("native", 0), f"#{RT_COLOR['native']}")
-    + _card(S["m_unions"], _tc.get("source_union", 0), f"#{RT_COLOR['source_union']}")
-    + _card(S["m_groups"], _tc.get("source_group", 0), f"#{RT_COLOR['source_group']}")
-    + _card(S["m_std"], _tc.get("reconciliation", 0), f"#{RT_COLOR['reconciliation']}")
-    + _card(S["m_adv"], _tc.get("advanced_reconciliation", 0), f"#{RT_COLOR['advanced_reconciliation']}")
-    + (f"<div style='background:{TH['card_bg']};border:1px solid {TH['card_border']};"
-       f"border-radius:12px;padding:16px;text-align:left;display:flex;flex-direction:column;justify-content:center'>"
-       f"<div style='font-size:0.72rem;color:{TH['text2']};font-weight:600;text-transform:uppercase;"
-       f"letter-spacing:0.5px;margin-bottom:6px'>{S['m_json']}</div>"
-       f"<div style='font-size:0.82rem;font-weight:600;color:{TH['text']};word-break:break-all;line-height:1.4'>"
-       f"{_nombre}</div></div>")
-    + "</div>"
-)
-st.markdown(_cards, unsafe_allow_html=True)
-
-# ── EXECUTIVE SUMMARY PREVIEW ─────────────────────────────────────────────────
-_s1, _s2 = build_overview_sentences(resources_unique, rels_all, res_map, lang)
-_obs_prev = collect_top_observations(resources_unique, rels_all, seg_map, seg_usage, lang, max_obs=3)
-
-def _role_row(r, lang, TH):
-    rt    = r.get("resource_type", "")
-    color = "#" + RT_COLOR.get(rt, "6B7280")
-    label = get_rt_label(rt, lang)
-    name  = r.get("name", "")
-    role  = resource_role_sentence(r, col_map, seg_map, meta_map, res_map, lang)
-    return (
-        f"<div style='display:flex;align-items:baseline;gap:8px;padding:5px 0;"
-        f"border-bottom:1px solid {TH['border']}'>"
-        f"<span style='font-size:0.75rem;font-weight:700;color:{color};"
-        f"white-space:nowrap;min-width:130px'>{label}</span>"
-        f"<span style='font-size:0.78rem;font-weight:600;color:{TH['text']};"
-        f"min-width:160px;white-space:nowrap'>{name}</span>"
-        f"<span style='font-size:0.78rem;color:{TH['text2']}'>{role}</span>"
+        f"border-radius:10px;padding:14px 12px;text-align:center'>"
+        f"<div style='font-size:0.68rem;color:{TH['text2']};font-weight:600;"
+        f"text-transform:uppercase;letter-spacing:0.4px;margin-bottom:5px'>{label}</div>"
+        f"<div style='font-size:1.6rem;font-weight:700;color:{color};line-height:1'>{val}</div>"
         f"</div>"
     )
 
-_roles_html = "".join(_role_row(r, lang, TH) for r in resources_unique)
+_metrics_html = (
+    f"<div style='display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-bottom:16px'>"
+    + _metric(S["m_total"],   _total,                              TH["text"])
+    + _metric(S["m_sources"], _tc.get("native", 0),                f"#{RT_COLOR['native']}")
+    + _metric(S["m_groups"],  _tc.get("source_group", 0),          f"#{RT_COLOR['source_group']}")
+    + _metric(S["m_unions"],  _tc.get("source_union", 0),          f"#{RT_COLOR['source_union']}")
+    + _metric("Recon.",       _recon_n,                            f"#{RT_COLOR['reconciliation']}")
+    + (f"<div style='background:{TH['card_bg']};border:1px solid {TH['card_border']};"
+       f"border-radius:10px;padding:14px 12px;display:flex;flex-direction:column;justify-content:center'>"
+       f"<div style='font-size:0.68rem;color:{TH['text2']};font-weight:600;"
+       f"text-transform:uppercase;letter-spacing:0.4px;margin-bottom:4px'>{S['m_json']}</div>"
+       f"<div style='font-size:0.8rem;font-weight:600;color:{TH['text']};word-break:break-all;line-height:1.3'>"
+       f"{_nombre}</div></div>")
+    + "</div>"
+)
+st.markdown(_metrics_html, unsafe_allow_html=True)
+
+# ── FLOW OVERVIEW CARD ────────────────────────────────────────────────────────
+_s1, _s2 = build_overview_sentences(resources_unique, rels_all, res_map, lang)
+_obs_prev = collect_top_observations(resources_unique, rels_all, seg_map, seg_usage, lang, max_obs=3)
+
+def _role_row(r):
+    rt    = r.get("resource_type", "")
+    color = "#" + RT_COLOR.get(rt, "6B7280")
+    return (
+        f"<div style='display:flex;align-items:baseline;gap:10px;padding:5px 0;"
+        f"border-bottom:1px solid {TH['border']}'>"
+        f"<span style='font-size:0.72rem;font-weight:700;color:{color};"
+        f"white-space:nowrap;width:128px;flex-shrink:0'>{get_rt_label(rt, lang)}</span>"
+        f"<span style='font-size:0.78rem;font-weight:600;color:{TH['text']};"
+        f"width:150px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>"
+        f"{r.get('name','')}</span>"
+        f"<span style='font-size:0.78rem;color:{TH['text2']};min-width:0'>"
+        f"{resource_role_sentence(r, col_map, seg_map, meta_map, res_map, lang)}</span>"
+        f"</div>"
+    )
 
 _obs_html = ""
 if _obs_prev:
+    _obs_rows = "".join(
+        f"<p style='font-size:0.78rem;color:{TH['text2']};margin:3px 0;line-height:1.4'>· {ob}</p>"
+        for ob in _obs_prev
+    )
     _obs_html = (
-        f"<div style='margin-top:14px;padding-top:12px;border-top:1px solid {TH['border']}'>"
-        f"<p style='font-size:0.72rem;font-weight:700;color:{TH['text2']};text-transform:uppercase;"
-        f"letter-spacing:0.5px;margin:0 0 6px'>{S['sum_preview_obs']}</p>"
-        + "".join(
-            f"<p style='font-size:0.78rem;color:{TH['text2']};margin:3px 0'>· {ob}</p>"
-            for ob in _obs_prev
-        )
-        + "</div>"
+        f"<div style='margin-top:12px;padding-top:10px;border-top:1px solid {TH['border']}'>"
+        f"<p style='font-size:0.68rem;font-weight:700;color:{TH['text2']};text-transform:uppercase;"
+        f"letter-spacing:0.4px;margin:0 0 5px'>{S['sum_preview_obs']}</p>"
+        f"{_obs_rows}</div>"
     )
 
 st.markdown(
     f"<div style='background:{TH['card_bg']};border:1px solid {TH['card_border']};"
-    f"border-radius:12px;padding:18px 20px;margin:20px 0'>"
-    f"<p style='font-size:0.72rem;font-weight:700;color:#EA0050;text-transform:uppercase;"
-    f"letter-spacing:0.5px;margin:0 0 8px'>{S['sum_preview_title']}</p>"
-    f"<p style='font-size:0.92rem;color:{TH['text']};line-height:1.65;margin:0 0 14px'>{_s1}</p>"
-    f"<p style='font-size:0.92rem;color:{TH['text2']};line-height:1.65;margin:0 0 14px'>{_s2}</p>"
-    f"<p style='font-size:0.72rem;font-weight:700;color:{TH['text2']};text-transform:uppercase;"
-    f"letter-spacing:0.5px;margin:0 0 6px'>{S['sum_preview_resources']}</p>"
-    f"{_roles_html}"
-    f"{_obs_html}"
-    f"</div>",
+    f"border-radius:12px;padding:18px 20px;margin-bottom:6px'>"
+    f"<p style='font-size:0.68rem;font-weight:700;color:#EA0050;text-transform:uppercase;"
+    f"letter-spacing:0.5px;margin:0 0 10px'>{S['sum_preview_title']}</p>"
+    f"<p style='font-size:0.9rem;color:{TH['text']};line-height:1.6;margin:0 0 4px'>{_s1}</p>"
+    f"<p style='font-size:0.88rem;color:{TH['text2']};line-height:1.6;margin:0 0 12px'>{_s2}</p>"
+    f"<div style='border-top:1px solid {TH['border']};padding-top:10px;margin-top:4px'>"
+    f"<p style='font-size:0.68rem;font-weight:700;color:{TH['text2']};text-transform:uppercase;"
+    f"letter-spacing:0.4px;margin:0 0 4px'>{S['sum_preview_resources']}</p>"
+    + "".join(_role_row(r) for r in resources_unique)
+    + f"</div>{_obs_html}</div>",
     unsafe_allow_html=True,
 )
 
-st.markdown(f"<hr style='margin:28px 0;border-color:{TH['border']}'>", unsafe_allow_html=True)
+st.markdown(f"<hr style='margin:24px 0;border-color:{TH['border']}'>", unsafe_allow_html=True)
 
-# ── STEP 1: SELECTION ─────────────────────────────────────────────────────────
-st.markdown(f"<h3 style='margin-bottom:16px;font-weight:700;color:{TH['text']}'>{S['step1_title']}</h3>",
-            unsafe_allow_html=True)
+# ── STEP 1: SELECT RESOURCES ──────────────────────────────────────────────────
+st.markdown(
+    f"<p style='font-size:1rem;font-weight:700;color:{TH['text']};margin:0 0 12px'>"
+    f"{S['step1_title']}</p>",
+    unsafe_allow_html=True,
+)
 
-all_types = sorted({r.get("resource_type", "") for r in resources_unique},
-                   key=lambda x: RT_ORDER.get(x, 99))
+all_types = sorted(
+    {r.get("resource_type", "") for r in resources_unique},
+    key=lambda x: RT_ORDER.get(x, 99),
+)
 
-col_f1, col_f2 = st.columns([4, 1])
-with col_f1:
-    filtro_tipo = st.multiselect(
-        "filter",
-        options=all_types,
-        format_func=lambda x: get_rt_label(x, lang),
-        default=all_types,
-        label_visibility="collapsed",
-        placeholder=S["filter_placeholder"],
-    )
+filtro_tipo = st.multiselect(
+    "filter", options=all_types,
+    format_func=lambda x: get_rt_label(x, lang),
+    default=all_types, label_visibility="collapsed",
+    placeholder=S["filter_placeholder"],
+)
 
 resources_visible = [r for r in resources_unique if r.get("resource_type", "") in filtro_tipo]
 
-bc1, bc2, bc3 = st.columns([1, 1, 6])
-select_all = bc1.button(S["btn_all"], use_container_width=True)
-deselect_all = bc2.button(S["btn_none"], use_container_width=True)
-
-if "sel" not in st.session_state:
-    st.session_state.sel = {r.get("export_id"): True for r in resources_unique}
-if select_all:
+_bc1, _bc2, _bc3 = st.columns([1, 1, 6])
+if _bc1.button(S["btn_all"],  use_container_width=True):
     for r in resources_visible:
         st.session_state.sel[r.get("export_id")] = True
-if deselect_all:
+if _bc2.button(S["btn_none"], use_container_width=True):
     for r in resources_visible:
         st.session_state.sel[r.get("export_id")] = False
 
-st.write("")
+if "sel" not in st.session_state:
+    st.session_state.sel = {r.get("export_id"): True for r in resources_unique}
 
 tipo_groups: dict = {}
 for r in resources_visible:
@@ -1612,46 +1589,45 @@ for r in resources_visible:
 
 selected_ids = set()
 for rt in sorted(tipo_groups.keys(), key=lambda x: RT_ORDER.get(x, 99)):
-    group = tipo_groups[rt]
+    group     = tipo_groups[rt]
     color_hex = RT_COLOR.get(rt, "475569")
-    label = get_rt_label(rt, lang)
+    label     = get_rt_label(rt, lang)
 
     st.markdown(
-        f"<div style='display:flex;align-items:center;gap:12px;margin:36px 0 16px'>"
-        f"<span style='background:#{color_hex}18;color:#{color_hex};border:1px solid #{color_hex}40;"
-        f"padding:6px 14px;border-radius:20px;font-size:0.85rem;font-weight:700;white-space:nowrap'>"
-        f"{label}</span>"
-        f"<span style='color:{TH['text2']};font-size:0.85rem;font-weight:600'>"
-        f"{len(group)} {S['resources_n']}</span></div>",
+        f"<div style='display:flex;align-items:center;gap:10px;margin:28px 0 12px'>"
+        f"<span style='background:#{color_hex}15;color:#{color_hex};"
+        f"border:1px solid #{color_hex}35;padding:4px 12px;border-radius:16px;"
+        f"font-size:0.82rem;font-weight:700'>{label}</span>"
+        f"<span style='color:{TH['text3']};font-size:0.82rem'>{len(group)} {S['resources_n']}</span>"
+        f"</div>",
         unsafe_allow_html=True,
     )
 
     for r in group:
-        eid = r.get("export_id")
-        name = r.get("name", "")
-        pars = ", ".join(rels_all[eid]["parents"]) or S["origin"]
+        eid   = r.get("export_id")
+        name  = r.get("name", "")
+        pars  = ", ".join(rels_all[eid]["parents"])  or S["origin"]
         chils = ", ".join(rels_all[eid]["children"]) or S["end_flow"]
 
-        ca, cb = st.columns([0.3, 9.7])
-        checked = ca.checkbox("", value=st.session_state.sel.get(eid, True), key=f"chk_{eid}")
+        _ca, _cb = st.columns([0.3, 9.7])
+        checked = _ca.checkbox("", value=st.session_state.sel.get(eid, True), key=f"chk_{eid}")
         st.session_state.sel[eid] = checked
 
-        opacity = "1" if checked else "0.5"
-        bg_color = TH["card_bg"] if checked else TH["bg3"]
-        border_col = "#EA0050" if checked else TH["card_border"]
-        border_w = "2px" if checked else "1px"
+        _bg  = TH["card_bg"] if checked else TH["bg3"]
+        _bdr = f"2px solid #EA0050" if checked else f"1px solid {TH['card_border']}"
+        _op  = "1" if checked else "0.5"
 
-        cb.markdown(
-            f"<div style='opacity:{opacity};padding:14px 18px;background:{bg_color};border-radius:8px;"
-            f"margin-bottom:8px;border:{border_w} solid {border_col};transition:all 0.15s'>"
-            f"<div style='display:flex;justify-content:space-between;align-items:center;margin-bottom:6px'>"
-            f"<span style='font-weight:700;font-size:0.95rem;color:{TH['text']}'>{name}</span>"
-            f"<span style='font-size:0.72rem;color:{TH['text2']};font-family:JetBrains Mono,monospace;"
-            f"background:{TH['bg3']};padding:4px 8px;border-radius:4px;border:1px solid {TH['border']}'>{eid}</span>"
+        _cb.markdown(
+            f"<div style='opacity:{_op};padding:12px 16px;background:{_bg};border-radius:8px;"
+            f"margin-bottom:6px;border:{_bdr}'>"
+            f"<div style='display:flex;justify-content:space-between;align-items:center;margin-bottom:4px'>"
+            f"<span style='font-weight:700;font-size:0.9rem;color:{TH['text']}'>{name}</span>"
+            f"<span style='font-size:0.7rem;color:{TH['text2']};font-family:JetBrains Mono,monospace;"
+            f"background:{TH['bg3']};padding:3px 7px;border-radius:4px'>{eid}</span>"
             f"</div>"
-            f"<div style='font-size:0.8rem;color:{TH['text2']};display:flex;gap:24px;font-weight:500'>"
-            f"<span>← <span style='color:{TH['text3']}'>{pars[:75]}{'…' if len(pars)>75 else ''}</span></span>"
-            f"<span>→ <span style='color:{TH['text3']}'>{chils[:75]}{'…' if len(chils)>75 else ''}</span></span>"
+            f"<div style='font-size:0.78rem;color:{TH['text3']};display:flex;gap:20px'>"
+            f"<span>← {pars[:70]}{'…' if len(pars)>70 else ''}</span>"
+            f"<span>→ {chils[:70]}{'…' if len(chils)>70 else ''}</span>"
             f"</div></div>",
             unsafe_allow_html=True,
         )
@@ -1659,42 +1635,26 @@ for rt in sorted(tipo_groups.keys(), key=lambda x: RT_ORDER.get(x, 99)):
             selected_ids.add(eid)
 
 # ── STEP 2: GENERATE ──────────────────────────────────────────────────────────
-st.markdown(f"<hr style='margin:48px 0 24px;border-color:{TH['border']}'>", unsafe_allow_html=True)
+st.markdown(f"<hr style='margin:36px 0 20px;border-color:{TH['border']}'>", unsafe_allow_html=True)
 
 n_sel = len(selected_ids)
 if n_sel == 0:
     st.warning(S["no_sel_warning"])
     st.stop()
 
-# Selection summary badges
-tipos_sel = Counter(r.get("resource_type", "") for r in resources_unique if r.get("export_id") in selected_ids)
-badges = "".join(
-    f"<span style='background:#{RT_COLOR.get(rt,'6B7280')}15;color:#{RT_COLOR.get(rt,'6B7280')};"
-    f"border:1px solid #{RT_COLOR.get(rt,'6B7280')}30;padding:4px 12px;border-radius:12px;"
-    f"font-size:0.8rem;font-weight:700;white-space:nowrap'>{get_rt_label(rt,lang)} ({cnt})</span> "
-    for rt, cnt in sorted(tipos_sel.items(), key=lambda x: RT_ORDER.get(x[0], 99))
-)
-st.markdown(
-    f"<div style='background:{TH['card_bg']};border:1px solid {TH['card_border']};border-radius:12px;"
-    f"padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap'>"
-    f"<span style='font-weight:700;color:{TH['text']};white-space:nowrap;font-size:1.05rem'>"
-    f"📋 {n_sel} {S['sel_label']}:</span>{badges}</div>",
-    unsafe_allow_html=True,
-)
-
 base_name = os.path.splitext(up.name)[0]
-ts_key    = f"reports_{up.name}_{n_sel}"   # invalidates if file or selection changes
+ts_key    = f"reports_{up.name}_{n_sel}"
 
-# Clear cached report if source changed
 if st.session_state.get("_report_key") != ts_key:
     st.session_state.pop("_excel_bytes", None)
     st.session_state.pop("_show_anim",   None)
     st.session_state["_report_key"] = ts_key
 
-if st.button(S["btn_generate"], type="primary", use_container_width=True):
+_btn_label = f"{S['btn_generate']}  ·  {n_sel} {S['resources_n']}"
+if st.button(_btn_label, type="primary", use_container_width=True):
     prog = st.progress(0, text="Starting…")
     try:
-        prog.progress(30, text="Parsing resources…")
+        prog.progress(25, text="Parsing resources…")
         excel_io = generar_excel(data, selected_ids, lang)
         prog.progress(100, text="Done.")
         st.session_state["_excel_bytes"] = excel_io.read()
@@ -1706,53 +1666,51 @@ if st.button(S["btn_generate"], type="primary", use_container_width=True):
         import traceback
         st.code(traceback.format_exc())
 
-# ── Animation + persistent download button ────────────────────────────────────────────
+# ── Animation + download ──────────────────────────────────────────────────────
 if "_excel_bytes" in st.session_state:
     ts      = datetime.now().strftime("%Y-%m-%d_%H%M")
     f_excel = f"flowdocs_{base_name}_{ts}.xlsx"
 
     if st.session_state.get("_show_anim"):
         st.session_state["_show_anim"] = False
-        _anim_msg = ("Documentation ready — download below" if lang == "en"
-                     else "Documentación lista — descargá abajo")
+        _msg = "Documentation ready — download below" if lang == "en" else "Documentación lista — descargá abajo"
         st.markdown(f"""
 <style>
-@keyframes _float{{0%,100%{{transform:translateY(0)}}50%{{transform:translateY(-8px)}}}}
+@keyframes _float{{0%,100%{{transform:translateY(0)}}50%{{transform:translateY(-7px)}}}}
 @keyframes _pop{{0%{{transform:scale(0);opacity:0}}70%{{transform:scale(1.08);opacity:1}}100%{{transform:scale(1);opacity:1}}}}
-@keyframes _fadein{{from{{opacity:0;transform:translateY(6px)}}to{{opacity:1;transform:translateY(0)}}}}
-@keyframes _shimmer{{0%{{stroke-dashoffset:160}}100%{{stroke-dashoffset:0}}}}
-.fd-wrap{{display:flex;flex-direction:column;align-items:center;gap:16px;padding:32px 0 24px}}
-.fd-icon{{animation:_float 2.4s ease-in-out infinite}}
-.fd-check{{animation:_pop .5s cubic-bezier(.175,.885,.32,1.275) .2s both}}
-.fd-msg{{animation:_fadein .4s ease .55s both;background:#EA0050;color:#fff;font-family:Inter,sans-serif;
-    font-size:1rem;font-weight:600;padding:10px 28px;border-radius:24px;letter-spacing:.2px}}
-.fd-line{{stroke-dasharray:160;animation:_shimmer .6s ease .1s both}}
+@keyframes _fadein{{from{{opacity:0;transform:translateY(5px)}}to{{opacity:1;transform:translateY(0)}}}}
+@keyframes _draw{{0%{{stroke-dashoffset:160}}100%{{stroke-dashoffset:0}}}}
+.fd-wrap{{display:flex;flex-direction:column;align-items:center;gap:14px;padding:28px 0 20px}}
+.fd-icon{{animation:_float 2.2s ease-in-out infinite}}
+.fd-check{{animation:_pop .45s cubic-bezier(.175,.885,.32,1.275) .15s both}}
+.fd-msg{{animation:_fadein .35s ease .5s both;background:#EA0050;color:#fff;
+    font-size:0.95rem;font-weight:600;padding:9px 26px;border-radius:22px}}
+.fd-tick{{stroke-dasharray:160;animation:_draw .55s ease .1s both}}
 </style>
 <div class="fd-wrap">
-  <div style="position:relative;width:90px;height:90px">
+  <div style="position:relative;width:80px;height:80px">
     <div class="fd-icon">
-      <svg width="90" height="90" viewBox="0 0 90 90" fill="none">
-        <rect x="14" y="8" width="52" height="66" rx="6" fill="#FDF0F3" stroke="#EA0050" stroke-width="2"/>
-        <rect x="22" y="22" width="36" height="3" rx="1.5" fill="#EA0050" opacity=".35"/>
-        <rect x="22" y="30" width="28" height="3" rx="1.5" fill="#EA0050" opacity=".25"/>
-        <rect x="22" y="38" width="32" height="3" rx="1.5" fill="#EA0050" opacity=".25"/>
-        <rect x="22" y="46" width="20" height="3" rx="1.5" fill="#EA0050" opacity=".2"/>
-        <rect x="48" y="8" width="18" height="18" rx="3" fill="#FDF0F3" stroke="#EA0050" stroke-width="2"/>
-        <line x1="48" y1="8" x2="66" y2="26" stroke="#EA0050" stroke-width="2"/>
+      <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+        <rect x="10" y="6" width="46" height="58" rx="5" fill="#FDF0F3" stroke="#EA0050" stroke-width="1.8"/>
+        <rect x="18" y="20" width="30" height="2.5" rx="1.25" fill="#EA0050" opacity=".3"/>
+        <rect x="18" y="28" width="22" height="2.5" rx="1.25" fill="#EA0050" opacity=".2"/>
+        <rect x="18" y="36" width="26" height="2.5" rx="1.25" fill="#EA0050" opacity=".2"/>
+        <rect x="18" y="44" width="16" height="2.5" rx="1.25" fill="#EA0050" opacity=".15"/>
+        <rect x="42" y="6" width="14" height="14" rx="2.5" fill="#FDF0F3" stroke="#EA0050" stroke-width="1.8"/>
+        <line x1="42" y1="6" x2="56" y2="20" stroke="#EA0050" stroke-width="1.8"/>
       </svg>
     </div>
-    <div class="fd-check" style="position:absolute;bottom:-4px;right:-4px;
-        width:32px;height:32px;border-radius:50%;background:#EA0050;
+    <div class="fd-check" style="position:absolute;bottom:-2px;right:-2px;
+        width:26px;height:26px;border-radius:50%;background:#EA0050;
         display:flex;align-items:center;justify-content:center;
-        box-shadow:0 4px 12px rgba(234,0,80,.4)">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-        <polyline class="fd-line" points="2,8 6,12 14,4"
-          stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"
-          stroke-dasharray="160"/>
+        box-shadow:0 3px 10px rgba(234,0,80,.4)">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+        <polyline class="fd-tick" points="1.5,6.5 5,10 11.5,2.5"
+          stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     </div>
   </div>
-  <div class="fd-msg">{_anim_msg}</div>
+  <div class="fd-msg">{_msg}</div>
 </div>""", unsafe_allow_html=True)
     else:
         st.success(S["success_msg"].format(n=n_sel))
@@ -1766,7 +1724,13 @@ if "_excel_bytes" in st.session_state:
         type="primary",
     )
 
+# ── FOOTER ────────────────────────────────────────────────────────────────────
 st.markdown(
-    f"<hr style='margin:32px 0;border-color:{TH['border']}'>"    f"<div style='text-align:center;padding-bottom:24px'>"    f"<p style='color:{TH['text2']};font-size:0.78rem;margin:0 0 6px'>Simetrik Flow Docs · v3.0  ·  MIT License</p>"    f"<p style='color:{TH['text3']};font-size:0.75rem;margin:0'>{S['disc_footer_1']}</p>"    f"</div>",
+    f"<div style='border-top:1px solid {TH['border']};margin-top:40px;padding:16px 0;"
+    f"text-align:center'>"
+    f"<p style='color:{TH['text2']};font-size:0.78rem;margin:0 0 3px'>"
+    f"Simetrik Flow Docs · v3.0 · MIT License</p>"
+    f"<p style='color:{TH['text3']};font-size:0.73rem;margin:0'>{S['disc_footer_1']}</p>"
+    f"</div>",
     unsafe_allow_html=True,
 )
