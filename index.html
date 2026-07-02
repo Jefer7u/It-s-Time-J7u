@@ -1029,6 +1029,45 @@
   .score-badge.score-high  { border-color: rgba(111,203,138,0.4); color: var(--green); background: rgba(111,203,138,0.1); }
   .score-badge.score-mid   { border-color: rgba(232,184,75,0.4);  color: var(--amber); background: rgba(232,184,75,0.1); }
   .score-badge.score-low   { border-color: var(--border2); color: var(--text3); }
+
+  /* ============================
+     TODAY — DAY PROGRESS BAR
+     ============================ */
+  .day-progress { height: 6px; background: var(--bg4); border-radius: 6px; overflow: hidden; margin: -8px 0 18px; }
+  .day-progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent2), var(--accent)); border-radius: 6px; transition: width 0.4s ease; }
+  .day-progress-fill.full { background: linear-gradient(90deg, #4a9e63, var(--green)); }
+
+  /* ============================
+     BOARD — PLANNER MODE (by day) + quick actions
+     ============================ */
+  .kb-quick { margin-top: 8px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .kb-quick-btn {
+    background: none; border: 1px solid var(--border2); color: var(--text2);
+    font-size: 10px; font-family: var(--font-mono); font-weight: 700;
+    padding: 2px 9px; border-radius: 20px; cursor: pointer;
+    transition: all 0.15s; white-space: nowrap;
+  }
+  .board-week-nav { display: none; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .board-week-nav.visible { display: flex; }
+  .kanban.planner { display: flex; overflow-x: auto; gap: 10px; padding-bottom: 8px; grid-template-columns: none; }
+  .kanban.planner .kanban-col { min-width: 218px; flex: 0 0 218px; scroll-snap-align: start; }
+  .kanban.planner .kanban-col-body { max-height: 58vh; }
+  .kanban-col.today-kb-col { border-color: var(--accent); border-width: 1.5px; }
+  .kanban-card.kb-habit { border-left: 3px solid var(--blue); }
+
+  @media (hover: hover) and (pointer: fine) {
+    .kb-quick-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-glow); }
+  }
+
+  /* ============================
+     WEEK — drag & drop entre días + mini progreso
+     ============================ */
+  .week-day-task-row[draggable="true"] { cursor: grab; }
+  .week-day-task-row.dragging { opacity: 0.35; }
+  .week-day-col.drag-over { border-color: var(--accent); }
+  .week-day-col.drag-over .week-day-body { background: var(--accent-glow); }
+  .week-day-progress { height: 3px; background: var(--bg4); border-radius: 3px; overflow: hidden; width: 100%; margin-top: 5px; }
+  .week-day-progress-fill { height: 100%; background: var(--green); border-radius: 3px; transition: width 0.3s ease; }
 </style>
 </head>
 <body>
@@ -1211,6 +1250,9 @@
           </div>
         </div>
 
+        <!-- DAY PROGRESS -->
+        <div class="day-progress"><div class="day-progress-fill" id="day-progress-fill"></div></div>
+
         <!-- QUICK ADD -->
         <div class="quick-add">
           <span class="qa-icon">＋</span>
@@ -1252,12 +1294,23 @@
         <div class="qa-preview" id="qa-preview-qa-board"></div>
 
         <div class="board-toolbar">
+          <div class="filter-chips" id="board-group-chips">
+            <span class="filter-label" data-i18n="board_group">Group</span>
+            <button class="filter-chip active" data-bgroup="status" data-i18n="group_status">By status</button>
+            <button class="filter-chip" data-bgroup="day" data-i18n="group_day">By day</button>
+          </div>
           <div class="filter-chips" id="board-scope-chips">
             <span class="filter-label" data-i18n="board_view">View</span>
             <button class="filter-chip active" data-scope="all" data-i18n="scope_all">All</button>
             <button class="filter-chip" data-scope="today" data-i18n="scope_today">Today</button>
             <button class="filter-chip" data-scope="week" data-i18n="scope_week">Week</button>
             <button class="filter-chip" data-scope="month" data-i18n="scope_month">Month</button>
+          </div>
+          <div class="board-week-nav" id="board-week-nav">
+            <button class="btn btn-ghost btn-sm" id="btn-bweek-prev">←</button>
+            <span class="week-label" id="board-week-label"></span>
+            <button class="btn btn-ghost btn-sm" id="btn-bweek-next">→</button>
+            <button class="btn btn-ghost btn-sm" id="btn-bweek-today">⊙ <span data-i18n="current_week">This week</span></button>
           </div>
         </div>
         <div class="board-toolbar">
@@ -1670,6 +1723,9 @@ const translations = {
     scope_all: "All", scope_today: "Today", scope_week: "Week", scope_month: "Month",
     col_todo: "To Do", col_progress: "In Progress", col_done: "Completed",
     no_board_tasks: "No tasks in this view.",
+    board_group: "Group", group_status: "By status", group_day: "By day",
+    backlog: "Backlog", due_today: "Due today", done_section: "Completed",
+    planner_hint: "Drag a card onto a day to schedule it",
     add: "Add", undo: "Undo",
     task_added: "Task added", task_added_today: "Task added to today",
     task_deleted: "Task deleted",
@@ -1742,6 +1798,9 @@ const translations = {
     scope_all: "Todas", scope_today: "Hoy", scope_week: "Semana", scope_month: "Mes",
     col_todo: "Por hacer", col_progress: "En progreso", col_done: "Completadas",
     no_board_tasks: "Sin tareas en esta vista.",
+    board_group: "Agrupar", group_status: "Por estado", group_day: "Por día",
+    backlog: "Backlog", due_today: "Vencen hoy", done_section: "Completadas",
+    planner_hint: "Arrastrá una tarjeta a un día para planificarla",
     add: "Agregar", undo: "Deshacer",
     task_added: "Tarea agregada", task_added_today: "Tarea agregada a hoy",
     task_deleted: "Tarea eliminada",
@@ -1900,6 +1959,7 @@ const getInitialState = () => ({
   weekPlanningDay: null, activeFilter: 'all', activeAreaFilter: null,
   selectedAreaColor: '#7ab3e0', historyView: 'daily', weekOffset: 0,
   boardScope: 'all', boardStatus: 'all', boardArea: null,
+  boardGroup: 'status', boardWeekOffset: 0,
   lastDiaryDate: null,
 });
 let state = getInitialState();
@@ -2387,8 +2447,11 @@ function _updateTodayStats() {
   const statDone = document.getElementById('stat-done');
   const statProg = document.getElementById('stat-progress');
   const statPend = document.getElementById('stat-pending');
+  const dayPct = plannedCount ? Math.round((doneCount/plannedCount)*100) : 0;
   if (statDone) statDone.textContent = doneCount;
-  if (statProg) statProg.innerHTML = `${plannedCount ? Math.round((doneCount/plannedCount)*100) : 0}<small>%</small>`;
+  if (statProg) statProg.innerHTML = `${dayPct}<small>%</small>`;
+  const dpFill = document.getElementById('day-progress-fill');
+  if (dpFill) { dpFill.style.width = dayPct + '%'; dpFill.classList.toggle('full', dayPct === 100); }
   const pendingCount = state.tasks.filter(t => !t.done).length;
   if (statPend) statPend.textContent = pendingCount;
   const bnavBadge = document.getElementById('bnav-badge-tasks');
@@ -2658,23 +2721,32 @@ document.getElementById('btn-save-score').addEventListener('click', () => {
 function renderTodayOverdue() {
   const wrap = document.getElementById('today-overdue');
   if (!wrap) return;
+  const notPlanned = tk => !tk.done && !state.todayPlan.includes(tk.id);
   const overdue = state.tasks
-    .filter(tk => !tk.done && isOverdue(tk.date) && !state.todayPlan.includes(tk.id))
+    .filter(tk => notPlanned(tk) && isOverdue(tk.date))
     .sort((a,b) => (a.date||'').localeCompare(b.date||''));
-  if (overdue.length === 0) { wrap.innerHTML = ''; return; }
+  const dueToday = state.tasks.filter(tk => notPlanned(tk) && tk.date === TODAY);
 
-  const rows = overdue.slice(0, 5).map(tk => `
+  if (overdue.length === 0 && dueToday.length === 0) { wrap.innerHTML = ''; return; }
+
+  const row = (tk, dateColor) => `
     <div class="overdue-row" data-ovid="${tk.id}">
       <span class="overdue-row-title">${esc(tk.title)}</span>
-      <span class="overdue-row-date">${formatDate(tk.date)}</span>
+      <span class="overdue-row-date" style="color:${dateColor};">${formatDate(tk.date)}</span>
       <button class="overdue-add" data-ovadd="${tk.id}">${esc(t('add_to_today'))}</button>
-    </div>`).join('');
-
-  wrap.innerHTML = `
-    <div class="overdue-alert">
-      <div class="overdue-alert-title">⚠ ${esc(t('overdue_title'))} · ${overdue.length}</div>
-      ${rows}
     </div>`;
+
+  let html = '<div class="overdue-alert">';
+  if (overdue.length > 0) {
+    html += `<div class="overdue-alert-title">⚠ ${esc(t('overdue_title'))} · ${overdue.length}</div>`;
+    html += overdue.slice(0, 5).map(tk => row(tk, 'var(--red)')).join('');
+  }
+  if (dueToday.length > 0) {
+    html += `<div class="overdue-alert-title" style="color:var(--amber);${overdue.length ? 'margin-top:10px;' : ''}">◷ ${esc(t('due_today'))} · ${dueToday.length}</div>`;
+    html += dueToday.slice(0, 5).map(tk => row(tk, 'var(--amber)')).join('');
+  }
+  html += '</div>';
+  wrap.innerHTML = html;
 
   wrap.querySelectorAll('[data-ovadd]').forEach(btn => btn.addEventListener('click', () => {
     const id = btn.dataset.ovadd;
@@ -2695,23 +2767,39 @@ function renderToday() {
     if (h && state.habitLog[TODAY] && state.habitLog[TODAY][id]) doneCount++;
     if (tk && tk.done) doneCount++;
   });
+  const dayPct = plannedCount ? Math.round((doneCount/plannedCount)*100) : 0;
   document.getElementById('stat-planned').textContent = plannedCount;
   document.getElementById('stat-done').textContent    = doneCount;
-  document.getElementById('stat-progress').innerHTML  = `${plannedCount ? Math.round((doneCount/plannedCount)*100) : 0}<small>%</small>`;
+  document.getElementById('stat-progress').innerHTML  = `${dayPct}<small>%</small>`;
   document.getElementById('stat-pending').textContent = state.tasks.filter(t => !t.done).length;
+  const dpFill = document.getElementById('day-progress-fill');
+  if (dpFill) { dpFill.style.width = dayPct + '%'; dpFill.classList.toggle('full', dayPct === 100); }
 
   if (plannedCount === 0) {
     list.innerHTML = `<div class="empty-state"><div class="empty-icon">◈</div><p>${esc(t('plan_empty'))}</p></div>`;
     return;
   }
 
+  const isItemDone = id => state.habits.find(h=>h.id===id)
+    ? !!(state.habitLog[TODAY]?.[id])
+    : !!(state.tasks.find(tk=>tk.id===id)?.done);
+
   const sortedPlan = [...state.todayPlan].sort((a,b) => {
-    const aDone = state.habits.find(h=>h.id===a) ? !!(state.habitLog[TODAY]?.[a]) : !!(state.tasks.find(tk=>tk.id===a)?.done);
-    const bDone = state.habits.find(h=>h.id===b) ? !!(state.habitLog[TODAY]?.[b]) : !!(state.tasks.find(tk=>tk.id===b)?.done);
+    const aDone = isItemDone(a), bDone = isItemDone(b);
     return aDone === bDone ? 0 : aDone ? 1 : -1;
   });
 
+  let doneDividerAdded = false;
   sortedPlan.forEach(id => {
+    // Visual divider before the completed block
+    if (!doneDividerAdded && isItemDone(id) && doneCount < plannedCount) {
+      const divider = document.createElement('div');
+      divider.className = 'section-title';
+      divider.style.marginTop = '16px';
+      divider.textContent = `✓ ${t('done_section')} · ${doneCount}`;
+      list.appendChild(divider);
+      doneDividerAdded = true;
+    }
     const habit = state.habits.find(h => h.id === id);
     if (habit) {
       const isDone = !!(state.habitLog[TODAY]?.[id]);
@@ -2861,6 +2949,30 @@ function buildKanbanCard(tk) {
     </div>` : ''}
   `;
 
+  // Quick actions: send to today's plan / open date editor — manage everything from the board
+  if (!tk.done) {
+    const quick = document.createElement('div');
+    quick.className = 'kb-quick';
+    let qhtml = '';
+    if (!state.todayPlan.includes(tk.id)) qhtml += `<button class="kb-quick-btn" data-kbtoday="${tk.id}">${esc(t('add_to_today'))}</button>`;
+    qhtml += `<button class="kb-quick-btn" data-kbdate="${tk.id}">📅</button>`;
+    quick.innerHTML = qhtml;
+    card.appendChild(quick);
+    const todayBtn = quick.querySelector('[data-kbtoday]');
+    if (todayBtn) todayBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      if (!state.todayPlan.includes(tk.id)) state.todayPlan.push(tk.id);
+      syncTodayToWeek();
+      save(); renderBoard();
+      showToast(t('task_added_today'), 'success');
+    });
+    quick.querySelector('[data-kbdate]').addEventListener('click', e => {
+      e.stopPropagation();
+      editTask(tk.id);
+      setTimeout(() => document.getElementById('task-input-date').focus(), 300);
+    });
+  }
+
   card.querySelector('.task-checkbox').addEventListener('click', e => {
     e.stopPropagation();
     window.toggleItemDone(tk.id, TODAY);
@@ -2874,6 +2986,152 @@ function buildKanbanCard(tk) {
   });
   card.addEventListener('dragend', () => card.classList.remove('dragging'));
   return card;
+}
+
+// ── PLANNER MODE: columns = Backlog + days of the week ─────
+function buildPlannerCard(id, dayISO) {
+  const habit = state.habits.find(h => h.id === id);
+  const tk = habit ? null : state.tasks.find(x => x.id === id);
+  if (!habit && !tk) return null;
+
+  const card = document.createElement('div');
+  card.draggable = true;
+  card.dataset.plid = id;
+
+  if (habit) {
+    const isDone = dayISO ? !!(state.habitLog[dayISO]?.[id]) : false;
+    card.className = 'kanban-card kb-habit' + (isDone ? ' kb-done' : '');
+    card.innerHTML = `
+      <div class="kb-title">
+        <div class="task-checkbox ${isDone ? 'checked' : ''}">${isDone ? '✓' : ''}</div>
+        <span class="kb-title-text ${isDone ? 'done' : ''}">${esc(habit.icon)} ${esc(habit.name)}</span>
+      </div>
+      <div class="kb-meta"><span style="font-size:10px;background:var(--accent-glow);color:var(--accent);padding:1px 6px;border-radius:20px;font-family:var(--font-mono);">${esc(t('habit'))}</span></div>`;
+    card.querySelector('.task-checkbox').addEventListener('click', e => {
+      e.stopPropagation();
+      if (!dayISO) return;
+      window.toggleItemDone(id, dayISO);
+      renderBoard();
+    });
+  } else {
+    const area = state.areas.find(a => a.id === tk.area);
+    const overdue = isOverdue(tk.date) && !tk.done;
+    const priority = tk.priority || 'low';
+    card.className = `kanban-card kb-${priority}` + (tk.done ? ' kb-done' : '');
+    card.innerHTML = `
+      <div class="kb-title">
+        <div class="task-checkbox ${tk.done ? 'checked' : ''}">${tk.done ? '✓' : ''}</div>
+        <span class="kb-title-text ${tk.done ? 'done' : ''}">${esc(tk.title)}</span>
+      </div>
+      <div class="kb-meta">
+        ${getPriorityBadge(priority)}
+        ${area ? `<span class="tag" style="background:${esc(area.color)}22;color:${esc(area.color)};">${esc(getAreaName(area))}</span>` : ''}
+        ${tk.date && !tk.done ? `<span class="task-date ${overdue ? 'overdue' : ''}">${overdue ? '⚠ ' : ''}${formatDate(tk.date)}</span>` : ''}
+      </div>`;
+    card.querySelector('.task-checkbox').addEventListener('click', e => {
+      e.stopPropagation();
+      window.toggleItemDone(id, dayISO || TODAY);
+      renderBoard();
+    });
+    card.querySelector('.kb-title-text').addEventListener('click', () => editTask(id));
+  }
+
+  card.addEventListener('dragstart', e => {
+    card.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', id);
+  });
+  card.addEventListener('dragend', () => card.classList.remove('dragging'));
+  return card;
+}
+
+// Move an item (task or habit) to a day of the visible week, or to the Backlog (null)
+function movePlannedItem(id, targetDay) {
+  const days = getWeekDays(state.boardWeekOffset);
+  days.forEach(d => {
+    if (state.weekPlan[d]) state.weekPlan[d] = state.weekPlan[d].filter(x => x !== id);
+  });
+  if (targetDay) {
+    if (!state.weekPlan[targetDay]) state.weekPlan[targetDay] = [];
+    if (!state.weekPlan[targetDay].includes(id)) state.weekPlan[targetDay].push(id);
+  }
+  if (days.includes(TODAY)) syncWeekToToday();
+  save(); renderBoard();
+}
+
+function renderBoardByDay() {
+  const board = document.getElementById('kanban-board');
+  board.innerHTML = '';
+  board.classList.add('planner');
+
+  const days = getWeekDays(state.boardWeekOffset);
+  const wn = getWeekNumber(days[0]);
+  const fmt = iso => new Date(iso+'T12:00:00').toLocaleDateString(currentLang === 'es' ? 'es-AR' : 'en-GB', { day:'numeric', month:'short' });
+  document.getElementById('board-week-label').textContent = `${t('week_number')} ${wn} — ${fmt(days[0])} → ${fmt(days[6])}`;
+
+  const dayNames = currentLang === 'es' ? ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'] : ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const status = state.boardStatus || 'all';
+
+  const passStatus = tk => status === 'pending' ? !tk.done : status === 'done' ? tk.done : true;
+  const passArea   = tk => !state.boardArea || tk.area === state.boardArea;
+
+  // Backlog: pending tasks not planned on any day of this week
+  const plannedThisWeek = new Set();
+  days.forEach(d => (state.weekPlan[d] || []).forEach(id => plannedThisWeek.add(id)));
+  const backlogTasks = state.tasks.filter(tk => !tk.done && !plannedThisWeek.has(tk.id) && passArea(tk));
+  const pOrder = { high:0, medium:1, low:2 };
+  backlogTasks.sort((a,b) => (pOrder[a.priority||'low'] ?? 2) - (pOrder[b.priority||'low'] ?? 2));
+
+  const makeCol = (label, color, isToday) => {
+    const col = document.createElement('div');
+    col.className = 'kanban-col' + (isToday ? ' today-kb-col' : '');
+    col.innerHTML = `
+      <div class="kanban-col-header">
+        <span class="kb-dot" style="background:${color};"></span>
+        <span style="color:${color};">${esc(label)}</span>
+        <span class="kanban-col-count">0</span>
+      </div>
+      <div class="kanban-col-body"></div>`;
+    return col;
+  };
+
+  const attachDrop = (col, targetDay) => {
+    col.addEventListener('dragover', e => { e.preventDefault(); col.classList.add('drag-over'); });
+    col.addEventListener('dragleave', e => { if (!col.contains(e.relatedTarget)) col.classList.remove('drag-over'); });
+    col.addEventListener('drop', e => {
+      e.preventDefault();
+      col.classList.remove('drag-over');
+      const id = e.dataTransfer.getData('text/plain');
+      if (id) movePlannedItem(id, targetDay);
+    });
+  };
+
+  // Backlog column
+  const backlogCol = makeCol(t('backlog'), 'var(--text3)', false);
+  const backlogBody = backlogCol.querySelector('.kanban-col-body');
+  backlogTasks.forEach(tk => { const c = buildPlannerCard(tk.id, null); if (c) backlogBody.appendChild(c); });
+  backlogCol.querySelector('.kanban-col-count').textContent = backlogTasks.length;
+  if (backlogTasks.length === 0) backlogBody.innerHTML = `<div class="kanban-empty">—</div>`;
+  attachDrop(backlogCol, null);
+  board.appendChild(backlogCol);
+
+  // One column per day
+  days.forEach((dateISO, i) => {
+    const isToday = dateISO === TODAY;
+    const d = new Date(dateISO + 'T12:00:00');
+    const col = makeCol(`${dayNames[i]} ${d.getDate()}`, isToday ? 'var(--accent)' : 'var(--text2)', isToday);
+    const body = col.querySelector('.kanban-col-body');
+    const planned = (state.weekPlan[dateISO] || []).filter(id => {
+      const tk = state.tasks.find(x => x.id === id);
+      if (tk) return passStatus(tk) && passArea(tk);
+      return status !== 'done'; // habits always show unless filtering only-completed tasks
+    });
+    planned.forEach(id => { const c = buildPlannerCard(id, dateISO); if (c) body.appendChild(c); });
+    col.querySelector('.kanban-col-count').textContent = planned.length;
+    if (planned.length === 0) body.innerHTML = `<div class="kanban-empty">—</div>`;
+    attachDrop(col, dateISO);
+    board.appendChild(col);
+  });
 }
 
 function renderBoardAreaChips() {
@@ -2900,14 +3158,24 @@ function renderBoardAreaChips() {
 
 function renderBoard() {
   // Sync chip active states with persisted state
+  const group = state.boardGroup || 'status';
+  document.querySelectorAll('#board-group-chips .filter-chip').forEach(ch =>
+    ch.classList.toggle('active', ch.dataset.bgroup === group));
   document.querySelectorAll('#board-scope-chips .filter-chip').forEach(ch =>
     ch.classList.toggle('active', ch.dataset.scope === (state.boardScope || 'all')));
   document.querySelectorAll('#board-status-chips .filter-chip').forEach(ch =>
     ch.classList.toggle('active', ch.dataset.bstatus === (state.boardStatus || 'all')));
   renderBoardAreaChips();
 
+  // In day mode: hide the time-scope chips (the week IS the scope) and show week nav
+  document.getElementById('board-scope-chips').style.display = group === 'day' ? 'none' : 'flex';
+  document.getElementById('board-week-nav').classList.toggle('visible', group === 'day');
+
+  if (group === 'day') { renderBoardByDay(); return; }
+
   const tasks = getBoardTasks();
   const board = document.getElementById('kanban-board');
+  board.classList.remove('planner');
   board.innerHTML = '';
 
   const allCols = [
@@ -2966,13 +3234,19 @@ function renderBoard() {
   }
 }
 
-// Board static filter chips (scope + status)
+// Board static filter chips (group + scope + status) and week navigation
+document.querySelectorAll('#board-group-chips .filter-chip').forEach(ch => {
+  ch.addEventListener('click', () => { state.boardGroup = ch.dataset.bgroup; renderBoard(); });
+});
 document.querySelectorAll('#board-scope-chips .filter-chip').forEach(ch => {
   ch.addEventListener('click', () => { state.boardScope = ch.dataset.scope; renderBoard(); });
 });
 document.querySelectorAll('#board-status-chips .filter-chip').forEach(ch => {
   ch.addEventListener('click', () => { state.boardStatus = ch.dataset.bstatus; renderBoard(); });
 });
+document.getElementById('btn-bweek-prev').addEventListener('click',  () => { state.boardWeekOffset--; renderBoard(); });
+document.getElementById('btn-bweek-next').addEventListener('click',  () => { state.boardWeekOffset++; renderBoard(); });
+document.getElementById('btn-bweek-today').addEventListener('click', () => { state.boardWeekOffset = 0; renderBoard(); });
 
 // ============================================================
 // RENDER: WEEK PLANNER
@@ -3023,16 +3297,34 @@ function renderWeek() {
       if (tk && tk.done) dayDone++;
     });
 
+    const dayPct = dayTotal ? Math.round((dayDone/dayTotal)*100) : 0;
     col.innerHTML = `
       <div class="week-day-header">
         <div class="week-day-name">${dayNames[i]}</div>
         <div class="week-day-num">${d.getDate()}</div>
         ${dayTotal > 0 ? `<div style="font-size:9px;font-family:var(--font-mono);color:${dayDone===dayTotal?'var(--green)':'var(--text3)'};">${dayDone}/${dayTotal}</div>` : ''}
+        ${dayTotal > 0 ? `<div class="week-day-progress"><div class="week-day-progress-fill" style="width:${dayPct}%;"></div></div>` : ''}
       </div>
       <div class="week-day-body"></div>
       <button class="week-add-btn" data-wday="${dateISO}">＋</button>
     `;
     const body = col.querySelector('.week-day-body');
+
+    // Day column accepts dropped items from other days (drag to reschedule)
+    col.addEventListener('dragover', e => { e.preventDefault(); col.classList.add('drag-over'); });
+    col.addEventListener('dragleave', e => { if (!col.contains(e.relatedTarget)) col.classList.remove('drag-over'); });
+    col.addEventListener('drop', e => {
+      e.preventDefault();
+      col.classList.remove('drag-over');
+      let payload;
+      try { payload = JSON.parse(e.dataTransfer.getData('text/plain')); } catch { return; }
+      if (!payload || !payload.id || payload.from === dateISO) return;
+      state.weekPlan[payload.from] = (state.weekPlan[payload.from] || []).filter(x => x !== payload.id);
+      if (!state.weekPlan[dateISO]) state.weekPlan[dateISO] = [];
+      if (!state.weekPlan[dateISO].includes(payload.id)) state.weekPlan[dateISO].push(payload.id);
+      if (payload.from === TODAY || dateISO === TODAY) syncWeekToToday();
+      save(); renderWeek();
+    });
 
     if (planned.length === 0) {
       const empty = document.createElement('div');
@@ -3051,12 +3343,19 @@ function renderWeek() {
 
       const row = document.createElement('div');
       row.className = 'week-day-task-row';
+      row.draggable = true;
       row.innerHTML = `
         <div class="week-day-task-dot" style="background:${isDone ? 'var(--green)' : color};"></div>
         <span class="week-day-task-label ${isDone ? 'done-text' : ''}">${esc((habit ? habit.icon + ' ' : '') + (item.name || item.title))}</span>
         ${isDone ? '<span class="week-day-task-check">✓</span>' : ''}
       `;
       row.addEventListener('click', () => window.toggleItemDone(id, dateISO));
+      row.addEventListener('dragstart', e => {
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', JSON.stringify({ id, from: dateISO }));
+        row.classList.add('dragging');
+      });
+      row.addEventListener('dragend', () => row.classList.remove('dragging'));
       body.appendChild(row);
     });
 
@@ -4266,4 +4565,3 @@ render();
 </script>
 </body>
 </html>
-<!-- Este es un comentario en HTML y no se ve en la pantalla -->
