@@ -194,10 +194,10 @@
   .page.active { display: flex; }
   #mobile-header { display: none; }
 
-  .page-header { padding: 28px 36px 18px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+  .page-header { padding: 20px 32px 14px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
   .page-title { font-size: 26px; color: var(--text); font-weight: 700; letter-spacing: -0.5px; }
   .page-sub { font-size: 12px; color: var(--text3); margin-top: 3px; font-family: var(--font-mono); }
-  .page-body { padding: 22px 36px; flex: 1; }
+  .page-body { padding: 16px 32px; flex: 1; }
   .page-header-row { display: flex; align-items: center; gap: 12px; }
 
   /* ============================
@@ -244,7 +244,7 @@
      ============================ */
   .today-greeting { font-size: 32px; color: var(--text); font-weight: 300; line-height: 1.2; margin-bottom: 4px; letter-spacing: -0.5px; }
   .today-greeting strong { color: var(--accent); font-weight: 700; }
-  .today-stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 18px 0 20px; }
+  .today-stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 12px 0 14px; }
   .stat-card-muted { opacity: 0.8; }
   .stat-card-muted .stat-label { font-size: 9.5px; }
   .stat-value.sm { font-size: 18px; color: var(--text2); }
@@ -255,7 +255,7 @@
 
   .section-title {
     font-size: 10.5px; text-transform: uppercase; letter-spacing: 1.4px; color: var(--text3);
-    margin: 20px 0 10px; display: flex; align-items: center; gap: 10px;
+    margin: 16px 0 8px; display: flex; align-items: center; gap: 10px;
     font-family: var(--font-mono);
   }
   .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
@@ -278,7 +278,7 @@
      ============================ */
   .task-card {
     background: var(--bg2); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 13px 15px; margin-bottom: 7px;
+    border-radius: var(--radius); padding: 12px 14px; margin-bottom: 6px;
     transition: all 0.18s ease; position: relative;
   }
 
@@ -623,7 +623,7 @@
     margin-left: auto; font-size: 10px; background: var(--bg4); color: var(--text2);
     padding: 1px 8px; border-radius: 20px;
   }
-  .kanban-col-body { padding: 8px; flex: 1; overflow-y: auto; max-height: 62vh; min-height: 90px; transition: background 0.15s; }
+  .kanban-col-body { padding: 8px; flex: 1; overflow-y: auto; max-height: 66vh; min-height: 90px; transition: background 0.15s; }
   .kanban-col.drag-over { border-color: var(--accent); }
   .kanban-col.drag-over .kanban-col-body { background: var(--accent-glow); }
 
@@ -1037,7 +1037,7 @@
   /* ============================
      TODAY — DAY PROGRESS BAR
      ============================ */
-  .day-progress { height: 6px; background: var(--bg4); border-radius: 6px; overflow: hidden; margin: -8px 0 18px; }
+  .day-progress { height: 6px; background: var(--bg4); border-radius: 6px; overflow: hidden; margin: -4px 0 14px; }
   .day-progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent2), var(--accent)); border-radius: 6px; transition: width 0.4s ease; }
   .day-progress-fill.full { background: linear-gradient(90deg, #4a9e63, var(--green)); }
 
@@ -1100,6 +1100,68 @@
     .area-edit-btn:hover { color: var(--accent); opacity: 1 !important; }
   }
   .status-option { user-select: none; }
+
+  /* ============================
+     GLOBAL QUOTE STRIP (visible en todas las páginas)
+     ============================ */
+  #global-quote {
+    padding: 8px 32px; border-bottom: 1px solid var(--border);
+    background: var(--bg2); font-size: 12.5px; color: var(--text2);
+    font-style: italic; line-height: 1.5;
+  }
+  #global-quote span { border-left: 2px solid var(--accent); padding-left: 10px; display: inline-block; }
+
+  /* ============================
+     TODAY — layout de 2 columnas + backlog compacto
+     ============================ */
+  .today-columns { display: grid; grid-template-columns: 1fr; gap: 0 24px; align-items: start; }
+  @media (min-width: 1100px) {
+    .today-columns { grid-template-columns: minmax(0, 3fr) minmax(280px, 2fr); }
+  }
+  .backlog-panel {
+    background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius);
+    max-height: 72vh; overflow-y: auto;
+  }
+  .backlog-row {
+    display: flex; align-items: center; gap: 8px; padding: 8px 11px;
+    border-bottom: 1px solid var(--border); font-size: 12.5px;
+    transition: background var(--transition);
+  }
+  .backlog-row:last-child { border-bottom: none; }
+  .backlog-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .backlog-title { flex: 1; min-width: 0; color: var(--text); cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; }
+  .backlog-row .tag { font-size: 10px; padding: 1px 7px; flex-shrink: 0; }
+  .backlog-row .task-date { flex-shrink: 0; }
+
+  /* ============================
+     INLINE PICKER — edición rápida (prioridad, área, score)
+     ============================ */
+  #inline-picker {
+    position: fixed; z-index: 5000;
+    background: var(--bg2); border: 1px solid var(--border2); border-radius: 10px;
+    box-shadow: var(--shadow); padding: 6px;
+    display: flex; flex-wrap: wrap; gap: 4px;
+    max-width: 250px; max-height: 50vh; overflow-y: auto;
+  }
+  #inline-picker.ip-col { flex-direction: column; flex-wrap: nowrap; min-width: 170px; }
+  .ip-item {
+    background: var(--bg3); border: 1px solid var(--border); color: var(--text);
+    font-size: 12px; font-family: var(--font-mono); font-weight: 500;
+    padding: 5px 10px; border-radius: 8px; cursor: pointer;
+    display: flex; align-items: center; white-space: nowrap;
+    transition: all 0.12s; text-align: left;
+  }
+  #inline-picker.ip-col .ip-item { width: 100%; }
+  [data-pcycle], [data-apick] { cursor: pointer; }
+  .app-name { cursor: pointer; }
+  #app-logo-mobile { cursor: pointer; }
+  @media (hover: hover) and (pointer: fine) {
+    .ip-item:hover { border-color: var(--accent); background: var(--accent-glow); color: var(--accent); }
+    .backlog-row:hover { background: var(--bg3); }
+  }
+  @media (max-width: 700px) {
+    #global-quote { padding: 8px 16px; font-size: 12px; }
+  }
 </style>
 </head>
 <body>
@@ -1249,18 +1311,18 @@
   <main id="main">
     <div id="mobile-header">
       <button id="mobile-menu-btn">☰</button>
-      <div style="font-weight:700;font-size:17px;color:var(--text);">It's Time<span style="color:var(--accent);">.</span></div>
+      <div id="app-logo-mobile" style="font-weight:700;font-size:17px;color:var(--text);">It's Time<span style="color:var(--accent);">.</span></div>
       <button id="mobile-search-btn" onclick="openSearch()" title="Search">⌕</button>
     </div>
+
+    <!-- GLOBAL QUOTE — visible en todas las páginas -->
+    <div id="global-quote"><span id="global-quote-text"></span></div>
 
     <!-- TODAY PAGE -->
     <div class="page active" id="page-today">
       <div class="page-header">
         <div class="today-greeting" id="today-greeting"><span data-i18n="greeting">Good day.</span> <strong data-i18n="greeting_word">Persistence.</strong></div>
         <div class="page-sub" id="today-full-date"></div>
-        <div class="stoic-quote-container">
-          <p id="home-quote" class="stoic-quote-text"></p>
-        </div>
       </div>
       <div class="page-body">
         <div class="today-stats">
@@ -1289,24 +1351,32 @@
         <!-- DAY PROGRESS -->
         <div class="day-progress"><div class="day-progress-fill" id="day-progress-fill"></div></div>
 
-        <!-- QUICK ADD -->
-        <div class="quick-add">
-          <span class="qa-icon">＋</span>
-          <input type="text" class="qa-input" id="qa-today" data-qa-ctx="today" autocomplete="off" spellcheck="false" data-i18n-placeholder="quick_add_ph" placeholder="Add a task... (!high #area @today)">
-          <button class="btn btn-primary btn-sm qa-btn" data-qa-for="qa-today" data-i18n="add">Add</button>
-        </div>
-        <div class="qa-preview" id="qa-preview-qa-today"></div>
+        <div class="today-columns">
+          <div class="today-main">
+            <!-- QUICK ADD -->
+            <div class="quick-add">
+              <span class="qa-icon">＋</span>
+              <input type="text" class="qa-input" id="qa-today" data-qa-ctx="today" autocomplete="off" spellcheck="false" data-i18n-placeholder="quick_add_ph" placeholder="Add a task... (!high #area @today)">
+              <button class="btn btn-primary btn-sm qa-btn" data-qa-for="qa-today" data-i18n="add">Add</button>
+            </div>
+            <div class="qa-preview" id="qa-preview-qa-today"></div>
 
-        <div style="display:flex;gap:8px;margin-bottom:4px;flex-wrap:wrap;align-items:center;">
-          <button class="btn btn-primary" id="btn-plan-today">◈ <span data-i18n="plan_my_day">Plan my day</span></button>
-          <button class="btn btn-ghost" id="btn-plan-week">▦ <span data-i18n="plan_my_week">Plan my week</span></button>
-          <button class="btn btn-ghost" id="btn-open-diary-today">◌ <span data-i18n="daily_reflection">Daily reflection</span></button>
-          <button class="btn btn-ghost" id="btn-manage-board">▤ <span data-i18n="manage_board">Manage in Board</span></button>
-          <span id="save-indicator"></span>
+            <div style="display:flex;gap:8px;margin-bottom:4px;flex-wrap:wrap;align-items:center;">
+              <button class="btn btn-primary" id="btn-plan-today">◈ <span data-i18n="plan_my_day">Plan my day</span></button>
+              <button class="btn btn-ghost" id="btn-plan-week">▦ <span data-i18n="plan_my_week">Plan my week</span></button>
+              <button class="btn btn-ghost" id="btn-open-diary-today">◌ <span data-i18n="daily_reflection">Daily reflection</span></button>
+              <button class="btn btn-ghost" id="btn-manage-board">▤ <span data-i18n="manage_board">Manage in Board</span></button>
+              <span id="save-indicator"></span>
+            </div>
+            <div id="today-overdue"></div>
+            <div class="section-title" data-i18n="execution_list">Execution List</div>
+            <div id="today-task-list"></div>
+          </div>
+          <aside class="today-side">
+            <div class="section-title" style="margin-top:0;">◻ <span data-i18n="backlog">Backlog</span>&nbsp;<span id="backlog-count" style="color:var(--accent);font-weight:700;">0</span></div>
+            <div class="backlog-panel" id="today-backlog"></div>
+          </aside>
         </div>
-        <div id="today-overdue"></div>
-        <div class="section-title" data-i18n="execution_list">Execution List</div>
-        <div id="today-task-list"></div>
       </div>
     </div>
 
@@ -2334,7 +2404,7 @@ function setDateLabels() {
   const short = `${now.getDate().toString().padStart(2,'0')}.${(now.getMonth()+1).toString().padStart(2,'0')}.${now.getFullYear()}`;
   document.getElementById('sidebar-date').textContent  = short;
   document.getElementById('today-full-date').textContent = full;
-  document.getElementById('home-quote').textContent  = getQuoteHTML();
+  document.getElementById('global-quote-text').textContent = getQuoteHTML();
   document.getElementById('modal-quote').textContent = getQuoteHTML();
   const wn = getWeekNumber(TODAY);
   document.getElementById('week-sub').textContent = `${t('week_number')} ${wn}`;
@@ -2415,10 +2485,20 @@ function applyStatusToTask(tk, st) {
   }
 }
 
-function getPriorityBadge(p) {
-  if (!p || p === 'low') return `<span class="priority-badge low">🟢 LOW</span>`;
-  if (p === 'medium')    return `<span class="priority-badge medium">🟡 MED</span>`;
-  if (p === 'high')      return `<span class="priority-badge high">🔴 HIGH</span>`;
+// editId: si se pasa, el badge es clickeable y cicla la prioridad (low→med→high)
+function getPriorityBadge(p, editId = null) {
+  const attr = editId ? ` data-pcycle="${editId}" title="Click: cambiar prioridad"` : '';
+  if (!p || p === 'low') return `<span class="priority-badge low"${attr}>🟢 LOW</span>`;
+  if (p === 'medium')    return `<span class="priority-badge medium"${attr}>🟡 MED</span>`;
+  if (p === 'high')      return `<span class="priority-badge high"${attr}>🔴 HIGH</span>`;
+  return '';
+}
+// Área como tag editable (con ghost "+ área" cuando no tiene)
+function getAreaTag(task, editable) {
+  const area = state.areas.find(a => a.id === task.area);
+  const attr = editable ? ` data-apick="${task.id}" title="Click: cambiar área"` : '';
+  if (area) return `<span class="tag" style="background:${esc(area.color)}22;color:${esc(area.color)};"${attr}>${esc(getAreaName(area))}</span>`;
+  if (editable) return `<span class="tag" style="background:var(--bg4);color:var(--text3);"${attr}>＋ ${esc(t('area').toLowerCase())}</span>`;
   return '';
 }
 
@@ -2760,8 +2840,8 @@ function buildTaskCard(task, container, readOnly = false) {
       <div class="task-title-wrap">
         <div class="task-title ${task.done ? 'strikethrough' : ''}" data-edit="${task.id}">${esc(task.title)}</div>
         <div class="task-meta">
-          ${getPriorityBadge(priority)}
-          ${area ? `<span class="tag" style="background:${esc(area.color)}22;color:${esc(area.color)};">${esc(getAreaName(area))}</span>` : ''}
+          ${getPriorityBadge(priority, !readOnly ? task.id : null)}
+          ${getAreaTag(task, !readOnly)}
           ${task.date && !task.done ? `<span class="task-date ${overdue ? 'overdue' : ''}">${overdue ? '⚠ ' : ''}${formatDate(task.date)}</span>` : ''}
           ${task.completedAt ? `<span class="task-date">${t('completed')}: ${formatDate(task.completedAt)}</span>` : ''}
           ${subtasksTotal > 0 ? `<span class="subtask-ctr" style="font-size:11px;color:var(--text3);font-family:var(--font-mono);">${subtasksDone}/${subtasksTotal} sub</span>` : ''}
@@ -2977,7 +3057,49 @@ function renderTodayOverdue() {
   }));
 }
 
+// Backlog compacto: todas las pendientes fuera del plan, un click las suma
+function renderTodayBacklog() {
+  const panel = document.getElementById('today-backlog');
+  if (!panel) return;
+  const pOrder = { high:0, medium:1, low:2 };
+  const items = state.tasks
+    .filter(tk => !tk.done && !state.todayPlan.includes(tk.id))
+    .sort((a,b) => {
+      const pd = (pOrder[a.priority||'low'] ?? 2) - (pOrder[b.priority||'low'] ?? 2);
+      if (pd !== 0) return pd;
+      return (a.date || '9999').localeCompare(b.date || '9999');
+    });
+  const cnt = document.getElementById('backlog-count');
+  if (cnt) cnt.textContent = items.length;
+  panel.innerHTML = '';
+  if (items.length === 0) {
+    panel.innerHTML = `<div class="week-day-empty" style="padding:16px;text-align:center;">— ${currentLang==='es'?'todo planificado':'all planned'} ✓</div>`;
+    return;
+  }
+  items.forEach(tk => {
+    const area = state.areas.find(a => a.id === tk.area);
+    const pcolor = tk.priority === 'high' ? '#E53935' : tk.priority === 'medium' ? '#e8b84b' : '#6fcb8a';
+    const shortDate = tk.date ? formatDate(tk.date).replace(/,? ?\d{4}/, '') : '';
+    const row = document.createElement('div');
+    row.className = 'backlog-row';
+    row.innerHTML = `
+      <span class="backlog-dot" style="background:${pcolor};"></span>
+      <span class="backlog-title" data-blopen="${tk.id}">${esc(tk.title)}</span>
+      ${area ? `<span class="tag" style="background:${esc(area.color)}22;color:${esc(area.color)};">${esc(getAreaName(area))}</span>` : ''}
+      ${shortDate ? `<span class="task-date ${isOverdue(tk.date) ? 'overdue' : ''}" style="font-size:10px;">${shortDate}</span>` : ''}
+      <button class="overdue-add" data-bladd="${tk.id}" title="${currentLang==='es'?'Agregar a hoy':'Add to today'}">＋</button>`;
+    row.querySelector('[data-blopen]').addEventListener('click', () => editTask(tk.id));
+    row.querySelector('[data-bladd]').addEventListener('click', () => {
+      if (!state.todayPlan.includes(tk.id)) state.todayPlan.push(tk.id);
+      syncTodayToWeek();
+      save(); renderToday();
+    });
+    panel.appendChild(row);
+  });
+}
+
 function renderToday() {
+  renderTodayBacklog();
   renderTodayOverdue();
   const list = document.getElementById('today-task-list'); list.innerHTML = '';
   const plannedCount = state.todayPlan.length;
@@ -3158,16 +3280,16 @@ function buildKanbanCard(tk) {
       <span class="kb-title-text ${tk.done ? 'done' : ''}">${esc(tk.title)}</span>
     </div>
     <div class="kb-meta">
-      ${getPriorityBadge(priority)}
-      ${area ? `<span class="tag" style="background:${esc(area.color)}22;color:${esc(area.color)};">${esc(getAreaName(area))}</span>` : ''}
+      ${getPriorityBadge(priority, tk.id)}
+      ${getAreaTag(tk, true)}
       ${tk.date && !tk.done ? `<span class="task-date ${overdue ? 'overdue' : ''}">${overdue ? '⚠ ' : ''}${formatDate(tk.date)}</span>` : ''}
       ${tk.completedAt ? `<span class="task-date">✓ ${formatDate(tk.completedAt)}</span>` : ''}
       ${subT > 0 ? `<span style="font-size:10px;color:var(--text3);font-family:var(--font-mono);">${subD}/${subT} sub</span>` : ''}
     </div>
-    ${!tk.done && score > 0 ? `
+    ${!tk.done ? `
     <div class="kb-progress">
       <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${score*10}%;"></div></div>
-      <span class="progress-label">${score}/10</span>
+      <span class="score-badge ${score>=8?'score-high':score>=4?'score-mid':'score-low'}" data-score="${tk.id}" style="font-size:10px;padding:2px 8px;" title="Click: actualizar progreso"><span class="sb-icon">✎</span> ${score}/10</span>
     </div>` : ''}
   `;
 
@@ -3246,8 +3368,8 @@ function buildPlannerCard(id, dayISO) {
         <span class="kb-title-text ${tk.done ? 'done' : ''}">${esc(tk.title)}</span>
       </div>
       <div class="kb-meta">
-        ${getPriorityBadge(priority)}
-        ${area ? `<span class="tag" style="background:${esc(area.color)}22;color:${esc(area.color)};">${esc(getAreaName(area))}</span>` : ''}
+        ${getPriorityBadge(priority, tk.id)}
+        ${getAreaTag(tk, true)}
         ${tk.date && !tk.done ? `<span class="task-date ${overdue ? 'overdue' : ''}">${overdue ? '⚠ ' : ''}${formatDate(tk.date)}</span>` : ''}
       </div>`;
     card.querySelector('.task-checkbox').addEventListener('click', e => {
@@ -4335,6 +4457,9 @@ document.getElementById('btn-manage-board').addEventListener('click', () => {
   state.boardGroup = 'focus';
   navigateTo('board');
 });
+// Click en el logo (sidebar o header mobile) → Board
+document.querySelector('#sidebar .app-name').addEventListener('click', () => navigateTo('board'));
+document.getElementById('app-logo-mobile').addEventListener('click', () => navigateTo('board'));
 
 // ============================================================
 // SYNC TODAY ↔ WEEK
@@ -4903,10 +5028,91 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && searchOverlay.classList.contains('open')) closeSearch();
 });
 
-// Score badge — single document-level delegate (badges are dynamically rendered)
+// ============================================================
+// INLINE PICKER — quick edits without opening the task modal
+// ============================================================
+let _pickerEl = null;
+function closeInlinePicker() {
+  if (_pickerEl) { _pickerEl.remove(); _pickerEl = null; }
+  window.removeEventListener('scroll', closeInlinePicker, true);
+}
+function showInlinePicker(anchor, items, onPick, layout = 'row') {
+  closeInlinePicker();
+  const el = document.createElement('div');
+  el.id = 'inline-picker';
+  if (layout === 'col') el.classList.add('ip-col');
+  items.forEach(it => {
+    const b = document.createElement('button');
+    b.className = 'ip-item';
+    b.innerHTML = it.html;
+    b.addEventListener('click', ev => {
+      ev.stopPropagation();
+      closeInlinePicker();
+      onPick(it.value);
+    });
+    el.appendChild(b);
+  });
+  document.body.appendChild(el);
+  const r = anchor.getBoundingClientRect();
+  const w = el.offsetWidth, h = el.offsetHeight;
+  el.style.left = Math.max(8, Math.min(r.left, window.innerWidth - w - 8)) + 'px';
+  el.style.top = (r.bottom + 6 + h > window.innerHeight ? Math.max(8, r.top - h - 6) : r.bottom + 6) + 'px';
+  _pickerEl = el;
+  setTimeout(() => {
+    document.addEventListener('click', closeInlinePicker, { once: true });
+    window.addEventListener('scroll', closeInlinePicker, true);
+  }, 0);
+}
+
+// Delegación global: click en prioridad cicla, en área abre picker, en score abre picker 0-10
 document.addEventListener('click', e => {
-  const badge = e.target.closest('[data-score]');
-  if (badge) openScoreModal(badge.dataset.score);
+  // Prioridad: low → medium → high → low
+  const pc = e.target.closest('[data-pcycle]');
+  if (pc) {
+    e.stopPropagation();
+    const tk = state.tasks.find(x => x.id === pc.dataset.pcycle);
+    if (tk) {
+      const order = ['low', 'medium', 'high'];
+      tk.priority = order[(order.indexOf(tk.priority || 'low') + 1) % 3];
+      save(); render();
+    }
+    return;
+  }
+  // Área: picker con todas las áreas + "sin área"
+  const ap = e.target.closest('[data-apick]');
+  if (ap) {
+    e.stopPropagation();
+    const id = ap.dataset.apick;
+    const items = [{ value: '', html: `<span class="category-dot" style="background:var(--text3);display:inline-block;margin-right:7px;"></span>${currentLang === 'es' ? 'Sin área' : 'No area'}` }]
+      .concat(state.areas.map(a => ({
+        value: a.id,
+        html: `<span class="category-dot" style="background:${esc(a.color)};display:inline-block;margin-right:7px;"></span>${esc(getAreaName(a))}`
+      })));
+    showInlinePicker(ap, items, v => {
+      const tk = state.tasks.find(x => x.id === id);
+      if (tk) { tk.area = v; save(); render(); }
+    }, 'col');
+    return;
+  }
+  // Progreso: picker de 0 a 10 (10 completa la tarea, <10 la reabre)
+  const sb = e.target.closest('[data-score]');
+  if (sb) {
+    e.stopPropagation();
+    const id = sb.dataset.score;
+    const items = Array.from({ length: 11 }, (_, i) => ({
+      value: i,
+      html: i === 10 ? '✓' : String(i)
+    }));
+    showInlinePicker(sb, items, v => {
+      const tk = state.tasks.find(x => x.id === id);
+      if (!tk) return;
+      tk.score = v;
+      if (v === 10 && !tk.done) { tk.done = true; tk.completedAt = TODAY; }
+      else if (v < 10 && tk.done) { tk.done = false; tk.completedAt = null; }
+      save(); render();
+    });
+    return;
+  }
 });
 
 // ============================================================
