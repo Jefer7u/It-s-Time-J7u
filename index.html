@@ -22,16 +22,16 @@
   }
 
   [data-theme="dark"] {
-    --bg:      #0c0c0e;
-    --bg2:     #141416;
-    --bg3:     #1c1c1f;
-    --bg4:     #242428;
-    --bg5:     #2e2e33;
-    --border:  rgba(255,255,255,0.07);
-    --border2: rgba(255,255,255,0.13);
-    --text:    #f0ede8;
-    --text2:   #9a9890;
-    --text3:   #5c5a57;
+    --bg:      #0d0d0f;
+    --bg2:     #1a1a1e;
+    --bg3:     #24242a;
+    --bg4:     #2e2e36;
+    --bg5:     #3a3a44;
+    --border:  rgba(255,255,255,0.10);
+    --border2: rgba(255,255,255,0.18);
+    --text:    #f2efe9;
+    --text2:   #a8a69e;
+    --text3:   #6e6c66;
     --accent:  #E53935;
     --accent2: #B71C1C;
     --accent-glow: rgba(229,57,53,0.15);
@@ -40,9 +40,9 @@
     --blue:    #7ab3e0;
     --purple:  #a889d4;
     --amber:   #e8b84b;
-    --shadow:  0 4px 24px rgba(0,0,0,0.4);
-    --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
-    --chart-grid: rgba(255,255,255,0.06);
+    --shadow:  0 4px 24px rgba(0,0,0,0.45);
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.35);
+    --chart-grid: rgba(255,255,255,0.08);
   }
 
   [data-theme="light"] {
@@ -1132,6 +1132,10 @@
   .backlog-title { flex: 1; min-width: 0; color: var(--text); cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; }
   .backlog-row .tag { font-size: 10px; padding: 1px 7px; flex-shrink: 0; }
   .backlog-row .task-date { flex-shrink: 0; }
+  .backlog-row[draggable="true"] { cursor: grab; }
+  .backlog-row.dragging { opacity: 0.35; }
+  .backlog-panel.drag-over { border-color: var(--accent); background: var(--accent-glow); }
+  #today-task-list.bl-drop-target { outline: 2px dashed var(--accent); outline-offset: 4px; border-radius: var(--radius); min-height: 60px; }
 
   /* ============================
      INLINE PICKER — edición rápida (prioridad, área, score)
@@ -1888,6 +1892,7 @@ const translations = {
     overwrite_entry_confirm: "There's already an entry for that date. Overwrite it?",
     edit_area: "Edit Area", delete: "Delete",
     delete_area_confirm: "Delete this area? Its tasks will remain without an area.",
+    delete_task_confirm: "Delete this task?",
     group_focus: "Today", col_today_plan: "Today's plan", col_done_today: "Done today",
     manage_board: "Manage in Board", save_area: "Save Area",
     add: "Add", undo: "Undo",
@@ -1977,6 +1982,7 @@ const translations = {
     overwrite_entry_confirm: "Ya existe una entrada para esa fecha. ¿Sobrescribirla?",
     edit_area: "Editar Área", delete: "Eliminar",
     delete_area_confirm: "¿Eliminar esta área? Sus tareas quedarán sin área.",
+    delete_task_confirm: "¿Eliminar esta tarea?",
     group_focus: "Hoy", col_today_plan: "Plan de hoy", col_done_today: "Hechas hoy",
     manage_board: "Gestionar en Tablero", save_area: "Guardar Área",
     add: "Agregar", undo: "Deshacer",
@@ -2767,6 +2773,7 @@ function _updateTodayStats() {
 window.deleteTask = function(id) {
   const task = state.tasks.find(t => t.id === id);
   if (!task) return;
+  if (!confirm(`${t('delete_task_confirm')}\n"${task.title.slice(0, 60)}"`)) return;
   const snapshot = {
     task: JSON.parse(JSON.stringify(task)),
     index: state.tasks.indexOf(task),
@@ -3094,6 +3101,22 @@ function renderTodayBacklog() {
       syncTodayToWeek();
       save(); renderToday();
     });
+    // Drag desde el backlog hacia la Lista de Ejecución
+    row.draggable = true;
+    row.addEventListener('dragstart', e => {
+      _backlogDragId = tk.id;
+      _dragSrcEl = null; // no es un reorden interno de la lista
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', 'bl:' + tk.id);
+      row.classList.add('dragging');
+    });
+    row.addEventListener('dragend', () => {
+      row.classList.remove('dragging');
+      _backlogDragId = null;
+      const listEl = document.getElementById('today-task-list');
+      listEl.classList.remove('bl-drop-target');
+      listEl.querySelectorAll('.today-draggable').forEach(c => c.classList.remove('drag-over-top','drag-over-bot'));
+    });
     panel.appendChild(row);
   });
 }
@@ -3198,6 +3221,9 @@ function attachDragEvents(el, container) {
     container.querySelectorAll('.today-draggable').forEach(c => {
       c.classList.remove('drag-over-top', 'drag-over-bot');
     });
+    const bp = document.getElementById('today-backlog');
+    if (bp) bp.classList.remove('drag-over');
+    _dragSrcEl = null;
   });
   el.addEventListener('dragover', e => {
     e.preventDefault();
@@ -3613,7 +3639,7 @@ function moveFocusItem(id, target) {
     else { tk.done = true; tk.score = 10; tk.completedAt = TODAY; }
   }
   syncTodayToWeek();
-  save(); renderBoard();
+  save(); render(); // respeta la página actual (board o today)
 }
 
 function renderBoardFocus() {
@@ -4022,8 +4048,8 @@ function drawBarChart(canvas, labels, values, color, maxOverride) {
   ctx.scale(dpr, dpr);
 
   const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-  const gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
-  const textColor = isDark ? 'rgba(240,237,232,0.45)' : 'rgba(26,25,22,0.45)';
+  const gridColor = isDark ? 'rgba(255,255,255,0.09)' : 'rgba(0,0,0,0.06)';
+  const textColor = isDark ? 'rgba(242,239,233,0.55)' : 'rgba(26,25,22,0.45)';
 
   const pad = { top:10, right:8, bottom:32, left:28 };
   const cW = W - pad.left - pad.right;
@@ -4096,7 +4122,7 @@ function drawDonutChart(canvas, segments) {
 
   ctx.beginPath(); ctx.arc(cx, cy, innerR, 0, Math.PI * 2);
   const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-  ctx.fillStyle = isDark ? '#141416' : '#ffffff'; ctx.fill();
+  ctx.fillStyle = isDark ? '#1a1a1e' : '#ffffff'; ctx.fill();
 
   ctx.fillStyle = isDark ? '#f0ede8' : '#1a1916';
   ctx.font = `bold 20px 'DM Sans', sans-serif`; ctx.textAlign = 'center';
@@ -5027,6 +5053,83 @@ document.addEventListener('keydown', e => {
   if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); openSearch(); }
   if (e.key === 'Escape' && searchOverlay.classList.contains('open')) closeSearch();
 });
+
+// ============================================================
+// CROSS DRAG & DROP — Backlog ↔ Execution List (Today page)
+// ============================================================
+let _backlogDragId = null;
+(function setupTodayCrossDnd() {
+  const listEl  = document.getElementById('today-task-list');
+  const asideEl = document.querySelector('.today-side');
+  const panelEl = document.getElementById('today-backlog');
+  if (!listEl || !asideEl || !panelEl) return;
+
+  const clearListIndicators = () => {
+    listEl.classList.remove('bl-drop-target');
+    listEl.querySelectorAll('.today-draggable').forEach(c => c.classList.remove('drag-over-top','drag-over-bot'));
+  };
+
+  // Backlog → Lista: soltar planifica (respetando la posición del drop)
+  listEl.addEventListener('dragover', e => {
+    if (!_backlogDragId) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    const card = e.target.closest('.today-draggable');
+    listEl.querySelectorAll('.today-draggable').forEach(c => c.classList.remove('drag-over-top','drag-over-bot'));
+    if (card) {
+      listEl.classList.remove('bl-drop-target');
+      const r = card.getBoundingClientRect();
+      card.classList.add(e.clientY < r.top + r.height / 2 ? 'drag-over-top' : 'drag-over-bot');
+    } else {
+      listEl.classList.add('bl-drop-target');
+    }
+  });
+  listEl.addEventListener('dragleave', e => {
+    if (_backlogDragId && !listEl.contains(e.relatedTarget)) clearListIndicators();
+  });
+  listEl.addEventListener('drop', e => {
+    if (!_backlogDragId) return;
+    e.preventDefault();
+    const id = _backlogDragId;
+    _backlogDragId = null;
+    const card = e.target.closest('.today-draggable');
+    let before = false;
+    if (card) {
+      const r = card.getBoundingClientRect();
+      before = e.clientY < r.top + r.height / 2;
+    }
+    clearListIndicators();
+    if (!state.todayPlan.includes(id)) {
+      const anchorIdx = card ? state.todayPlan.indexOf(card.dataset.planId) : -1;
+      if (anchorIdx >= 0) state.todayPlan.splice(before ? anchorIdx : anchorIdx + 1, 0, id);
+      else state.todayPlan.push(id);
+    }
+    syncTodayToWeek();
+    save(); renderToday();
+  });
+
+  // Lista → Backlog: soltar des-planifica (y reabre si estaba completada hoy)
+  asideEl.addEventListener('dragover', e => {
+    if (_backlogDragId) return; // un item del propio backlog: ignorar
+    if (_dragSrcEl && _dragSrcEl.dataset && _dragSrcEl.dataset.planId) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      panelEl.classList.add('drag-over');
+    }
+  });
+  asideEl.addEventListener('dragleave', e => {
+    if (!asideEl.contains(e.relatedTarget)) panelEl.classList.remove('drag-over');
+  });
+  asideEl.addEventListener('drop', e => {
+    if (_backlogDragId) return;
+    if (!(_dragSrcEl && _dragSrcEl.dataset && _dragSrcEl.dataset.planId)) return;
+    e.preventDefault();
+    const id = _dragSrcEl.dataset.planId;
+    _dragSrcEl = null;
+    panelEl.classList.remove('drag-over');
+    moveFocusItem(id, 'backlog'); // des-planifica, reabre si estaba hecha, save + render
+  });
+})();
 
 // ============================================================
 // INLINE PICKER — quick edits without opening the task modal
