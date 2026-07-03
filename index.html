@@ -1087,6 +1087,19 @@
   }
   .diary-stat strong { color: var(--text); font-size: 13px; }
   .diary-actions { display: flex; gap: 4px; align-items: center; flex-shrink: 0; }
+
+  /* Área: botón editar en el sidebar */
+  .area-edit-btn {
+    margin-left: auto; background: none; border: none; color: var(--text3);
+    font-size: 11px; cursor: pointer; padding: 2px 6px; border-radius: 5px;
+    opacity: 0; transition: opacity 0.15s, color 0.15s; flex-shrink: 0;
+  }
+  .nav-item:hover .area-edit-btn { opacity: 0.8; }
+  @media (max-width: 700px) { .area-edit-btn { opacity: 0.55; } }
+  @media (hover: hover) and (pointer: fine) {
+    .area-edit-btn:hover { color: var(--accent); opacity: 1 !important; }
+  }
+  .status-option { user-select: none; }
 </style>
 </head>
 <body>
@@ -1288,6 +1301,7 @@
           <button class="btn btn-primary" id="btn-plan-today">◈ <span data-i18n="plan_my_day">Plan my day</span></button>
           <button class="btn btn-ghost" id="btn-plan-week">▦ <span data-i18n="plan_my_week">Plan my week</span></button>
           <button class="btn btn-ghost" id="btn-open-diary-today">◌ <span data-i18n="daily_reflection">Daily reflection</span></button>
+          <button class="btn btn-ghost" id="btn-manage-board">▤ <span data-i18n="manage_board">Manage in Board</span></button>
           <span id="save-indicator"></span>
         </div>
         <div id="today-overdue"></div>
@@ -1319,6 +1333,7 @@
         <div class="board-toolbar">
           <div class="filter-chips" id="board-group-chips">
             <span class="filter-label" data-i18n="board_group">Group</span>
+            <button class="filter-chip" data-bgroup="focus" data-i18n="group_focus">Today</button>
             <button class="filter-chip active" data-bgroup="status" data-i18n="group_status">By status</button>
             <button class="filter-chip" data-bgroup="day" data-i18n="group_day">By day</button>
           </div>
@@ -1340,10 +1355,20 @@
           <div class="filter-chips" id="board-status-chips">
             <span class="filter-label" data-i18n="board_status">Status</span>
             <button class="filter-chip active" data-bstatus="all" data-i18n="filter_all">All</button>
-            <button class="filter-chip" data-bstatus="pending" data-i18n="filter_pending">Pending</button>
+            <button class="filter-chip" data-bstatus="todo" data-i18n="col_todo">To Do</button>
+            <button class="filter-chip" data-bstatus="progress" data-i18n="col_progress">In Progress</button>
             <button class="filter-chip" data-bstatus="done" data-i18n="filter_done">Completed</button>
           </div>
           <div class="filter-chips" id="board-area-chips"></div>
+        </div>
+        <!-- FOCUS MODE (Today inside the Board) -->
+        <div id="board-focus-bar" style="display:none;">
+          <div class="week-stats-bar" id="board-focus-stats"></div>
+          <div class="day-progress"><div class="day-progress-fill" id="board-day-progress-fill"></div></div>
+          <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+            <button class="btn btn-primary btn-sm" id="btn-plan-today-board">◈ <span data-i18n="plan_my_day">Plan my day</span></button>
+            <button class="btn btn-ghost btn-sm" id="btn-open-diary-board">◌ <span data-i18n="daily_reflection">Daily reflection</span></button>
+          </div>
         </div>
         <div class="kanban" id="kanban-board"></div>
       </div>
@@ -1395,7 +1420,8 @@
 
         <div class="tabs" id="task-filter-tabs">
           <div class="tab active" data-filter="all" data-i18n="filter_all">All</div>
-          <div class="tab" data-filter="pending" data-i18n="filter_pending">Pending</div>
+          <div class="tab" data-filter="todo" data-i18n="col_todo">To Do</div>
+          <div class="tab" data-filter="progress" data-i18n="col_progress">In Progress</div>
           <div class="tab" data-filter="done" data-i18n="filter_done">Completed</div>
         </div>
         <div id="task-area-filter" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;"></div>
@@ -1540,6 +1566,15 @@
       </div>
       <input type="hidden" id="task-input-priority" value="low">
     </div>
+    <div class="form-group">
+      <label class="form-label" data-i18n="task_status">Status</label>
+      <div id="status-selector" style="display:flex;gap:8px;flex-wrap:wrap;">
+        <div class="status-option" data-s="todo"     style="cursor:pointer;padding:5px 12px;border-radius:20px;border:1px solid var(--border2);background:var(--bg3);color:var(--text2);font-size:11px;font-family:var(--font-mono);font-weight:700;transition:all 0.15s;">◻ <span data-i18n="col_todo">To Do</span></div>
+        <div class="status-option" data-s="progress" style="cursor:pointer;padding:5px 12px;border-radius:20px;border:1px solid rgba(232,184,75,0.3);background:rgba(232,184,75,0.1);color:#e8b84b;font-size:11px;font-family:var(--font-mono);font-weight:700;transition:all 0.15s;">▶ <span data-i18n="col_progress">In Progress</span></div>
+        <div class="status-option" data-s="done"     style="cursor:pointer;padding:5px 12px;border-radius:20px;border:1px solid rgba(111,203,138,0.3);background:rgba(111,203,138,0.1);color:#6fcb8a;font-size:11px;font-family:var(--font-mono);font-weight:700;transition:all 0.15s;">✓ <span data-i18n="col_done">Completed</span></div>
+      </div>
+      <input type="hidden" id="task-input-status" value="todo">
+    </div>
     <div class="modal-actions">
       <button class="btn btn-ghost" id="btn-cancel-task" data-i18n="cancel">Cancel</button>
       <button class="btn btn-primary" id="btn-save-task" data-i18n="save_task">Save Task</button>
@@ -1592,6 +1627,10 @@
     <div class="modal-title" id="diary-modal-title">Daily Reflection</div>
     <div class="stoic-quote-container" style="margin-bottom:18px;">
       <p id="modal-quote" class="stoic-quote-text"></p>
+    </div>
+    <div class="form-group" style="max-width:200px;">
+      <label class="form-label" data-i18n="entry_date">Entry date</label>
+      <input type="date" id="diary-date">
     </div>
     <div class="form-group">
       <label class="form-label diary-q-label good" data-i18n="diary_good">✦ What went well today?</label>
@@ -1661,7 +1700,7 @@
 <!-- Area Modal -->
 <div class="modal-overlay" id="modal-area">
   <div class="modal" style="max-width:380px;">
-    <div class="modal-title" data-i18n="new_area">New Area</div>
+    <div class="modal-title" id="area-modal-title">New Area</div>
     <div class="form-group">
       <label class="form-label" data-i18n="name">Name</label>
       <input type="text" id="area-input-name" data-i18n-placeholder="area_name_ph">
@@ -1680,8 +1719,9 @@
       </div>
     </div>
     <div class="modal-actions">
+      <button class="btn btn-danger" id="btn-delete-area" style="margin-right:auto;display:none;" data-i18n="delete">Delete</button>
       <button class="btn btn-ghost" id="btn-cancel-area" data-i18n="cancel">Cancel</button>
-      <button class="btn btn-primary" id="btn-save-area" data-i18n="create_area">Create Area</button>
+      <button class="btn btn-primary" id="btn-save-area">Create Area</button>
     </div>
   </div>
 </div>
@@ -1774,6 +1814,12 @@ const translations = {
     journal_entries: "entries", journal_streak: "day streak",
     delete_entry_confirm: "Delete this journal entry?",
     no_journal_results: "No entries match your filters.",
+    task_status: "Status", entry_date: "Entry date",
+    overwrite_entry_confirm: "There's already an entry for that date. Overwrite it?",
+    edit_area: "Edit Area", delete: "Delete",
+    delete_area_confirm: "Delete this area? Its tasks will remain without an area.",
+    group_focus: "Today", col_today_plan: "Today's plan", col_done_today: "Done today",
+    manage_board: "Manage in Board", save_area: "Save Area",
     add: "Add", undo: "Undo",
     task_added: "Task added", task_added_today: "Task added to today",
     task_deleted: "Task deleted",
@@ -1857,6 +1903,12 @@ const translations = {
     journal_entries: "entradas", journal_streak: "días de racha",
     delete_entry_confirm: "¿Eliminar esta entrada del diario?",
     no_journal_results: "Ninguna entrada coincide con los filtros.",
+    task_status: "Estado", entry_date: "Fecha de la entrada",
+    overwrite_entry_confirm: "Ya existe una entrada para esa fecha. ¿Sobrescribirla?",
+    edit_area: "Editar Área", delete: "Eliminar",
+    delete_area_confirm: "¿Eliminar esta área? Sus tareas quedarán sin área.",
+    group_focus: "Hoy", col_today_plan: "Plan de hoy", col_done_today: "Hechas hoy",
+    manage_board: "Gestionar en Tablero", save_area: "Guardar Área",
     add: "Agregar", undo: "Deshacer",
     task_added: "Tarea agregada", task_added_today: "Tarea agregada a hoy",
     task_deleted: "Tarea eliminada",
@@ -2330,6 +2382,39 @@ function setPriorityUI(p) {
   document.getElementById('task-input-priority').value = p || 'low';
 }
 
+// ── Task status helpers (todo / progress / done) ──
+function getTaskStatus(tk) {
+  if (tk.done) return 'done';
+  if ((tk.score || 0) > 0) return 'progress';
+  return 'todo';
+}
+function getStatusText(st) {
+  if (st === 'done')     return t('col_done');
+  if (st === 'progress') return t('col_progress');
+  return t('col_todo');
+}
+function setStatusUI(st) {
+  document.querySelectorAll('.status-option').forEach(o => o.style.opacity = '0.45');
+  const el = document.querySelector(`.status-option[data-s="${st || 'todo'}"]`);
+  if (el) el.style.opacity = '1';
+  document.getElementById('task-input-status').value = st || 'todo';
+}
+document.querySelectorAll('.status-option').forEach(opt => {
+  opt.addEventListener('click', () => setStatusUI(opt.dataset.s));
+});
+// Apply a status choice to a task object (score/done/completedAt kept consistent)
+function applyStatusToTask(tk, st) {
+  if (st === 'done') {
+    tk.done = true; tk.score = 10;
+    if (!tk.completedAt) tk.completedAt = TODAY;
+  } else if (st === 'progress') {
+    tk.done = false; tk.completedAt = null;
+    if (!tk.score || tk.score === 0 || tk.score === 10) tk.score = 5;
+  } else {
+    tk.done = false; tk.completedAt = null; tk.score = 0;
+  }
+}
+
 function getPriorityBadge(p) {
   if (!p || p === 'low') return `<span class="priority-badge low">🟢 LOW</span>`;
   if (p === 'medium')    return `<span class="priority-badge medium">🟡 MED</span>`;
@@ -2348,27 +2433,67 @@ function renderAreaNav() {
   const container = document.getElementById('area-nav'); container.innerHTML = '';
   state.areas.forEach(area => {
     const el = document.createElement('div'); el.className = 'nav-item';
-    el.innerHTML = `<span class="category-dot" style="background:${esc(area.color)};"></span> ${esc(getAreaName(area))}`;
+    el.innerHTML = `<span class="category-dot" style="background:${esc(area.color)};"></span> <span style="flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(getAreaName(area))}</span><button class="area-edit-btn" data-aedit="${area.id}" title="${currentLang==='es'?'Editar área':'Edit area'}">✎</button>`;
     el.addEventListener('click', () => { state.activeAreaFilter = area.id; navigateTo('tasks'); });
+    el.querySelector('.area-edit-btn').addEventListener('click', e => {
+      e.stopPropagation();
+      openAreaModal(area.id);
+    });
     container.appendChild(el);
   });
+}
+
+let editingAreaId = null;
+
+function openAreaModal(areaId = null) {
+  editingAreaId = areaId;
+  const area = areaId ? state.areas.find(a => a.id === areaId) : null;
+  document.getElementById('area-modal-title').textContent = area ? t('edit_area') : t('new_area');
+  document.getElementById('btn-save-area').textContent = area ? t('save_area') : t('create_area');
+  document.getElementById('btn-delete-area').style.display = area ? '' : 'none';
+  document.getElementById('area-input-name').value = area ? getAreaName(area) : '';
+  const color = area ? area.color : '#7ab3e0';
+  state.selectedAreaColor = color;
+  document.querySelectorAll('.area-color-opt').forEach(x =>
+    x.classList.toggle('selected', x.dataset.color.toLowerCase() === color.toLowerCase()));
+  // Custom color with no matching swatch → select first as fallback visual
+  if (!document.querySelector('.area-color-opt.selected')) {
+    if (!area) document.querySelector('.area-color-opt').classList.add('selected');
+  }
+  openModal('modal-area');
+  setTimeout(() => document.getElementById('area-input-name').focus(), 250);
 }
 function getAreaSelect(selectEl) {
   selectEl.innerHTML = `<option value="">— ${currentLang === 'es' ? 'Sin Área' : 'No Area'} —</option>`;
   state.areas.forEach(a => { const o = document.createElement('option'); o.value = a.id; o.textContent = getAreaName(a); selectEl.appendChild(o); });
 }
 
-document.getElementById('btn-add-area').addEventListener('click', () => {
-  document.getElementById('area-input-name').value = '';
-  document.querySelectorAll('.area-color-opt').forEach(x => x.classList.remove('selected'));
-  document.querySelector('.area-color-opt').classList.add('selected');
-  state.selectedAreaColor = '#7ab3e0'; openModal('modal-area');
-});
+document.getElementById('btn-add-area').addEventListener('click', () => openAreaModal(null));
+
 document.getElementById('btn-save-area').addEventListener('click', () => {
   const name = document.getElementById('area-input-name').value.trim();
   if (!name) return;
-  state.areas.push({ id: uid(), name, nameEs: name, color: state.selectedAreaColor });
-  save(); renderAreaNav(); closeModal('modal-area');
+  if (editingAreaId) {
+    const area = state.areas.find(a => a.id === editingAreaId);
+    if (area) { area.name = name; area.nameEs = name; area.color = state.selectedAreaColor; }
+  } else {
+    state.areas.push({ id: uid(), name, nameEs: name, color: state.selectedAreaColor });
+  }
+  editingAreaId = null;
+  save(); closeModal('modal-area'); render(); // full render: tags, chips, board y nav se actualizan
+});
+
+document.getElementById('btn-delete-area').addEventListener('click', () => {
+  if (!editingAreaId) return;
+  if (!confirm(t('delete_area_confirm'))) return;
+  const id = editingAreaId;
+  state.areas = state.areas.filter(a => a.id !== id);
+  // Las tareas del área quedan "sin área"; los filtros que apuntaban a ella se limpian
+  state.tasks.forEach(tk => { if (tk.area === id) tk.area = ''; });
+  if (state.activeAreaFilter === id) state.activeAreaFilter = null;
+  if (state.boardArea === id) state.boardArea = null;
+  editingAreaId = null;
+  save(); closeModal('modal-area'); render();
 });
 document.querySelectorAll('.area-color-opt').forEach(el => {
   el.addEventListener('click', () => {
@@ -2783,6 +2908,7 @@ function editTask(id) {
   document.getElementById('task-input-date').value  = t2.date || '';
   document.getElementById('task-input-area').value  = t2.area || '';
   setPriorityUI(t2.priority || 'low');
+  setStatusUI(getTaskStatus(t2));
   openModal('modal-task');
 }
 
@@ -3168,7 +3294,13 @@ function renderBoardByDay() {
   const dayNames = currentLang === 'es' ? ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'] : ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
   const status = state.boardStatus || 'all';
 
-  const passStatus = tk => status === 'pending' ? !tk.done : status === 'done' ? tk.done : true;
+  const passStatus = tk => {
+    if (status === 'todo')     return getTaskStatus(tk) === 'todo';
+    if (status === 'progress') return getTaskStatus(tk) === 'progress';
+    if (status === 'pending')  return !tk.done;
+    if (status === 'done')     return tk.done;
+    return true;
+  };
   const passArea   = tk => !state.boardArea || tk.area === state.boardArea;
 
   // Backlog: pending tasks not planned on any day of this week
@@ -3263,11 +3395,15 @@ function renderBoard() {
     ch.classList.toggle('active', ch.dataset.bstatus === (state.boardStatus || 'all')));
   renderBoardAreaChips();
 
-  // In day mode: hide the time-scope chips (the week IS the scope) and show week nav
-  document.getElementById('board-scope-chips').style.display = group === 'day' ? 'none' : 'flex';
+  // Contextual controls: scope chips only make sense in status mode,
+  // week nav only in day mode, status chips hidden in focus mode
+  document.getElementById('board-scope-chips').style.display = group === 'status' ? 'flex' : 'none';
   document.getElementById('board-week-nav').classList.toggle('visible', group === 'day');
+  document.getElementById('board-status-chips').style.display = group === 'focus' ? 'none' : 'flex';
+  document.getElementById('board-focus-bar').style.display = group === 'focus' ? '' : 'none';
 
-  if (group === 'day') { renderBoardByDay(); return; }
+  if (group === 'focus') { renderBoardFocus(); return; }
+  if (group === 'day')   { renderBoardByDay(); return; }
 
   const tasks = getBoardTasks();
   const board = document.getElementById('kanban-board');
@@ -3280,9 +3416,12 @@ function renderBoard() {
     { key: 'done',     label: t('col_done'),     color: 'var(--green)', match: tk => tk.done },
   ];
   const status = state.boardStatus || 'all';
-  const cols = status === 'pending' ? allCols.filter(c => c.key !== 'done')
-             : status === 'done'    ? allCols.filter(c => c.key === 'done')
-             : allCols;
+  const visibleMap = {
+    all: ['todo','progress','done'], pending: ['todo','progress'],
+    todo: ['todo'], progress: ['progress'], done: ['done'],
+  };
+  const visible = visibleMap[status] || visibleMap.all;
+  const cols = allCols.filter(c => visible.includes(c.key));
 
   const pOrder = { high: 0, medium: 1, low: 2 };
 
@@ -3328,6 +3467,106 @@ function renderBoard() {
   if (tasks.length === 0) {
     board.innerHTML = `<div class="empty-state" style="grid-column:1/-1;width:100%;"><div class="empty-icon">▤</div><p>${esc(t('no_board_tasks'))}</p></div>`;
   }
+}
+
+// ── FOCUS MODE: Today managed from the Board ────────────────
+// Columns: Backlog (unplanned pending) → Today's plan → Done today.
+// Dragging between them plans / unplans / completes items.
+function moveFocusItem(id, target) {
+  const habit = state.habits.find(h => h.id === id);
+  const tk = habit ? null : state.tasks.find(x => x.id === id);
+  if (!habit && !tk) return;
+
+  if (target === 'backlog') {
+    state.todayPlan = state.todayPlan.filter(x => x !== id);
+    if (habit) { if (state.habitLog[TODAY]) state.habitLog[TODAY][id] = false; }
+    else if (tk.done) { tk.done = false; tk.completedAt = null; tk.score = 0; }
+  } else if (target === 'today') {
+    if (!state.todayPlan.includes(id)) state.todayPlan.push(id);
+    if (habit) { if (state.habitLog[TODAY]) state.habitLog[TODAY][id] = false; }
+    else if (tk.done) { tk.done = false; tk.completedAt = null; if (tk.score === 10) tk.score = 0; }
+  } else { // done
+    if (!state.todayPlan.includes(id)) state.todayPlan.push(id);
+    if (habit) { if (!state.habitLog[TODAY]) state.habitLog[TODAY] = {}; state.habitLog[TODAY][id] = true; }
+    else { tk.done = true; tk.score = 10; tk.completedAt = TODAY; }
+  }
+  syncTodayToWeek();
+  save(); renderBoard();
+}
+
+function renderBoardFocus() {
+  const board = document.getElementById('kanban-board');
+  board.classList.remove('planner');
+  board.innerHTML = '';
+
+  const passArea = tk => !state.boardArea || tk.area === state.boardArea;
+  const isDoneToday = id => {
+    const h = state.habits.find(x => x.id === id);
+    if (h) return !!(state.habitLog[TODAY]?.[id]);
+    const tk = state.tasks.find(x => x.id === id);
+    return !!(tk && tk.done);
+  };
+  const exists = id => state.habits.some(h => h.id === id) || state.tasks.some(tk => tk.id === id);
+
+  // Metrics (same as the Today page)
+  const plannedCount = state.todayPlan.filter(exists).length;
+  const doneCount = state.todayPlan.filter(id => exists(id) && isDoneToday(id)).length;
+  const dayPct = plannedCount ? Math.round((doneCount / plannedCount) * 100) : 0;
+  document.getElementById('board-focus-stats').innerHTML = `
+    <div class="week-stat-card"><div class="week-stat-label">${esc(t('stat_planned'))}</div><div class="week-stat-value accent">${plannedCount}</div></div>
+    <div class="week-stat-card"><div class="week-stat-label">${esc(t('stat_done'))}</div><div class="week-stat-value green">${doneCount}</div></div>
+    <div class="week-stat-card"><div class="week-stat-label">${esc(t('stat_progress'))}</div><div class="week-stat-value">${dayPct}<span style="font-size:13px;color:var(--text3);font-weight:400;">%</span></div></div>
+    <div class="week-stat-card"><div class="week-stat-label">${esc(t('stat_pending_today'))}</div><div class="week-stat-value">${plannedCount - doneCount}</div></div>`;
+  const fill = document.getElementById('board-day-progress-fill');
+  fill.style.width = dayPct + '%';
+  fill.classList.toggle('full', dayPct === 100);
+
+  // Column contents
+  const pOrder = { high:0, medium:1, low:2 };
+  const backlog = state.tasks
+    .filter(tk => !tk.done && !state.todayPlan.includes(tk.id) && passArea(tk))
+    .sort((a,b) => (pOrder[a.priority||'low'] ?? 2) - (pOrder[b.priority||'low'] ?? 2));
+  const todayPending = state.todayPlan.filter(id => exists(id) && !isDoneToday(id));
+  const todayDone = state.todayPlan.filter(id => exists(id) && isDoneToday(id));
+  // Tasks completed today outside the plan also count as "done today"
+  state.tasks.forEach(tk => {
+    if (tk.done && tk.completedAt === TODAY && !state.todayPlan.includes(tk.id)) todayDone.push(tk.id);
+  });
+
+  const colDefs = [
+    { key: 'backlog', label: t('backlog'),        color: 'var(--text3)',  ids: backlog.map(tk => tk.id) },
+    { key: 'today',   label: t('col_today_plan'), color: 'var(--accent)', ids: todayPending, highlight: true },
+    { key: 'done',    label: t('col_done_today'), color: 'var(--green)',  ids: todayDone },
+  ];
+
+  colDefs.forEach(def => {
+    const col = document.createElement('div');
+    col.className = 'kanban-col' + (def.highlight ? ' today-kb-col' : '');
+    col.innerHTML = `
+      <div class="kanban-col-header">
+        <span class="kb-dot" style="background:${def.color};"></span>
+        <span style="color:${def.color};">${esc(def.label)}</span>
+        <span class="kanban-col-count">${def.ids.length}</span>
+      </div>
+      <div class="kanban-col-body"></div>`;
+    const body = col.querySelector('.kanban-col-body');
+    if (def.ids.length === 0) body.innerHTML = `<div class="kanban-empty">—</div>`;
+    else def.ids.forEach(id => {
+      const c = buildPlannerCard(id, TODAY);
+      if (c) body.appendChild(c);
+    });
+
+    col.addEventListener('dragover', e => { e.preventDefault(); col.classList.add('drag-over'); });
+    col.addEventListener('dragleave', e => { if (!col.contains(e.relatedTarget)) col.classList.remove('drag-over'); });
+    col.addEventListener('drop', e => {
+      e.preventDefault();
+      col.classList.remove('drag-over');
+      const id = e.dataTransfer.getData('text/plain');
+      if (id) moveFocusItem(id, def.key);
+    });
+
+    board.appendChild(col);
+  });
 }
 
 // Board static filter chips (group + scope + status) and week navigation
@@ -3622,10 +3861,16 @@ function renderAllTasks() {
     afc.appendChild(chip);
   });
 
+  // Sync tab UI with persisted state (compat: old 'pending' → 'todo')
+  if (state.activeFilter === 'pending') state.activeFilter = 'todo';
+  document.querySelectorAll('#task-filter-tabs .tab').forEach(tab =>
+    tab.classList.toggle('active', tab.dataset.filter === (state.activeFilter || 'all')));
+
   let tasks = [...state.tasks];
   if (state.activeAreaFilter) tasks = tasks.filter(t => t.area === state.activeAreaFilter);
-  if (state.activeFilter === 'pending') tasks = tasks.filter(t => !t.done);
-  else if (state.activeFilter === 'done') tasks = tasks.filter(t => t.done);
+  if      (state.activeFilter === 'todo')     tasks = tasks.filter(t => getTaskStatus(t) === 'todo');
+  else if (state.activeFilter === 'progress') tasks = tasks.filter(t => getTaskStatus(t) === 'progress');
+  else if (state.activeFilter === 'done')     tasks = tasks.filter(t => t.done);
 
   // Sort: pending first by priority then due date; completed by most recent
   const pOrder = { high:0, medium:1, low:2 };
@@ -4043,7 +4288,7 @@ function renderHabits() {
 // ============================================================
 // PLAN TODAY MODAL
 // ============================================================
-document.getElementById('btn-plan-today').addEventListener('click', () => {
+function openPlanTodayModal() {
   const container = document.getElementById('plan-task-list'); container.innerHTML = '';
   if (state.habits.length > 0) {
     const hTitle = document.createElement('div'); hTitle.className = 'section-title'; hTitle.textContent = t('nav_habits');
@@ -4082,6 +4327,13 @@ document.getElementById('btn-plan-today').addEventListener('click', () => {
     });
   }
   openModal('modal-plan');
+}
+document.getElementById('btn-plan-today').addEventListener('click', openPlanTodayModal);
+document.getElementById('btn-plan-today-board').addEventListener('click', openPlanTodayModal);
+document.getElementById('btn-open-diary-board').addEventListener('click', () => openDiaryModal(TODAY));
+document.getElementById('btn-manage-board').addEventListener('click', () => {
+  state.boardGroup = 'focus';
+  navigateTo('board');
 });
 
 // ============================================================
@@ -4105,6 +4357,15 @@ document.getElementById('btn-save-plan').addEventListener('click', () => {
   syncTodayToWeek();
   closeModal('modal-plan');
   save();
+
+  // Plan confirmed from the Board's focus mode → refresh the board instead
+  if (state.currentPage === 'board') {
+    setTimeout(() => {
+      renderBoard();
+      showToast(currentLang === 'es' ? `¡Plan del día actualizado! ${state.todayPlan.length} items` : `Day plan updated! ${state.todayPlan.length} items`, 'success');
+    }, 210);
+    return;
+  }
 
   setTimeout(() => {
     renderToday();
@@ -4145,6 +4406,9 @@ function openDiaryModal(dateISO) {
   document.getElementById('diary-good').value    = entry.good    || '';
   document.getElementById('diary-bad').value     = entry.bad     || '';
   document.getElementById('diary-improve').value = entry.improve || '';
+  const dateInp = document.getElementById('diary-date');
+  dateInp.value = diaryEditingDate;
+  dateInp.max = TODAY; // no future journaling
   const titleEl = document.getElementById('diary-modal-title');
   titleEl.textContent = diaryEditingDate === TODAY
     ? t('daily_reflection')
@@ -4158,12 +4422,20 @@ document.getElementById('btn-open-diary-today').addEventListener('click', () => 
 document.getElementById('btn-new-journal').addEventListener('click', () => openDiaryModal(TODAY));
 
 document.getElementById('btn-save-diary').addEventListener('click', () => {
-  state.diary[diaryEditingDate] = {
+  const targetDate = document.getElementById('diary-date').value || diaryEditingDate;
+  // Moving to another date that already has an entry → confirm overwrite
+  if (targetDate !== diaryEditingDate && state.diary[targetDate]) {
+    if (!confirm(t('overwrite_entry_confirm'))) return;
+  }
+  const payload = {
     good:    document.getElementById('diary-good').value.trim(),
     bad:     document.getElementById('diary-bad').value.trim(),
     improve: document.getElementById('diary-improve').value.trim(),
-    date: diaryEditingDate,
+    date: targetDate,
   };
+  if (targetDate !== diaryEditingDate) delete state.diary[diaryEditingDate];
+  state.diary[targetDate] = payload;
+  if (targetDate === TODAY) state.lastDiaryDate = TODAY;
   save(); closeModal('modal-diary');
   if (state.currentPage === 'diary') renderDiary();
 });
@@ -4279,6 +4551,7 @@ function openNewTaskModal() {
   document.getElementById('task-input-date').value  = '';
   document.getElementById('task-input-area').value  = '';
   setPriorityUI('low');
+  setStatusUI('todo');
   openModal('modal-task');
   setTimeout(() => document.getElementById('task-input-title').focus(), 250);
 }
@@ -4288,12 +4561,19 @@ document.getElementById('btn-new-task-board').addEventListener('click', openNewT
 document.getElementById('btn-save-task').addEventListener('click', () => {
   const title    = document.getElementById('task-input-title').value.trim();
   const priority = document.getElementById('task-input-priority').value;
+  const status   = document.getElementById('task-input-status').value;
   if (!title) return;
   if (state.editingTaskId) {
     const tk = state.tasks.find(x => x.id === state.editingTaskId);
-    if (tk) { tk.title = title; tk.area = document.getElementById('task-input-area').value; tk.date = document.getElementById('task-input-date').value; tk.priority = priority; }
+    if (tk) {
+      tk.title = title; tk.area = document.getElementById('task-input-area').value;
+      tk.date = document.getElementById('task-input-date').value; tk.priority = priority;
+      if (getTaskStatus(tk) !== status) applyStatusToTask(tk, status);
+    }
   } else {
-    state.tasks.push({ id:uid(), title, area:document.getElementById('task-input-area').value, date:document.getElementById('task-input-date').value, priority, score:0, subtasks:[], done:false, completedAt:null });
+    const tk = { id:uid(), title, area:document.getElementById('task-input-area').value, date:document.getElementById('task-input-date').value, priority, score:0, subtasks:[], done:false, completedAt:null };
+    applyStatusToTask(tk, status);
+    state.tasks.push(tk);
   }
   state.editingTaskId = null;
   save(); closeModal('modal-task'); render();
@@ -4530,7 +4810,7 @@ function runSearch(q) {
       results.push({
         type: 'task', icon: tk.done ? '✓' : '◻',
         title: tk.title,
-        sub: [getPriorityText(tk.priority), area ? getAreaName(area) : ''].filter(Boolean).join(' · '),
+        sub: [getStatusText(getTaskStatus(tk)), getPriorityText(tk.priority), area ? getAreaName(area) : ''].filter(Boolean).join(' · '),
         badge: currentLang === 'es' ? 'tarea' : 'task',
         cls: 'srb-task',
         action: () => { closeSearch(); navigateTo('tasks'); }
