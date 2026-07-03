@@ -244,7 +244,10 @@
      ============================ */
   .today-greeting { font-size: 32px; color: var(--text); font-weight: 300; line-height: 1.2; margin-bottom: 4px; letter-spacing: -0.5px; }
   .today-greeting strong { color: var(--accent); font-weight: 700; }
-  .today-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 18px 0 20px; }
+  .today-stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 18px 0 20px; }
+  .stat-card-muted { opacity: 0.8; }
+  .stat-card-muted .stat-label { font-size: 9.5px; }
+  .stat-value.sm { font-size: 18px; color: var(--text2); }
   .stat-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; transition: border-color var(--transition); }
   .stat-label { font-size: 10.5px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.9px; font-family: var(--font-mono); }
   .stat-value { font-size: 26px; font-weight: 700; color: var(--text); margin-top: 4px; letter-spacing: -0.5px; }
@@ -689,6 +692,7 @@
     }
     #mobile-menu-btn { background: none; border: none; color: var(--text); font-size: 22px; cursor: pointer; padding: 0; touch-action: manipulation; }
     .today-stats { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .stat-card-muted { grid-column: span 2; }
     .page-body { padding: 14px 16px; }
     .page-header { padding: 16px 16px 12px; }
     .today-greeting { font-size: 24px; }
@@ -1068,6 +1072,21 @@
   .week-day-col.drag-over .week-day-body { background: var(--accent-glow); }
   .week-day-progress { height: 3px; background: var(--bg4); border-radius: 3px; overflow: hidden; width: 100%; margin-top: 5px; }
   .week-day-progress-fill { height: 100%; background: var(--green); border-radius: 3px; transition: width 0.3s ease; }
+
+  /* ============================
+     JOURNAL — toolbar, stats, acciones
+     ============================ */
+  .diary-toolbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
+  .diary-toolbar .quick-add { flex: 1; min-width: 220px; margin-bottom: 0; }
+  .diary-stats { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+  .diary-stat {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11px; font-family: var(--font-mono); font-weight: 600;
+    padding: 4px 12px; border-radius: 20px;
+    background: var(--bg3); border: 1px solid var(--border2); color: var(--text2);
+  }
+  .diary-stat strong { color: var(--text); font-size: 13px; }
+  .diary-actions { display: flex; gap: 4px; align-items: center; flex-shrink: 0; }
 </style>
 </head>
 <body>
@@ -1245,8 +1264,12 @@
             <div class="stat-value" id="stat-progress">0<small>%</small></div>
           </div>
           <div class="stat-card">
-            <div class="stat-label" data-i18n="stat_pending">Total Pending</div>
-            <div class="stat-value" id="stat-pending">0</div>
+            <div class="stat-label" data-i18n="stat_pending_today">Pending Today</div>
+            <div class="stat-value" id="stat-pending-today">0</div>
+          </div>
+          <div class="stat-card stat-card-muted">
+            <div class="stat-label" data-i18n="stat_pending">Pending (all tasks)</div>
+            <div class="stat-value sm" id="stat-pending">0</div>
           </div>
         </div>
 
@@ -1433,10 +1456,27 @@
     <!-- DIARY PAGE -->
     <div class="page" id="page-diary">
       <div class="page-header">
-        <div class="page-title" data-i18n="nav_journal">Journal</div>
-        <div class="page-sub" data-i18n="journal_sub">Daily reflection — what went well, what to improve</div>
+        <div class="page-header-row">
+          <div style="flex:1;">
+            <div class="page-title" data-i18n="nav_journal">Journal</div>
+            <div class="page-sub" data-i18n="journal_sub">Daily reflection — what went well, what to improve</div>
+          </div>
+          <button class="btn btn-primary" id="btn-new-journal">◌ <span data-i18n="journal_new">Today's reflection</span></button>
+        </div>
       </div>
       <div class="page-body">
+        <div class="diary-toolbar">
+          <div class="quick-add">
+            <span class="qa-icon" style="color:var(--text3);">⌕</span>
+            <input type="text" class="qa-input" id="diary-search" autocomplete="off" spellcheck="false" data-i18n-placeholder="journal_search_ph" placeholder="Search entries...">
+          </div>
+          <div class="filter-chips" id="diary-filter-chips">
+            <button class="filter-chip active" data-jf="all" data-i18n="jf_all">All</button>
+            <button class="filter-chip" data-jf="week" data-i18n="jf_week">This week</button>
+            <button class="filter-chip" data-jf="month" data-i18n="jf_month">This month</button>
+          </div>
+        </div>
+        <div class="diary-stats" id="diary-stats"></div>
         <div id="diary-list"></div>
       </div>
     </div>
@@ -1549,7 +1589,7 @@
 <!-- Diary Modal -->
 <div class="modal-overlay" id="modal-diary">
   <div class="modal">
-    <div class="modal-title" data-i18n="daily_reflection">Daily Reflection</div>
+    <div class="modal-title" id="diary-modal-title">Daily Reflection</div>
     <div class="stoic-quote-container" style="margin-bottom:18px;">
       <p id="modal-quote" class="stoic-quote-text"></p>
     </div>
@@ -1726,6 +1766,14 @@ const translations = {
     board_group: "Group", group_status: "By status", group_day: "By day",
     backlog: "Backlog", due_today: "Due today", done_section: "Completed",
     planner_hint: "Drag a card onto a day to schedule it",
+    stat_pending_today: "Pending Today",
+    rollover_msg: "pending task(s) moved to today",
+    journal_new: "Today's reflection",
+    journal_search_ph: "Search entries...",
+    jf_all: "All", jf_week: "This week", jf_month: "This month",
+    journal_entries: "entries", journal_streak: "day streak",
+    delete_entry_confirm: "Delete this journal entry?",
+    no_journal_results: "No entries match your filters.",
     add: "Add", undo: "Undo",
     task_added: "Task added", task_added_today: "Task added to today",
     task_deleted: "Task deleted",
@@ -1735,7 +1783,7 @@ const translations = {
     add_to_today: "→ Today",
     light: "Light", dark: "Dark",
     greeting: "Good day.", greeting_word: "Persistence.",
-    stat_planned: "Planned Today", stat_done: "Completed", stat_progress: "Progress", stat_pending: "Total Pending",
+    stat_planned: "Planned Today", stat_done: "Completed", stat_progress: "Progress", stat_pending: "Pending (all tasks)",
     plan_my_day: "Plan my day", daily_reflection: "Daily reflection",
     execution_list: "Execution List",
     prev: "Prev", next: "Next", current_week: "This week",
@@ -1801,6 +1849,14 @@ const translations = {
     board_group: "Agrupar", group_status: "Por estado", group_day: "Por día",
     backlog: "Backlog", due_today: "Vencen hoy", done_section: "Completadas",
     planner_hint: "Arrastrá una tarjeta a un día para planificarla",
+    stat_pending_today: "Pendientes Hoy",
+    rollover_msg: "tarea(s) pendiente(s) movida(s) a hoy",
+    journal_new: "Reflexión de hoy",
+    journal_search_ph: "Buscar en el diario...",
+    jf_all: "Todas", jf_week: "Esta semana", jf_month: "Este mes",
+    journal_entries: "entradas", journal_streak: "días de racha",
+    delete_entry_confirm: "¿Eliminar esta entrada del diario?",
+    no_journal_results: "Ninguna entrada coincide con los filtros.",
     add: "Agregar", undo: "Deshacer",
     task_added: "Tarea agregada", task_added_today: "Tarea agregada a hoy",
     task_deleted: "Tarea eliminada",
@@ -1810,7 +1866,7 @@ const translations = {
     add_to_today: "→ Hoy",
     light: "Claro", dark: "Oscuro",
     greeting: "Buen día.", greeting_word: "Persistencia.",
-    stat_planned: "Planeado Hoy", stat_done: "Completado", stat_progress: "Progreso", stat_pending: "Total Pendiente",
+    stat_planned: "Planeado Hoy", stat_done: "Completado", stat_progress: "Progreso", stat_pending: "Pendientes (total tareas)",
     plan_my_day: "Planear el día", daily_reflection: "Reflexión diaria",
     execution_list: "Lista de Ejecución",
     prev: "Ant", next: "Sig", current_week: "Esta semana",
@@ -2132,8 +2188,45 @@ async function loadFromFirebase(uid) {
       }
     } else { seedIfEmpty(); save(); }
   } catch(e) { console.error("Load error:", e); }
+  newDayMaintenance();
   checkDiaryDayReset();
   render();
+}
+
+// ============================================================
+// NEW DAY MAINTENANCE — auto-rollover of unfinished tasks
+// Runs on every load: (1) clears from today's plan tasks that were
+// completed on previous days, (2) carries forward tasks planned on
+// past days that are still pending. Past weekPlan records stay
+// untouched so weekly compliance history remains accurate.
+// ============================================================
+function newDayMaintenance() {
+  // 1) Clean today's plan: drop tasks completed before today
+  state.todayPlan = state.todayPlan.filter(id => {
+    const tk = state.tasks.find(x => x.id === id);
+    if (!tk) return true; // habits and unknown ids stay
+    return !(tk.done && tk.completedAt && tk.completedAt < TODAY);
+  });
+
+  // 2) Rollover: tasks planned on past days, still pending → today
+  let moved = 0;
+  Object.keys(state.weekPlan).forEach(d => {
+    if (d >= TODAY) return;
+    (state.weekPlan[d] || []).forEach(id => {
+      const tk = state.tasks.find(x => x.id === id);
+      if (tk && !tk.done && !state.todayPlan.includes(id)) {
+        state.todayPlan.push(id);
+        moved++;
+      }
+    });
+  });
+
+  syncTodayToWeek();
+  if (moved > 0) {
+    save();
+    // Delay so it doesn't collide with the "Welcome back" toast
+    setTimeout(() => showToast(`↪ ${moved} ${t('rollover_msg')}`, 'success'), 2600);
+  }
 }
 
 function checkDiaryDayReset() {
@@ -2450,6 +2543,8 @@ function _updateTodayStats() {
   const dayPct = plannedCount ? Math.round((doneCount/plannedCount)*100) : 0;
   if (statDone) statDone.textContent = doneCount;
   if (statProg) statProg.innerHTML = `${dayPct}<small>%</small>`;
+  const statPendToday = document.getElementById('stat-pending-today');
+  if (statPendToday) statPendToday.textContent = plannedCount - doneCount;
   const dpFill = document.getElementById('day-progress-fill');
   if (dpFill) { dpFill.style.width = dayPct + '%'; dpFill.classList.toggle('full', dayPct === 100); }
   const pendingCount = state.tasks.filter(t => !t.done).length;
@@ -2771,6 +2866,7 @@ function renderToday() {
   document.getElementById('stat-planned').textContent = plannedCount;
   document.getElementById('stat-done').textContent    = doneCount;
   document.getElementById('stat-progress').innerHTML  = `${dayPct}<small>%</small>`;
+  document.getElementById('stat-pending-today').textContent = plannedCount - doneCount;
   document.getElementById('stat-pending').textContent = state.tasks.filter(t => !t.done).length;
   const dpFill = document.getElementById('day-progress-fill');
   if (dpFill) { dpFill.style.width = dayPct + '%'; dpFill.classList.toggle('full', dayPct === 100); }
@@ -4036,55 +4132,141 @@ document.getElementById('btn-save-plan').addEventListener('click', () => {
 });
 
 // ============================================================
-// DIARY
+// DIARY / JOURNAL — filters, search, edit any date, streak
 // ============================================================
-document.getElementById('btn-open-diary-today').addEventListener('click', () => {
-  TODAY = getLocalISODate();
-  const entry = state.diary[TODAY] || {};
+let diaryFilter = 'all';   // all | week | month  (UI-only, not persisted)
+let diarySearch = '';
+let diaryEditingDate = TODAY;
+
+function openDiaryModal(dateISO) {
+  TODAY = getLocalISODate(); // refresh in case day changed
+  diaryEditingDate = dateISO || TODAY;
+  const entry = state.diary[diaryEditingDate] || {};
   document.getElementById('diary-good').value    = entry.good    || '';
   document.getElementById('diary-bad').value     = entry.bad     || '';
   document.getElementById('diary-improve').value = entry.improve || '';
-  state.lastDiaryDate = TODAY;
+  const titleEl = document.getElementById('diary-modal-title');
+  titleEl.textContent = diaryEditingDate === TODAY
+    ? t('daily_reflection')
+    : `${t('daily_reflection')} — ${formatDate(diaryEditingDate)}`;
+  if (diaryEditingDate === TODAY) state.lastDiaryDate = TODAY;
   openModal('modal-diary');
-});
+  setTimeout(() => document.getElementById('diary-good').focus(), 250);
+}
+
+document.getElementById('btn-open-diary-today').addEventListener('click', () => openDiaryModal(TODAY));
+document.getElementById('btn-new-journal').addEventListener('click', () => openDiaryModal(TODAY));
+
 document.getElementById('btn-save-diary').addEventListener('click', () => {
-  state.diary[TODAY] = {
+  state.diary[diaryEditingDate] = {
     good:    document.getElementById('diary-good').value.trim(),
     bad:     document.getElementById('diary-bad').value.trim(),
     improve: document.getElementById('diary-improve').value.trim(),
-    date: TODAY,
+    date: diaryEditingDate,
   };
-  save(); closeModal('modal-diary'); renderDiary();
+  save(); closeModal('modal-diary');
+  if (state.currentPage === 'diary') renderDiary();
 });
 
+// Journaling streak: consecutive days with a non-empty entry.
+// If today has no entry yet, the streak counts from yesterday (not broken yet).
+function getJournalStreak() {
+  let streak = 0;
+  const d = new Date();
+  const hasEntry = iso => { const e = state.diary[iso]; return !!(e && (e.good || e.bad || e.improve)); };
+  if (!hasEntry(toISO(d))) d.setDate(d.getDate() - 1);
+  while (hasEntry(toISO(d))) { streak++; d.setDate(d.getDate() - 1); }
+  return streak;
+}
+
+function getFilteredDiaryEntries() {
+  let entries = Object.values(state.diary || {}).filter(e => e && e.date);
+  if (diaryFilter === 'week') {
+    const days = getWeekDays(0);
+    entries = entries.filter(e => days.includes(e.date));
+  } else if (diaryFilter === 'month') {
+    const m = TODAY.slice(0, 7);
+    entries = entries.filter(e => e.date.startsWith(m));
+  }
+  if (diarySearch.trim()) {
+    const q = diarySearch.toLowerCase();
+    entries = entries.filter(e =>
+      [e.good, e.bad, e.improve].filter(Boolean).join(' ').toLowerCase().includes(q)
+      || e.date.includes(q) || formatDate(e.date).toLowerCase().includes(q));
+  }
+  return entries.sort((a,b) => b.date.localeCompare(a.date));
+}
+
+window.deleteDiaryEntry = function(dateISO) {
+  if (!confirm(t('delete_entry_confirm'))) return;
+  delete state.diary[dateISO];
+  save(); renderDiary();
+};
+
 function renderDiary() {
+  // Stats pills: total entries + journaling streak
+  const statsEl = document.getElementById('diary-stats');
+  const total = Object.values(state.diary || {}).filter(e => e && (e.good || e.bad || e.improve)).length;
+  const streak = getJournalStreak();
+  statsEl.innerHTML = `
+    <span class="diary-stat">◌ <strong>${total}</strong> ${esc(t('journal_entries'))}</span>
+    <span class="diary-stat">🔥 <strong>${streak}</strong> ${esc(t('journal_streak'))}</span>`;
+
   const container = document.getElementById('diary-list'); container.innerHTML = '';
-  const entries = Object.values(state.diary || {}).sort((a,b) => b.date.localeCompare(a.date));
-  if (entries.length === 0) {
+  const hasAny = Object.keys(state.diary || {}).length > 0;
+  const entries = getFilteredDiaryEntries();
+
+  if (!hasAny) {
     container.innerHTML = `<div class="empty-state"><div class="empty-icon">◌</div><p style="white-space:pre-line;">${esc(t('no_journal'))}</p></div>`;
     return;
   }
+  if (entries.length === 0) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">⌕</div><p>${esc(t('no_journal_results'))}</p></div>`;
+    return;
+  }
+
+  const searching = !!diarySearch.trim();
   entries.forEach(entry => {
     const isToday = entry.date === TODAY;
     const card = document.createElement('div'); card.className = 'diary-day-card';
     card.innerHTML = `
       <div class="diary-day-header">
-        <div>
+        <div style="flex:1;min-width:0;">
           <div class="diary-day-date">${formatDate(entry.date)} ${isToday ? '— '+esc(t('today')) : ''}</div>
           <div class="diary-day-title">${entry.good ? esc(entry.good.slice(0,60))+(entry.good.length>60?'...':'') : (currentLang==='es'?'Entrada vacía':'Empty entry')}</div>
         </div>
-        <span style="color:var(--text3);font-size:12px;">▾</span>
+        <div class="diary-actions">
+          <button class="btn btn-ghost btn-sm btn-icon" data-jedit="${entry.date}" title="${currentLang==='es'?'Editar':'Edit'}">✎</button>
+          <button class="btn btn-danger btn-sm btn-icon" data-jdel="${entry.date}" title="${currentLang==='es'?'Eliminar':'Delete'}">✕</button>
+          <span style="color:var(--text3);font-size:12px;margin-left:4px;">▾</span>
+        </div>
       </div>
-      <div class="diary-day-body ${isToday ? 'open' : ''}">
+      <div class="diary-day-body ${(isToday || searching) ? 'open' : ''}">
         <div class="diary-q"><div class="form-label diary-q-label good">${esc(t('diary_good'))}</div><div class="diary-q-text">${esc(entry.good) || '—'}</div></div>
         <div class="diary-q"><div class="form-label diary-q-label bad">${esc(t('diary_bad'))}</div><div class="diary-q-text">${esc(entry.bad) || '—'}</div></div>
         <div class="diary-q"><div class="form-label diary-q-label improve">${esc(t('diary_improve'))}</div><div class="diary-q-text">${esc(entry.improve) || '—'}</div></div>
       </div>
     `;
     card.querySelector('.diary-day-header').addEventListener('click', () => card.querySelector('.diary-day-body').classList.toggle('open'));
+    card.querySelector('[data-jedit]').addEventListener('click', e => { e.stopPropagation(); openDiaryModal(entry.date); });
+    card.querySelector('[data-jdel]').addEventListener('click', e => { e.stopPropagation(); window.deleteDiaryEntry(entry.date); });
     container.appendChild(card);
   });
 }
+
+// Journal toolbar: search (debounced) + period filter chips
+let _diarySearchTimer;
+document.getElementById('diary-search').addEventListener('input', e => {
+  clearTimeout(_diarySearchTimer);
+  _diarySearchTimer = setTimeout(() => { diarySearch = e.target.value; renderDiary(); }, 150);
+});
+document.querySelectorAll('#diary-filter-chips .filter-chip').forEach(ch => {
+  ch.addEventListener('click', () => {
+    diaryFilter = ch.dataset.jf;
+    document.querySelectorAll('#diary-filter-chips .filter-chip').forEach(x => x.classList.toggle('active', x === ch));
+    renderDiary();
+  });
+});
 
 // ============================================================
 // TASK MODAL (opened from All Tasks AND from the Board)
